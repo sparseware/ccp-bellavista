@@ -1,0 +1,11 @@
+    Causative agent: PENICILLIN
+ Nature of Reaction: Adverse Reaction
+ 
+     Signs/symptoms: ANAPHYLAXIS
+ 
+       Drug Classes: PENICILLIN-G RELATED PENICILLINS
+ 
+         Originator: KEEP,NIGEL (CLINICAL COORDINATOR)
+         Originated: Jul 13, 2009@13:17:37
+           Verified: <auto-verified>
+Observed/Historical: Historical

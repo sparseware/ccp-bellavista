@@ -1,0 +1,171 @@
+GroupBox {
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  name: "serversSettings"
+  rows: "f:d,f:d,d,4dluY,14dluY,d,4dluY,f:d"
+  columns: "d:g"
+  widgets {
+    {
+      Line {
+        bounds {
+          x: "0"
+          y: "4"
+        }
+        contentPadding {
+          left: "0"
+        }
+        lines {
+          separator [ leftOffset="6", rightOffset="6" ]
+        }
+      }
+    }
+    {
+      ListBox {
+        name: "servers"
+        borders {
+          matte [ insets="1,0,1,0" ]
+        }
+        fgColor: "tableForeground"
+        bgColor: "tableBackground"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        handleFirstFocusSelection: false
+        visibleRowCount: 7
+        alternatingHighlightColor: "rowHilite"
+        singleClickActionEnabled: true
+        rowHeight: "2ln"
+      } [ onChange="class:Settings#onServersChange", onConfigure="class:Settings#onConfigureServers" ]
+    }
+    {
+      PushButton {
+        verticalAlign: full
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        templateName: "bv.pushbutton.back"
+        value: "{resource:bv.text.settings.manage_servers}"
+        textHAlignment: left
+      } [ onAction="class:Settings#onBackButton" ]
+    }
+    {
+      ToolBar {
+        borders {
+          matte [ insets="0,0,1,0" ]
+        }
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            PushButton {
+              icon: "resource:bv.icon.plus"
+            } [ onAction="class:Settings#onServersAddAction" ]
+          }
+          {
+            PushButton {
+              icon: "resource:bv.icon.minus"
+            } [ onAction="class:Settings#onServersDeleteAction" ]
+          }
+          {
+            Bean {
+              name: "Rare.bean.expander"
+            }
+          }
+          {
+            PushButton {
+              name: "upButton"
+              icon: "resource:bv.icon.up"
+            } [ onAction="class:MainEventHandler#moveListItemUp?servers" ]
+          }
+          {
+            PushButton {
+              name: "downButton"
+              icon: "resource:bv.icon.down"
+            } [ onAction="class:MainEventHandler#moveListItemDown?servers" ]
+          }
+        }
+      }
+    }
+    {
+      GroupBox {
+        bounds {
+          x: "0"
+          y: "5"
+        }
+        layout: forms
+        rows: "2dluY,d,2dluY,d,2dluY,d,4dluY,d"
+        columns: "4dluX,d,2dluX,d:g,4dluX"
+        widgets {
+          {
+            Label {
+              horizontalAlign: right
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              value: "{resource:bv.text.name}:"
+            }
+          }
+          {
+            Label {
+              horizontalAlign: right
+              bounds {
+                x: "1"
+                y: "3"
+              }
+              value: "{resource:bv.text.url}:"
+            }
+          }
+          {
+            TextField {
+              name: "name"
+              bounds {
+                x: "3"
+                y: "1"
+              }
+              visibleCharacters: 10
+            }
+          }
+          {
+            TextField {
+              name: "url"
+              bounds {
+                x: "3"
+                y: "3"
+              }
+            }
+          }
+          {
+            CheckBox {
+              name: "context"
+              bounds {
+                x: "3"
+                y: "5"
+              }
+              value: "{resource:bv.text.settings.context_server}"
+            }
+          }
+          {
+            PushButton {
+              name: "update"
+              bounds {
+                x: "3"
+                y: "7"
+                width: "10ch"
+              }
+              enabled: false
+              value: "{resource:bv.text.update}"
+            } [ onAction="class:Settings#onServersUpdateAction" ]
+          }
+        }
+      }
+    }
+  }
+} [ onUnload="class:Settings#onServersUnload"]

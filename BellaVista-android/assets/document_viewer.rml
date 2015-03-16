@@ -1,0 +1,158 @@
+GridPane {
+  name: "documentViewer"
+  rows: 3
+  columnSpacing: 0
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      verticalFill: preferred
+      viewer {
+        ToolBar {
+          borders {
+            matte [ insets="0,0,1,0" ]
+          }
+          actAsFormViewer: false
+          widgets {
+            {
+              PushButton {
+                name: "backButton"
+                verticalAlign: full
+                visible: false
+                templateName: "bv.pushbutton.back"
+              } [ onAction="class:MainEventHandler#goBackInStackPane" ]
+            }
+            {
+              GroupBox {
+                name: "documentHeader"
+                verticalAlign: full
+                horizontalAlign: full
+                layout: forms
+                rows: "d:g,d"
+                columns: "d:g"
+                widgets {
+                  {
+                    Label {
+                      name: "documentTitle"
+                      verticalAlign: full
+                      horizontalAlign: full
+                      font {
+                        size: "-1"
+                        style: bold
+                      }
+                      bounds {
+                        x: "0"
+                        y: "0"
+                      }
+                      value: " "
+                      textHAlignment: center
+                      textVAlignment: center
+                      wordWrap: true
+                    }
+                  }
+                  {
+                    Label {
+                      name: "documentDate"
+                      horizontalAlign: full
+                      bounds {
+                        x: "0"
+                        y: "1"
+                      }
+                      value: " "
+                      textHAlignment: center
+                      textVAlignment: center
+                    }
+                  }
+                }
+              } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+            }
+            {
+              PushButton {
+                verticalAlign: full
+                templateName: "bv.pushbutton.fullscreen"
+              } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+            }
+          }
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      viewer {
+        SplitPane {
+          bgColor: "defaultBackground+5"
+          splitOrientation: top_to_bottom
+          actAsFormViewer: false
+          splitProportions {
+            .7
+          }
+          regions {
+            {
+              x: "0"
+              y: "0"
+              viewer {
+                Browser {
+                  name: "documentDetail"
+                  templateName: "bv.browser"
+                }
+              }
+            }
+            {
+              x: "0"
+              y: "1"
+              visible: false
+              viewer {
+                CollapsiblePane {
+                  name: "attachments"
+                  title: "{resource:bv.text.attachments_none}"
+                  verticalAlign: full
+                  widget {
+                    Table {
+                      name: "attachmentsTable"
+                      bounds {
+                        height: "6ln"
+                      }
+                      templateName: "bv.table"
+                      columnSortingAllowed: false
+                      singleClickActionEnabled: true
+                      headerHeight: "1ln"
+                      columns {
+                        {
+                          renderDetail: icon_only
+                          width: "28!"
+                          icon: "resource:bv.icon.document"
+                        }
+                        {
+                          title: "{resource:bv.text.title}"
+                        }
+                        {
+                          title: "{resource:bv.text.date}"
+                          valueType: date_time_type
+                          valueContext: "|MM/dd/yy"
+                          width: "8ch"
+                        }
+                      }
+                    }
+                  }
+                  collapsibleInfo {
+                    initiallyCollapsed: false
+                    titleCell {
+                      borders {
+                        matte [ insets="1, 0, 0, 0" ]
+                        empty [ insets="4, 0, 4, 4" ]
+                      }
+                    }
+                    userControllable: false
+                    opaqueTitleBar: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

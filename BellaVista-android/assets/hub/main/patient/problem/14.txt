@@ -1,0 +1,17 @@
+Congestive Heart Failure (428.0)
+ 
+   Onset: 9/15/08
+  Status: ACTIVE/ACUTE
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: KEEP,NIGEL
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 7/13/09
+ 
+ 
+----------- Audit History -----------
+7/13/09:  PRIORITY changed by KEEP,NIGEL from UNSPECIFIED to ACUTE

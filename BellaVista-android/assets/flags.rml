@@ -1,0 +1,99 @@
+Form {
+  layout: forms
+  rows: "2dluY,d,2dluY,f:d,d,f:d:g,2dluY,d,2dluY"
+  columns: "2dluX,d:g,2dluX"
+  widgets {
+    {
+      ListBox {
+        name: "flagsList"
+        borders {
+          line [ padForArc="false", cornerArc="6", noBottom="true" ]
+        }
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        visibleRowCount: 3
+        showDividerLine: true
+        singleClickActionEnabled: true
+      } [ onAction="class:MainEventHandler#onFlagsListAction" ]
+    }
+    {
+      Browser {
+        name: "flagText"
+        borders {
+          line 
+        }
+        bounds {
+          x: "1"
+          y: "5"
+          width: "60ch"
+          height: "15ln"
+        }
+        templateName: "bv.browser"
+      }
+    }
+    {
+      Label {
+        verticalAlign: full
+        horizontalAlign: full
+        bgColor: "Rare.LineBorder.color"
+        bounds {
+          x: "1"
+          y: "4"
+          height: "5"
+        }
+      }
+    }
+    {
+      GroupBox {
+        bounds {
+          x: "1"
+          y: "1"
+        }
+        layout: forms
+        rows: "d"
+        columns: "d:g,2dluX,d"
+        widgets {
+          {
+            Label {
+              font {
+                size: "+2"
+                style: bold
+              }
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              contentPadding {
+                left: "4"
+              }
+              icon: "resource:bv_icon_flag"
+              value: "{resource:bv.text.patient_flagged}"
+            }
+          }
+          {
+            PushButton {
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              templateName: "bv.pushbutton.fullscreen"
+            } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+          }
+        }
+      }
+    }
+    {
+      PushButton {
+      	name: "okButton"
+        bounds {
+          x: "1"
+          y: "7"
+          width: "7ch"
+        }
+        value: "{resource:Rare.text.ok}"
+      }[ onAction="class:MainEventHandler#onCloseWindow" ]
+    }
+  }
+} [ onCreated="class:MainEventHandler#onCreatedFlagsPopup", onConfigure="class:MainEventHandler#onConfigureFlagsPopup" ]

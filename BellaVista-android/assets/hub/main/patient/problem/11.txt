@@ -1,0 +1,17 @@
+Chronic ischemic heart disease (414.9)
+ 
+   Onset: 6/18/98
+  Status: ACTIVE/ACUTE
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: CRAFT,ADAM
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 8/6/09
+ 
+ 
+----------- Audit History -----------
+8/6/09:  PRIORITY changed by KEEP,NIGEL from UNSPECIFIED to ACUTE

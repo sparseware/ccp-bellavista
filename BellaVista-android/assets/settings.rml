@@ -1,0 +1,71 @@
+Form {
+  name: "settings"
+  borders {
+    line [ padForArc="false", cornerArc="8" ]
+  }
+  verticalAlign: full
+  horizontalAlign: full
+  bgColor: "defaultBackground"
+  bounds {
+    width: "-1" [ min="25ch" ]
+    height: "-1" [ min="25ln" ]
+  }
+  layout: forms
+  rows: "f:d,f:d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      GroupBox {
+        bgColor: "defaultGradient"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        layout: forms
+        rows: "d"
+        columns: "4dlu,d:g,4dlu,d,4dlu"
+        widgets {
+          {
+            Label {
+              name: "titleLabel"
+              verticalAlign: full
+              bounds {
+                x: "1"
+                y: "0"
+                width: "17ch"
+                height: "2ln" [ min="!" ]
+              }
+              templateName: "bv.label.dialogTitle"
+              value: "{resource:bv.text.settings}"
+              textHAlignment: left
+            } [ onShown="class:MainEventHandler#onMakeWindowDragger" ]
+          }
+          {
+            PushButton {
+              bounds {
+                x: "3"
+                y: "0"
+              }
+              templateName: "bv.pushbutton.close"
+            } [ onAction="class:Settings#onClose" ]
+          }
+        }
+      }
+    }
+    {
+      StackPane {
+        name: "settingsStack"
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        transitionAnimator: "SlideAnimation"
+        actAsFormViewer: true
+        viewerURLs {
+          "/basic_settings.rml" [ deferred="false" ]
+          "/servers_settings.rml" [ deferred="false" ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+Form {
+  name: "labsOverview"
+  local: false
+  layout: forms
+  rows: "d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      ToolBar {
+        borders {
+          matte [ insets="0,0,1,0" ]
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            Label {
+              value: "{resource:bv.text.lab_trends}"
+              textHAlignment: center
+            } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+          }
+          {
+            PushButton {
+              templateName: "bv.pushbutton.fullscreen"
+            } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+          }
+        }
+      }
+    }
+    {
+      Table {
+        name: "trendsTable"
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        local: false
+        autoResizeMode: none
+        selectionMode: invisible
+        columnSelectionAllowed: true
+        gridLineType: none
+        autoSizeRowsToFit: true
+        rowHeight: "3.75ln"
+        showStandardColumnHeader: false
+        columns {
+          {
+            title: ""
+            valueType: date_time_type
+            valueContext: "|MM/dd/yy'@'HH:mm"
+            rendererClass: "FormsLayoutRenderer" [ options="rows=\"d,d,d,d:g\",columns=\"2dluX,d,2dluX,d,2dluX,d:g\"" ]
+          }
+          {
+            title: ""
+            rendererClass: "FormsLayoutRenderer" [ options="rows=\"d,d,d,d:g\",columns=\"2dluX,d,2dluX,d,2dluX,d:g\"" ]
+          }
+        }
+      } [ onCreated="class:Labs#onTrendsTableCreated", onConfigure="class:Labs#onTrendsTableConfigure" ]
+    }
+  }
+}

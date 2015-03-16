@@ -1,0 +1,68 @@
+GridPane {
+  verticalAlign: full
+  horizontalAlign: auto
+  rows: 2
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      viewer {
+        ImagePane {
+          name: "imageViewer"
+          bgImageURL: "resource:bv.image.blank"
+          zoomingAllowed: true [ maximum="400%" ]
+          movingAllowed: true
+          scaling: bilinear_cached
+          centerImage: true
+          showLoadStatus: true
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      name: "slides_footer"
+      verticalFill: preferred
+      viewer {
+        Carousel {
+          name: "thumbNails"
+          borders {
+            matte [ insets="1, 0, 0, 0" ]
+          }
+          verticalAlign: full
+          horizontalAlign: full
+          bgColor: "defaultGradient"
+          bounds {
+            x: "2"
+            y: "0"
+            height: "25dlu" [ min="25dlu" ]
+          }
+          dataType: image_urls
+          flatList: true
+          imageGap: 1
+          sideFraction: .8
+          renderTitles: false
+          cacheSize: 10
+          areaMargin {
+            top: "4"
+            bottom: "4"
+          }
+          scaling: bilinear
+          selectionCell {
+            bgColor: "white"
+            borders {
+              matte [ color="white", insets="2,2,2,2" ]
+            }
+          }
+          itemCell {
+            bgColor: "gray"
+            borders {
+              matte [ color="gray", insets="2,2,2,2" ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+GridPane {
+  bgColor: "defaultBackground"
+  rows: 2
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      borders {
+        matte [ insets="0,0,1,0", color="#cccccc" ]
+      }
+      name: "patient_info"
+      verticalFill: preferred
+      dataURL: "infobar.rml"
+      collapsibleInfo {
+        title: "Patient Information"
+        titleCell {
+          borders {
+            empty [ insets="8,0,8,0" ]
+          }
+        }
+        expander: chevron
+        animateTransitions: true
+        showTitleBar: false
+        opaqueTitleBar: false
+      } [ onWillExpand="class:MainEventHandler#onCollapsiblePaneToggle", onWillCollapse="class:MainEventHandler#onCollapsiblePaneToggle" ]
+    }
+    {
+      x: "0"
+      y: "1"
+      verticalFill: maximum
+      viewer {
+        TabPane {
+          name: "applicationTabs"
+          borders {
+            none
+          }
+          local: false
+          //tabPosition: top
+          closeButton: none
+          tabStyle: office2003
+          tabHeight: "2ln"
+          selectedIndex: 0
+          tabs {
+            {
+              name: "summary"
+              dataURL: "summary.rml"
+              title: "{resource:bv.text.summary}"
+              reloadOnActivation: true
+            }
+            {
+              name: "vitals"
+              dataURL: "vitals.rml"
+              title: "{resource:bv.text.vitals}"
+              reloadOnActivation: true
+            }
+            {
+              name: "labs"
+              dataURL: "labs.rml"
+              title: "{resource:bv.text.labs}"
+              reloadOnActivation: true
+            }
+            {
+              name: "orders"
+              dataURL: "orders.rml"
+              title: "{resource:bv.text.orders}"
+              reloadOnActivation: true
+            }
+            {
+              name: "consults"
+              dataURL: "consults.rml"
+              title: "{resource:bv.text.consults}"
+              reloadOnActivation: true
+            }
+            {
+              name: "notes"
+              dataURL: "notes.rml"
+              title: "{resource:bv.text.notes}"
+              reloadOnActivation: true
+            } 
+            /**
+             * this tab is use for testing for memory leaks
+             * it is not meant to be available in practice
+             *
+            {
+             name:"empty"
+             title: "empty"
+            }
+            /**/
+          }
+        } [ onCreated="class:MainEventHandler#onTabPaneCreated" ]
+      }
+    }
+  }
+}

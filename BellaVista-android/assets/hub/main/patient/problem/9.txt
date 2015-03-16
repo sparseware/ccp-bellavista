@@ -1,0 +1,17 @@
+Diabetes Mellitus without mention of Complication, type II or unspecified type, (250.00)
+ 
+   Onset: 5/20/96
+  Status: ACTIVE/ACUTE
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: BITTLE,LOYD
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 8/6/09
+ 
+ 
+----------- Audit History -----------
+8/6/09:  PRIORITY changed by KEEP,NIGEL from UNSPECIFIED to ACUTE

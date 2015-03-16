@@ -1,0 +1,433 @@
+TemplateContext {
+  widgets {
+    {
+      Label {
+        horizontalAlign: full
+        font {
+          size: "+2"
+        }
+        bgColor: "defaultGradient"
+        templateName: "bv.label.dialogTitle"
+        textHAlignment: center
+        wordWrap: true
+      } [ onShown="class:MainEventHandler#onMakeWindowDragger" ]
+    }
+    {
+      Label {
+        verticalAlign: bottom
+        templateName: "bv.label.value"
+      }
+    }
+    {
+      Label {
+        verticalAlign: bottom
+        horizontalAlign: right
+        fgColor: "clinicalPrompt"
+        templateName: "bv.label.clinicalPrompt"
+        textHAlignment: trailing
+        textVAlignment: top
+      }
+    }
+    {
+      Label {
+        borders {
+          matte [ insets="0,0,1,0", color="lightBorder" ]
+          empty [ insets="4,0,4,0" ]
+        }
+        bgColor: "tableHeaderBackground+15, tableHeaderBackground" [ magnitude="66" ]
+        bounds {
+          height: "-1" [ min="1.5ln" ]
+        }
+        templateName: "bv.label.trendPanelHeader"
+        textHAlignment: center
+      }
+    }
+    {
+      Label {
+        borders {
+          matte [ insets="0,0,4,0", color=",darkBorder" ]
+          empty [ insets="4,0,4,0" ]
+        }
+        templateName: "Rare.Alert.title"
+      }
+    }
+    {
+      PushButton {
+        fgColor: "link"
+        templateName: "Rare.Alert.button"
+        buttonStyle: hyperlink_always_underline
+      }
+    }
+    {
+      TreeTable {
+        borders {
+          matte [ insets="1,0,0,0", color="lightBorder" ]
+        }
+        verticalAlign: full
+        horizontalAlign: full
+        font {
+          size: "+1"
+        }
+        fgColor: "tableForeground"
+        bgColor: "tableBackground"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        defaultContextMenu: false
+        templateName: "bv.table.data"
+        local: false
+        selectionMode: single
+        columnSortingAllowed: false
+        changeSelColorOnLostFocus: false
+        singleClickActionEnabled: true
+        gridLineType: horizontal_lines
+        gridLineColor: "tableGridLineColor"
+        headerHeight: "1.75ln"
+        headerFgColor: "tableHeaderForeground"
+        headerBgColor: "tableHeaderBackground+15, tableHeaderBackground" [ magnitude="66" ]
+        alternatingHighlightColor: "rowHilite"
+        alternatingHighlightType: row
+        autoSizeRowsToFit: true
+        rowHeight: "1.75ln"
+        columns {
+          {
+            title: " "
+            renderDetail: icon_only
+            width: "22!"
+          }
+          {
+            title: "{resource:bv.text.result}"
+            width: "12ch"
+            wordWrap: true
+          }
+          {
+            title: "{resource:bv.text.value}"
+            width: "8ch"
+            wordWrap: true
+          }
+        }
+        expandAll: true
+        indentBy: 0
+      }
+    }
+    {
+      Table {
+        borders {
+          none
+        }
+        verticalAlign: full
+        horizontalAlign: full
+        fgColor: "tableForeground"
+        bgColor: "tableBackground"
+        defaultContextMenu: false
+        popupMenu {
+          {
+            value: "{resource:bv.text.sort_by_name}"
+          } [ onAction="class:PatientSelect#onSortByName(widget)" ]
+          {
+            value: "{resource:bv.text.sort_by_room_number}"
+          } [ onAction="class:PatientSelect#onSortByRoomNumber" ]
+        }
+        templateName: "bv.table.patients"
+        local: false
+        selectionMode: single
+        columnSortingAllowed: false
+        gridLineType: horizontal_lines
+        gridLineColor: "tableGridLineColor"
+        alternatingHighlightColor: "rowHilite"
+        alternatingHighlightType: row
+        autoSizeRowsToFit: true
+        rowHeight: "2ln"
+        showStandardColumnHeader: false
+        columns {
+          {
+            title: "Photo"
+            renderDetail: icon_only
+            width: "50!"
+          }
+          {
+            title: "Demographics"
+          }
+          {
+            title: " "
+            renderDetail: icon_only
+            width: "28!"
+          }
+        }
+      } [ onCreated="class:PatientSelect#onPatientsTableCreated", onChange="class:PatientSelect#onPatientsTableChange",
+          onAction="class:PatientSelect#onSelectPatient" ]
+    }
+    {
+      Table {
+        borders {
+          none
+        }
+        verticalAlign: full
+        horizontalAlign: full
+        font {
+          size: "+1"
+        }
+        fgColor: "summaryForeground"
+        bgColor: "summaryBackground"
+        defaultContextMenu: false
+        templateName: "bv.table.summary"
+        columnSortingAllowed: false
+        singleClickActionEnabled: true
+        gridLineType: none
+        gridLineColor: "tableGridLineColor"
+        headerFgColor: "summaryHeaderForeground"
+        headerBgColor: "summaryHeaderBackground"
+        headerBottomSeparatorColor: "darkBorder"
+        headerSeparatorColor: "summaryHeaderBackground"
+        autoSizeRowsToFit: true
+        rowHeight: "1.25ln"
+      }
+    }
+    {
+      Table {
+        borders {
+          none
+        }
+        verticalAlign: full
+        horizontalAlign: full
+        font {
+          size: "+1"
+        }
+        fgColor: "tableForeground"
+        bgColor: "tableBackground"
+        defaultContextMenu: false
+        templateName: "bv.table"
+        singleClickActionEnabled: true
+        gridLineType: horizontal_lines
+        gridLineColor: "tableGridLineColor"
+        headerFgColor: "tableHeaderForeground"
+        headerBgColor: "tableHeaderBackground+15, tableHeaderBackground" [ magnitude="66" ]
+        alternatingHighlightColor: "rowHilite"
+        alternatingHighlightType: row
+        autoSizeRowsToFit: true
+        rowHeight: "2ln"
+      }
+    }
+    {
+      RadioButton {
+        borders {
+          empty [ insets="3,3,3,3" ]
+        }
+        templateName: "bv.radiobutton.toolbar"
+        pressedPainter {
+          bgColor: "defaultBackground-5"
+          borders {
+            lowered
+            empty [ insets="2,2,2,2" ]
+          }
+        }
+        selectionPainter {
+          bgColor: "defaultBackground-30"
+          borders {
+            lowered
+            empty [ insets="2,2,2,2" ]
+          }
+        }
+      }
+    } [ os="not_touch" ]
+    {
+      RadioButton {
+        borders {
+          empty [ insets="7,7,7,7" ]
+        }
+        templateName: "bv.radiobutton.toolbar"
+        pressedPainter {
+          bgColor: "defaultBackground-5"
+          borders {
+            lowered
+            empty [ insets="6,6,6,6" ]
+          }
+        }
+        selectionPainter {
+          bgColor: "defaultBackground-30"
+          borders {
+            lowered
+            empty [ insets="6,6,6,6" ]
+          }
+        }
+      }
+    } [ os="touch" ]
+    {
+      PushButton {
+        borders {
+          line [ cornerArc="8", color="transparent" ]
+          empty [ insets="4,4,4,4" ]
+        }
+        bgColor: "transparent"
+        focusable: false
+        templateName: "bv.pushbutton.back"
+        icon: "resource:bv.icon.back"
+        buttonStyle: toolbar
+      }
+    }
+    {
+      PushButton {
+        borders {
+          line [ cornerArc="8", color="transparent" ]
+          empty [ insets="4,4,4,4" ]
+        }
+        bgColor: "transparent"
+        focusable: false
+        templateName: "bv.pushbutton.close"
+        icon: "resource:Rare.icon.close"
+        buttonStyle: toolbar
+      } [ onAction="class:MainEventHandler#onCloseWindow" ]
+    }
+    {
+      PushButton {
+        name: "bv.action.fullscreen"
+        verticalAlign: full
+        templateName: "bv.pushbutton.fullscreen"
+        buttonStyle: toolbar
+      } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+    }
+    {
+      PushButton {
+        borders {
+          empty [ insets="6,2,6,2" ]
+        }
+        templateName: "bv.pushbutton.popup_hyperlink"
+        actionType: popup_widget
+        buttonStyle: hyperlink_always_underline
+        useSharedBorderForPopup: true [ color="darkBorder" ]
+      }
+    } [ os="touch" ]
+    {
+      PushButton {
+        borders {
+          empty [ insets="2,2,2,2" ]
+        }
+        templateName: "bv.pushbutton.popup_hyperlink"
+        actionType: popup_widget
+        buttonStyle: hyperlink_always_underline
+        useSharedBorderForPopup: true [ color="darkBorder" ]
+      }
+    } [ os="not_touch" ]
+    {
+      Table {
+        name: "spreadsheetTable"
+        templateName: "bv.table.spreadsheet"
+        local: false
+        autoResizeMode: none
+        selectionMode: single
+        columnSortingAllowed: false
+        singleClickActionEnabled: true
+        gridLineType: both
+        alternatingHighlightColor: "rowHilite"
+        alternatingHighlightType: row
+        autoSizeRowsToFit: true
+        columns {
+          {
+            title: " "
+            renderType: header_normal
+            width: "12ch"
+            gridCell {
+              bgColor: "defaultBackground^10"
+            }
+            headerWordWrap: false
+            headerHorizontalAlign: center
+            headerVerticalAlign: center
+          }
+          {
+            title: " "
+            horizontalAlign: center
+            width: "6ch"
+            headerWordWrap: true [ supportHTML="false" ]
+            headerFont {
+              size: "-1"
+            }
+            headerHorizontalAlign: center
+          }
+          {
+            title: "{resource:bv.text.reference_range}"
+            horizontalAlign: center
+            renderType: footer
+            width: "6ch"
+            font {
+              size: "-2"
+            }
+            gridCell {
+              bgColor: "defaultBackground^10"
+            }
+            headerHorizontalAlign: center
+          }
+        }
+      }
+    }
+    {
+      ListBox {
+        fgColor: "foreground"
+        bgColor: "defaultBackground-5"
+        templateName: "Rare.MenuBar.actionBarMenu"
+        showDividerLine: true [ showLastLine="false" ]
+        rowHeight: "2ln"
+      }
+    }
+    {
+      ListBox {
+        fgColor: "foreground"
+        bgColor: "defaultBackground+5"
+        templateName: "Rare.PushButton.menu"
+        showDividerLine: true [ showLastLine="false" ]
+        rowHeight: "2ln"
+      }
+    }
+    {
+      ListBox {
+        fgColor: "tableForeground"
+        bgColor: "rowHilite"
+        defaultContextMenu: false
+        templateName: "bv.listbox"
+        alternatingHighlightColor: "tableBackground"
+        autoSizeRowsToFit: true
+        showDividerLine: true [ showLastLine="false" ]
+        dividerLineColor: "tableGridLineColor"
+        singleClickActionEnabled: true
+        rowHeight: "2ln"
+      }
+    }
+    {
+      ComboBox {
+        borders {
+          empty [ insets="3,3,3,3" ]
+        }
+        bgColor: "defaultBackground"
+        templateName: "bv.combobox.filter"
+        editable: false
+        itemDescription {
+          font {
+            size: "+1"
+          }
+        }
+        showPopupButton: true [ border="none", bgColor="transparent"]
+        popupPainter {
+          borders {
+            line [ noTop="true" ]
+          }
+        }
+        rowHeight: "1.75ln"
+      } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder" ]
+    }
+    {
+      Label {
+        bgColor: "themeBlue,"
+        bounds {
+          height: "4"
+        }
+        templateName: "bv.line.data_separator"
+      }
+    }
+    {
+      Browser {
+        templateName: "bv.browser"
+        customProperties: "autoInsertMetaContent=true;android:hardwareAccelerated=false"
+      }
+    }
+  }
+}

@@ -1,0 +1,85 @@
+GroupBox {
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "d,d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      Table {
+        name: "listCategories"
+        borders {
+          none
+        }
+        verticalAlign: full
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        dataURL: "collection:patientListCategories"
+        singleClickActionEnabled: true
+        rowHeight: "1.75ln"
+        visibleRowCount: 3
+        selectedIndex: -1
+        scrollPane {
+          horizontalScrollbar: hidden
+        }
+        columns {
+          {
+            title: " "
+            width: "15ch"
+            icon: "resource:bv.icon.dash"
+          }
+        }
+        displayAsGridView: true
+        gridViewType: vertical_wrap
+      } [ onAction="class:PatientSelect#onListCategoriesAction" ]
+    }
+    {
+      Label {
+        borders {
+          matte [ insets="1,0,1,0", color="darkBorder" ]
+        }
+        bgColor: "defaultGradient"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        contentPadding {
+          top: "4"
+          bottom: "4"
+          left: "4"
+        }
+        value: "{resource:bv.text.patient_lists}"
+      }
+    }
+    {
+      ListBox {
+        name: "listsBox"
+        borders {
+          none
+        }
+        verticalAlign: full
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        local: false
+        selectionMode: single
+        itemDescription {
+          icon: "resource:bv.icon.list"
+        }
+        visibleRowCount: 3
+        autoSizeRowsToFit: true
+        showDividerLine: true
+        singleClickActionEnabled: true
+        rowHeight: "1.75ln"
+        scrollPane {
+          horizontalScrollbar: hidden
+        }
+      } [ onFinishedLoading="class:PatientSelect#onListsBoxFinishLoading", onAction="class:PatientSelect#onPatientListSelected" ]
+    }
+  }
+}

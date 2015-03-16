@@ -1,0 +1,318 @@
+/*
+ * Copyright (C) SparseWare Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.sparseware.bellavista;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map.Entry;
+
+import com.appnativa.rare.Platform;
+import com.appnativa.rare.iPlatformAppContext;
+import com.appnativa.rare.net.ActionLink;
+import com.appnativa.rare.spot.Chart;
+import com.appnativa.rare.ui.ColorUtils;
+import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.RenderableDataItem.HorizontalAlign;
+import com.appnativa.rare.ui.UIColor;
+import com.appnativa.rare.ui.UIScreen;
+import com.appnativa.rare.ui.chart.ChartDataItem;
+import com.appnativa.rare.util.SubItemComparator;
+import com.appnativa.rare.viewer.ChartViewer;
+import com.appnativa.rare.viewer.StackPaneViewer;
+import com.appnativa.rare.viewer.TableViewer;
+import com.appnativa.rare.widget.aGroupableButton;
+import com.appnativa.rare.widget.iWidget;
+import com.appnativa.util.MutableInteger;
+import com.appnativa.util.json.JSONObject;
+
+/**
+ * This provides a core set of functionality for managing results for display
+ * The data is assumed to be returned is reverse chronological order (newest
+ * values first). The middle-ware should enforce this constraint.
+ * 
+ * @author Don DeCoteau
+ */
+public class Vitals extends aResultsManager implements iValueChecker {
+  public Vitals() {
+    super("vitals", "Vitals");
+    iPlatformAppContext app = Platform.getAppContext();
+    JSONObject info = (JSONObject) app.getData("vitalsInfo");
+    itemCounts = new LinkedHashMap<String, MutableInteger>();
+    itemDatesSet = new LinkedHashSet<Date>();
+    dataPageSize = info.optInt("dataPageSize", dataPageSize);
+    spreadSheetPageSize = info.optInt("spreadSheetPageSize", spreadSheetPageSize);
+    chartHandler = new ChartHandler(info.getJSONObject("charts"));
+    if (info.optBoolean("hasReferenceRange", false)) {
+      RANGE_POSITION = 4;
+    }
+  }
+
+  @Override
+  protected String getSpeeedSheetColumnTitle() {
+    return Platform.getResourceAsString("bv.text.vitals");
+  }
+
+  public void onSummaryClick(String eventName, iWidget widget, EventObject event) {
+    ActionPath path = new ActionPath("vitals", "combo");
+    Utils.handleActionPath(path);
+  }
+
+  @Override
+  public void changeView(String eventName, iWidget widget, EventObject event) {
+    String name = ((aGroupableButton) widget).getSelectedButtonName();
+    if (name == null) {
+      name = widget.getName();
+    }
+    if (UIScreen.isLargeScreen() && "spreadsheet".equals(name)) { //if going to the spreadsheet go to same result type
+      String key = getSelectedChartableKey();
+      if (key != null) {
+        keyPath = new ActionPath(key);
+      }
+    }
+    super.changeView(eventName, widget, event);
+  }
+
+  public void onShowComboChart(String eventName, iWidget widget, EventObject event) {
+    showComboChart((StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack"));
+  }
+
+  @Override
+  public boolean checkRow(RenderableDataItem row, int index, int expandableColumn, int rowCount) {
+    try {
+      do {
+        RenderableDataItem name = row.getItemEx(NAME_POSITION);
+        Date date = (Date) row.get(DATE_POSITION).getValue();
+        if (name == null || date == null) {
+          continue;
+        }
+        String key = (String) name.getLinkedData();
+        if (key == null) {
+          continue;
+        }
+        RenderableDataItem valueItem = row.get(VALUE_POSITION);
+        String value = (String) valueItem.getValue();
+        if (Utils.isChartable(value)) {
+          itemDatesSet.add(date);
+          MutableInteger count = itemCounts.get(key);
+          if (count == null) {
+            count = new MutableInteger(0);
+
+            itemCounts.put(key, count);
+          }
+          count.incrementAndGet();
+        }
+      } while (false);
+    } catch (Exception e) {
+      Platform.ignoreException(null, e);
+    }
+    return true;
+  }
+
+  /**
+   * Called when the vitals data has been loaded into the table. We populate the
+   * the categories list and sort the table based on the sort order for the
+   * categories that was sent with the data
+   */
+  public void onFinishedLoading(String eventName, iWidget widget, EventObject event) {
+  }
+
+  /**
+   * Called via the configure event on the charts panel
+   */
+  @Override
+  public void onChartsPanelLoaded(String eventName, iWidget widget, EventObject event) {
+    super.onChartsPanelLoaded(eventName, widget, event);
+    if (dataLoaded && !dataTable.hasSelection()) {
+      showComboChart((StackPaneViewer) widget.getFormViewer().getWidget("chartPaneStack"));
+    }
+  }
+
+  public void selectVitals(String eventName, iWidget widget, EventObject event) {
+
+  }
+
+  protected List<RenderableDataItem> createSpreadsheetRows(TableViewer table) {
+    Date[] dates = itemDates;
+    List<RenderableDataItem> list = originalRows;
+    LinkedHashMap<String, MutableInteger> counts = itemCounts;
+    LinkedHashMap<String, List<RenderableDataItem>> categories = new LinkedHashMap<String, List<RenderableDataItem>>();
+    HashMap<String, RenderableDataItem> map = new HashMap<String, RenderableDataItem>(counts.size());
+    ArrayList<RenderableDataItem> rows = new ArrayList<RenderableDataItem>(counts.size());
+    int len = list.size();
+    int clen = dates.length;
+    boolean found;
+    RenderableDataItem row, test, orow;
+    for (int i = 0; i < len; i++) {
+      orow = list.get(i);
+      test = orow.get(NAME_POSITION);
+      String s = (String) test.getLinkedData();
+      if (!counts.containsKey(s)) { // only contains chartable items (numeric
+                                    // values)
+        continue;
+      }
+      Date date = (Date) orow.get(DATE_POSITION).getValue();
+      s = (String) test.getValue();
+      row = map.get(s);
+
+      if (row == null) {
+        row = table.createRow(clen + 1, false);
+        row.setItemCount(clen + 1);
+        map.put(s, row);
+        row.setItem(0, test);
+        rows.add(row);
+      }
+      long time = date.getTime();
+      found = false;
+      for (int col = 0; col < clen; col++) {
+        if (dates[col].getTime() == time) {
+          found = true;
+          row.setItem(col + 1, orow.get(VALUE_POSITION));
+        }
+      }
+      if (!found) {
+        System.out.println(orow);
+      }
+    }
+    SubItemComparator c = new SubItemComparator();
+    c.setOptions(0, false);
+    Iterator<Entry<String, List<RenderableDataItem>>> it = categories.entrySet().iterator();
+    rows.clear();
+    UIColor bg = ColorUtils.getColor("vitalsCategoryBackground");
+    RenderableDataItem emptyCatRow = new RenderableDataItem();
+    emptyCatRow.setBackground(bg);
+    while (it.hasNext()) {
+      Entry<String, List<RenderableDataItem>> e = it.next();
+      String category = e.getKey();
+      List<RenderableDataItem> clist = e.getValue();
+      Collections.sort(clist, c);
+      row = table.createRow(clen + 3, false);
+      row.setSelectable(false);
+      for (int i = 0; i < clen + 3; i++) {
+        row.add(emptyCatRow);
+      }
+      test = new RenderableDataItem(category);
+      test.setBackground(bg);
+      test.setColumnSpan(-1);
+      test.setHorizontalAlignment(HorizontalAlign.CENTER);
+      row.set(1, test);
+      row.setLinkedData(category);
+      rows.add(row);
+      rows.addAll(clist);
+    }
+    return rows;
+  }
+
+  protected void processData(TableViewer table, List<RenderableDataItem> rows) {
+    Utils.checkRowsAndOptimizeDates(rows, DATE_POSITION, RenderableDataItem.TYPE_DATETIME, this);
+    itemDates = itemDatesSet.toArray(new Date[itemDatesSet.size()]);
+    Arrays.sort(itemDates);
+    int len = itemDates.length;
+    spreadsheetPosition = Math.max(0, len - spreadSheetPageSize);
+    rows = Utils.groupByDate(table, rows);
+
+    table.handleGroupedCollection(rows, false);
+    dataLoaded = true;
+    ActionPath path = Utils.getActionPath(true);
+    String key = path == null ? null : path.pop();
+    if(key==null && UIScreen.isLargeScreen()) {
+      key="combo";
+    }
+    if(key!=null) {
+      if(UIScreen.isLargeScreen() && !chartsLoaded) {
+        keyPath=new ActionPath(key);
+      }
+      else {
+        handlePathKey(table, key, 0, true);
+      }
+   }
+  }
+
+  protected void showComboChart(StackPaneViewer sp) {
+    clearSelection();
+    try {
+      if (sp == null) {
+        String url = namePrefix + "_charts.rml";
+        Utils.pushWorkspaceViewer(url);
+        keyPath = new ActionPath("combo");
+      } else {
+        ChartDataItem series = ChartViewer.createSeries("Combo");
+        ChartViewer cv = chartHandler.createChart(sp.getFormViewer(), "combo", 1, series);
+        cv.getChartDefinition().setShowLegends(true);
+        SummaryVitalsHandler parser = new SummaryVitalsHandler();
+        cv.remove(series);
+        parser.calculateRangesAndUpdateUI(cv.getFormViewer(), cv, originalRows, false);
+        Utils.setViewerInStackPaneViewer(sp, cv, null, true, true, true);
+      }
+    } catch (Exception e) {
+      Utils.handleError(e);
+    }
+  }
+
+  @Override
+  protected void handlePathKey(TableViewer table, String key, int column, boolean fireAction) {
+    if ("combo".equals(key)) {
+      showComboChart((StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack"));
+    } else {
+      super.handlePathKey(table, key, column, fireAction);
+    }
+  }
+
+  @Override
+  protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
+    originalRows = rows;
+    final TableViewer table = (TableViewer) widget;
+    table.setWidgetDataLink(link);
+    itemCounts.clear();
+    itemDatesSet.clear();
+
+    int len = rows.size();
+
+    if ((len == 1) && !rows.get(0).isEnabled()) {
+      hasNoData = true;
+      table.addParsedRow(rows.get(0));
+      table.finishedParsing();
+      table.finishedLoading();
+      itemDates = null;
+      dataLoaded = true;
+      Utils.getActionPath(true);
+      return;
+    }
+    processData(table, rows);
+  }
+
+  class ChartHandler extends aChartHandler {
+
+    public ChartHandler(JSONObject chartsInfo) {
+      super("Vitals", chartsInfo, NAME_POSITION, DATE_POSITION, VALUE_POSITION);
+    }
+
+    @Override
+    protected void configureChart(iWidget context, Chart cfg, String key, ChartDataItem series) {
+      super.configureChart(context, cfg, key, series);
+      if (key.equals("combo")) {
+        cfg.getPlotReference().bgColor.setValue("defaultBackground,defaultBackground-15");
+      }
+    }
+  }
+}

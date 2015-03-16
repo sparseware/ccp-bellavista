@@ -1,0 +1,175 @@
+SplitPane {
+  splitProportions {
+    .4
+  }
+  regions {
+    {
+      borders {
+        shadow
+      }
+      horizontalFill: preferred
+      viewer {
+        GroupBox {
+          layout: forms
+          rows: "d,d:g"
+          columns: "d:g"
+          widgets {
+            {
+              TreeTable {
+                name: "vitalsTable"
+                verticalAlign: full
+                bounds {
+                  x: "0"
+                  y: "1"
+                }
+                dataURL: "/hub/main/vitals/list" [ columnSeparator="^", ldSeparator="|" ]
+                templateName: "bv.table.data"
+              } [ onCreated="class:Vitals#onTableCreated", onAction="class:Vitals#onTableAction", onFinishedLoading="class:Vitals#onFinishedLoading" ]
+            }
+            {
+              ToolBar {
+                name: "tableToolbar"
+                borders {
+                  empty [ insets="2,2,2,2" ]
+                }
+                bounds {
+                  x: "0"
+                  y: "0"
+                }
+                actAsFormViewer: false
+                widgets {
+                  {
+                    PushButton {
+                      name: "tools"
+                      enabled: false
+                      value: "{resource:bv.text.tools}"
+                      icon: "resource:bv_icon_tools"
+                      actionType: popup_menu
+                    }
+                  }
+                  {
+                    PushButton {
+                      name: "comboChart"
+                      icon: "resource:bv.icon.combo_chart"
+                      showText: false
+                      buttonStyle: toolbar
+                    } [ onAction="class:Vitals#onShowComboChart" ]
+                  }
+                  {
+                    Label {
+                      name: "tableLabel"
+                      verticalAlign: auto
+                      horizontalAlign: full
+                      font {
+                        size: "-2"
+                      }
+                      value: " "
+                      textHAlignment: center
+                      textVAlignment: auto
+                    } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+                  }
+                  {
+                    PushButton {
+                      name: "firstPage"
+                      bounds {
+                        x: "2"
+                        y: "0"
+                      }
+                      enabled: false
+                      visible: false
+                      icon: "resource:bv.icon.page_first"
+                      buttonStyle: toolbar
+                    } [ onAction="class:Vitals#onFirstPage" ]
+                  }
+                  {
+                    PushButton {
+                      name: "previousPage"
+                      bounds {
+                        x: "4"
+                        y: "0"
+                      }
+                      enabled: false
+                      visible: false
+                      icon: "resource:bv.icon.page_previous"
+                      buttonStyle: toolbar
+                    } [ onAction="class:Vitals#onPreviousPage" ]
+                  }
+                  {
+                    PushButton {
+                      name: "nextPage"
+                      bounds {
+                        x: "6"
+                        y: "0"
+                      }
+                      enabled: false
+                      visible: false
+                      icon: "resource:bv.icon.page_next"
+                      buttonStyle: toolbar
+                    } [ onAction="class:Vitals#onNextPage" ]
+                  }
+                  {
+                    PushButton {
+                      name: "lastPage"
+                      bounds {
+                        x: "8"
+                        y: "0"
+                      }
+                      enabled: false
+                      visible: false
+                      icon: "resource:bv.icon.page_last"
+                      buttonStyle: toolbar
+                    } [ onAction="class:Vitals#onLastPage" ]
+                  }
+                  {
+                    Bean {
+                      name: "Rare.bean.separator"
+                    }
+                  }
+                  {
+                    RadioButton {
+                      name: "charts"
+                      templateName: "bv.radiobutton.toolbar"
+                      value: "{resource:bv.text.charts}"
+                      icon: "resource:bv.icon.table"
+                      showText: false
+                      groupName: "views"
+                      selected: true
+                    } [ onAction="class:Vitals#changeView" ]
+                  }
+                  {
+                    RadioButton {
+                      name: "spreadsheet"
+                      templateName: "bv.radiobutton.toolbar"
+                      value: "{resource:bv.text.spreadsheet}"
+                      icon: "resource:bv.icon.spreadsheet"
+                      showText: false
+                      groupName: "views"
+                    } [ onAction="class:Vitals#changeView" ]
+                  }
+                  {
+                    RadioButton {
+                      name: "realtime_vitals"
+                      enabled: false
+                      templateName: "bv.radiobutton.toolbar"
+                      value: "{resource:bv.text.realtime_vitals}"
+                      icon: "resource:bv.icon.ecg"
+                      showText: false
+                      groupName: "views"
+                    } [ onAction="class:Vitals#changeView" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      borders {
+        shadow
+      }
+      name: "vitalsChartRegion"
+      dataURL: "vitals_charts.rml"
+    }
+  }
+} [ onDispose="class:Vitals#onDispose" ]

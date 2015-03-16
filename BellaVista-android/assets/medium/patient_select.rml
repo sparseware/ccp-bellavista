@@ -1,0 +1,309 @@
+Form {
+  name: "patientSelectionForm"
+  local: false
+  layout: forms
+  rows: "f:d,f:d,f:d:g,f:d"
+  columns: "d:g"
+  widgets {
+    {
+      GroupBox {
+        horizontalAlign: full
+        bgColor: "defaultGradient"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        layout: forms
+        rows: "f:d,f:d,f:d,f:d"
+        columns: "2dluX,4dluX,d,2dluX,d:g,2dluX"
+        widgets {
+          {
+            Label {
+              horizontalAlign: right
+              bounds {
+                x: "2"
+                y: "2"
+              }
+              value: "{resource:bv.text.age_sex}:"
+              textHAlignment: trailing
+              textVAlignment: top
+            }
+          }
+          {
+            Label {
+              name: "age_sex"
+              bounds {
+                x: "4"
+                y: "2"
+              }
+              contentPadding {
+                left: "3"
+              }
+              templateName: "bv.label.value"
+              textHAlignment: leading
+            }
+          }
+          {
+            Label {
+              horizontalAlign: right
+              bounds {
+                x: "2"
+                y: "3"
+              }
+              value: "{resource:bv.text.admit_date}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "admit_date"
+              bounds {
+                x: "4"
+                y: "3"
+              }
+              contentPadding {
+                left: "3"
+              }
+              templateName: "bv.label.value"
+            }
+          }
+          {
+            PushButton {
+              name: "patient"
+              borders {
+                matte [ insets="0,0,1,0" ]
+                empty [ insets="8,8,0,0" ]
+              }
+              horizontalAlign: full
+              font {
+                style: bold
+              }
+              bounds {
+                x: "4"
+                y: "0"
+              }
+              enabled: false
+              popupMenu {
+                {
+                  name: "summary"
+                  value: "Goto Summary"
+                }
+                {
+                  name: "vitals"
+                }
+                {
+                  name: "labs"
+                }
+                {
+                  name: "orders"
+                }
+                {
+                  name: "consults"
+                }
+                {
+                  name: "notes"
+                }
+              }
+              value: "NO PATIENT"
+              icon: "resource:bv_icon_checkmark"
+              textHAlignment: left
+              textVAlignment: bottom
+              iconPosition: right_justified
+              pressedPainter {
+                bgColor: "darkBackground"
+                borders {
+                  lowered
+                  empty [ insets="8,8,8,2" ]
+                }
+              }
+              buttonStyle: toolbar
+            }[ onAction="class:PatientSelect#onSelectPatient"]
+          }
+          {
+            Label {
+              verticalAlign: bottom
+              horizontalAlign: right
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              value: "{resource:bv.text.name}:"
+              textHAlignment: trailing
+              textVAlignment: center
+            }
+          }
+          {
+            Label {
+              bounds {
+                x: "2"
+                y: "1"
+              }
+              value: "{resource:bv.text.mrn}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "mrn"
+              bounds {
+                x: "4"
+                y: "1"
+              }
+              templateName: "bv.label.value"
+              textHAlignment: leading
+            }
+          }
+        }
+      } [ onFling="class:MainEventHandler#onFormHeaderFlung" ]
+    }
+    {
+      StackPane {
+        name: "selectionStack"
+        bgColor: "white"
+        local: false
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        selectedIndex: 0
+        actAsFormViewer: false
+        viewers {
+          {
+            GroupBox {
+              local: false
+              layout: forms
+              rows: "f:d,f:d:g,f:d"
+              columns: "d:g"
+              widgets {
+                {
+                  Table {
+                    name: "patientsTable"
+                    verticalAlign: full
+                    bounds {
+                      x: "0"
+                      y: "1"
+                    }
+                    templateName: "bv.table.patients"
+                    local: false
+                    visibleRowCount: 4
+                  }
+                }
+                {
+                  GroupBox {
+                    name: "buttonPanel"
+                    borders {
+                      matte [ insets="1,0,0,0" ]
+                    }
+                    horizontalAlign: full
+                    bounds {
+                      x: "0"
+                      y: "2"
+                    }
+                    layout: forms
+                    rows: "d,2dlu"
+                    columns: "d:g,2dluX,d:g,d"
+                    columnGrouping {
+                      "1,3"
+                    }
+                    widgets {
+                      {
+                        PushButton {
+                          name: "nextPage"
+                          bounds {
+                            x: "2"
+                            y: "0"
+                          }
+                          enabled: false
+                          value: "{resource:bv.text.paging_next}"
+                          icon: "resource:bv.icon.paging_next"
+                          iconPosition: right
+                          buttonStyle: toolbar
+                        } [ onAction="class:PatientSelect#onNextOrPreviousPage" ]
+                      }
+                      {
+                        PushButton {
+                          name: "previousPage"
+                          bounds {
+                            x: "0"
+                            y: "0"
+                          }
+                          enabled: false
+                          value: "{resource:bv.text.paging_previous}"
+                          icon: "resource:bv.icon.paging_previous"
+                          buttonStyle: toolbar
+                        } [ onAction="class:PatientSelect#onNextOrPreviousPage" ]
+                      }
+                    }
+                  }
+                }
+              }
+            } 
+          } [ name="patients" ]
+        }
+        viewerURLs {
+          "patients_by_list.rml" [ name="listsButton" ]
+          "patient_search.rml" [ name="searchButton" ]
+        }
+      }
+    }
+    {
+      ToolBar {
+        borders {
+          matte [ insets="1,0,1,0", color="darkBorder" ]
+          empty [ insets="2,4,2,4"]
+        }
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            RadioButton {
+              name: "bookmarkButton"
+		      templateName: "bv.radiobutton.toolbar"
+              icon: "resource:bv.icon.bookmark"
+              selected: true
+              groupName: "select"
+            } [ onAction="class:PatientSelect#onBookmarkButtonAction" ]
+          }
+          {
+            RadioButton {
+              name: "signalButton"
+		      templateName: "bv.radiobutton.toolbar"
+              groupName: "select"
+            } [ onAction="class:PatientSelect#onSignalButtonAction" ]
+          }
+          {
+            RadioButton {
+              name: "listsButton"
+              icon: "resource:bv.icon.list"
+		      templateName: "bv.radiobutton.toolbar"
+              groupName: "select"
+            } [ onAction="class:PatientSelect#showFormForButton" ]
+          }
+          {
+            RadioButton {
+              name: "searchButton"
+              icon: "resource:bv.icon.search"
+		      templateName: "bv.radiobutton.toolbar"
+              groupName: "select"
+            } [ onAction="class:PatientSelect#showFormForButton" ]
+          }
+          {
+            Bean {
+              name: "Rare.bean.separator"
+            }
+          }
+          {
+            PushButton {
+              name: "smallBarcodeButton"
+              icon: "resource:bv.icon.barcode"
+              buttonStyle: toolbar
+            } [ onAction="class:PatientSelect#onBarcodeButtonAction" ]
+          }
+        }
+      }
+    }
+  }
+} [ onCreated="class:PatientSelect#onCreated", onConfigure="class:PatientSelect#onSelectionFormConfigure" ]

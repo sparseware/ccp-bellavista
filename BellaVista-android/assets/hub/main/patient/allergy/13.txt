@@ -1,0 +1,13 @@
+    Causative agent: ASPIRIN
+ Nature of Reaction: Adverse Reaction
+ 
+     Signs/symptoms: EPIGASTRIC DISTRESS
+                     EPISTAXIS
+                     GI REACTION
+ 
+       Drug Classes: SALICYLATES,ANTIRHEUMATIC
+ 
+         Originator: KEEP,NIGEL (CLINICAL COORDINATOR)
+         Originated: Jul 13, 2009@12:58:36
+           Verified: <auto-verified>
+Observed/Historical: Historical

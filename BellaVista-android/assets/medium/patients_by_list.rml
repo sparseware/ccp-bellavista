@@ -1,0 +1,63 @@
+GroupBox {
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      ComboBox {
+        name: "listCategories"
+        borders {
+          none
+        }
+        bgColor: "defaultGradient"
+        bounds {
+          x: "0"
+          y: "0"
+          width: "12ch" [ min="17ch" ]
+        }
+        dataURL: "collection:patientListCategories"
+        templateName: "bv.combobox.filter"
+        itemDescription {
+          font {
+            size: "+1"
+          }
+          icon: "resource:bv.icon.list"
+        }
+        selectedIndex: -1
+        emptyText {
+          value: "({resource:bv.text.choose_list_category})"
+        }
+      } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder",
+          onAction="class:PatientSelect#onListCategoriesAction" ]
+    }
+    {
+      ListBox {
+        name: "listsBox"
+        borders {
+          none
+        }
+        verticalAlign: full
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        contentPadding {
+          left: "6"
+        }
+        selectionMode: single
+        itemDescription {
+          icon: "resource:bv.icon.list"
+        }
+        autoSizeRowsToFit: true
+        singleClickActionEnabled: true
+        rowHeight: "1.75ln"
+        scrollPane {
+          horizontalScrollbar: hidden
+        }
+      } [ onFinishedLoading="class:PatientSelect#onListsBoxFinishLoading", onAction="class:PatientSelect#onPatientListSelected" ]
+    }
+  }
+}

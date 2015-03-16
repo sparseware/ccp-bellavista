@@ -1,0 +1,106 @@
+Form {
+  layout: forms
+  rows: "d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      TreeTable {
+        name: "labsTable"
+        verticalAlign: full
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        dataURL: "/hub/main/labs/list" [ columnSeparator="^", ldSeparator="|" ]
+        templateName: "bv.table.data"
+      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onTableAction", onFinishedLoading="class:Labs#onFinishedLoading" ]
+    }
+    {
+      ToolBar {
+        name: "tableToolbar"
+        borders {
+          empty [ insets="2,2,2,2" ]
+        }
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            PushButton {
+              name: "tools"
+              enabled: false
+              value: "{resource:bv.text.tools}"
+              icon: "resource:bv.icon.tools"
+              actionType: popup_menu
+              buttonStyle: toolbar
+            }
+          }
+          {
+            PushButton {
+              name: "categories"
+              value: "{resource:bv.text.filter}"
+              icon: "resource:bv.icon.labs"
+              actionType: popup_menu
+              buttonStyle: toolbar
+            }
+          }
+          {
+            PushButton {
+              name: "orderLabs"
+              enabled: false
+              value: "{resource:bv.text.order_labs}"
+              icon: "resource:bv.icon.new_orders"
+              buttonStyle: toolbar
+            }
+          }
+          {
+            Label {
+              name: "tableLabel"
+              verticalAlign: auto
+              horizontalAlign: full
+              font {
+                size: "-2"
+              }
+              value: " "
+              textHAlignment: center
+              textVAlignment: auto
+            } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+          }
+          {
+            RadioButton {
+              name: "charts"
+              templateName: "bv.radiobutton.toolbar"
+              value: "{resource:bv.text.charts}"
+              icon: "resource:bv.icon.table"
+              showText: false
+              selected: true
+              groupName: "views"
+            } [ onAction="class:Labs#changeView" ]
+          }
+          {
+            RadioButton {
+              name: "trends"
+              templateName: "bv.radiobutton.toolbar"
+              value: "{resource:bv.text.trends}"
+              icon: "resource:bv.icon.trends"
+              showText: false
+              groupName: "views"
+            } [ onAction="class:Labs#changeView" ]
+          }
+          {
+            RadioButton {
+              name: "spreadsheet"
+              templateName: "bv.radiobutton.toolbar"
+              value: "{resource:bv.text.spreadsheet}"
+              icon: "resource:bv.icon.spreadsheet"
+              showText: false
+              groupName: "views"
+            } [ onAction="class:Labs#changeView" ]
+          }
+        }
+      }
+    }
+  }
+} [ onDispose="class:Labs#onDispose", onLoad="class:Labs#reselectDefaultView"]

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>BellaVista-swing</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>assets</name>
+			<type>2</type>
+			<locationURI>$%257BPARENT-1-PROJECT_LOC%257D/BellaVista-android/assets</locationURI>
+		</link>
+		<link>
+			<name>shared</name>
+			<type>2</type>
+			<locationURI>$%257BPARENT-1-PROJECT_LOC%257D/shared</locationURI>
+		</link>
+		<link>
+			<name>res/drawable</name>
+			<type>2</type>
+			<locationURI>$%257BPARENT-1-PROJECT_LOC%257D/BellaVista-android/res/drawable</locationURI>
+		</link>
+		<link>
+			<name>res/drawable-mdpi</name>
+			<type>2</type>
+			<locationURI>$%257BPARENT-1-PROJECT_LOC%257D/BellaVista-android/res/drawable-mdpi</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>

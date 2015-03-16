@@ -1,0 +1,183 @@
+GridPane {
+  rows: 2
+  columnSpacing: 0
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      verticalFill: preferred
+      viewer {
+        GroupBox {
+          borders {
+            matte [ insets="0,0,1,0" ]
+          }
+          verticalAlign: full
+          horizontalAlign: full
+          layout: forms
+          rows: "d"
+          columns: "d:g,d"
+          widgets {
+            {
+              Label {
+                verticalAlign: full
+                horizontalAlign: full
+                font {
+                  style: bold
+                }
+                bounds {
+                  x: "0"
+                  y: "0"
+                }
+                value: "{resource:bv.text.collection_info}"
+                textHAlignment: center
+                textVAlignment: center
+                wordWrap: true
+              }
+            }
+            {
+              PushButton {
+                verticalAlign: full
+                bounds {
+                  x: "1"
+                  y: "0"
+                }
+                templateName: "bv.pushbutton.fullscreen"
+              } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+            }
+          }
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      bgColor: "white"
+      viewer {
+        GroupBox {
+          layout: forms
+          rows: "4dluY,d,2dluY,d,2dluY,d,2dluY,d,2dluY,d,4dluY,d:g"
+          columns: "4dluX,d,2dluX,[15dlu,d]:g,2dluX"
+          cellPainters {
+            {
+              x: "0"
+              y: "0"
+              width: "5"
+              height: "10"
+              bgColor: "defaultBackground"
+            }
+          }
+          widgets {
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "3"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.accession_number}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "5"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.specimen}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "7"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.requestor}:"
+              }
+            }
+            {
+              TextArea {
+                name: "comment"
+                borders {
+                  none
+                }
+                columnSpan: 3
+                verticalAlign: full
+                horizontalAlign: full
+                bounds {
+                  x: "1"
+                  y: "11"
+                }
+                editable: false
+              }
+            }
+            {
+              Label {
+                name: "accessionNumber"
+                bounds {
+                  x: "3"
+                  y: "3"
+                }
+                templateName: "bv.label.value"
+              }
+            }
+            {
+              Label {
+                name: "specimen"
+                bounds {
+                  x: "3"
+                  y: "5"
+                }
+                templateName: "bv.label.value"
+              }
+            }
+            {
+              Label {
+                name: "requestor"
+                bounds {
+                  x: "3"
+                  y: "7"
+                }
+                templateName: "bv.label.value"
+              }
+            }
+            {
+              Line {
+                columnSpan: 3
+                fgColor: "clinicalPrompt"
+                bounds {
+                  x: "1"
+                  y: "9"
+                }
+                leftLabel: "{resource:bv.text.comment_s}"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "1"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.date}:"
+              }
+            }
+            {
+              Label {
+                name: "collectionDate"
+                bounds {
+                  x: "3"
+                  y: "1"
+                }
+                templateName: "bv.label.value"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

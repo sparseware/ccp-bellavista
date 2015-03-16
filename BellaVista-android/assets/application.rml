@@ -1,0 +1,169 @@
+Application {
+  name: "BellaVista"
+  lookAndFeelPropertiesURL:<< 	Rare.background=Color|#eae8e5
+    Rare.foreground=Color|#111111
+    defaultBackground=Color|Rare.background
+    Rare.LineBorder.color=Color|defaultBackground-20
+    foreground=Color|Rare.foreground
+    themeBlue=Color|#009cff
+    rowHilite=Color|defaultBackground+5
+    link=Color|#5195ce
+    dimForeground=Color|#333333
+    clinicalPrompt=Color|#555555
+	lightBackground=Color|defaultBackground+5
+	mediumBackground=Color|defaultBackground-10
+    darkBackground=Color|defaultBackground-20
+    darkBorder=Color|defaultBackground-50
+    lightBorder=Color|#cccccc
+    textHighlight=Color|#929d8d
+    trendBackground=Color|white
+	defaultGradient=Color|defaultBackground+10,defaultBackground-10 
+	abnormal=Color|red-10
+	
+	unknown=Color|orange-10
+	allergies=Color|#900000
+  	spreadsheetCategoryBackground=Color|defaultBackground+5,defaultBackground-20
+  	lineChartColor=Color|#00a7ff
+  	barChartColor=Color|"#00a7ff-10, #00a7ff+10 [ direction='horizontal_left' ]"
+  	lineChartColor_g=Color|#777777
+  	barChartColor_g=Color|"#666666, #cccccc [ direction='horizontal_left' ]"
+  	popupMenuBackground=Color|defaultBackground^5
+	orderDetailsColor=Color|#0c2a11
+	tableHeaderBackground=Color|defaultBackground
+	tableHeaderForeground=Color|foreground
+	tableForeground=Color|black
+	tableGridLineColor=Color|#eeeeee
+	tableBackground=Color|white
+	orderDetailColor=Color|#002000
+	
+	summaryForeground=Color|darkBorder-10
+    summaryBackground=Color|white
+    summaryHeaderForeground=Color|darkBorder-10
+    summaryHeaderBackground=Color|darkBackground
+//    summaryHeaderBackground=Color|darkBackground
+	
+	
+  	Rare.Chart.foreground=Color|clinicalPrompt
+  	Rare.Chart.plotBackground=Color|"white,#dddddd"
+  	Rare.Chart.markerBackground=Color|#b6e3b6@25
+  	Rare.Chart.gridColor=Color|defaultBackground-30
+    Rare.Chart.font=Font|{size:-2} [os="touch"]
+
+    Rare.Alert.foregroundColor=Color|dimForeground
+    Rare.Alert.backgroundColor=Color|defaultBackground+5
+    Rare.Dialog.useRuntimeDecorations=Boolean|True
+    Rare.TabPane.minimumTabHeight=String|1.5ln
+    Rare.TabPane.tabBorderColor=Color|darkBorder
+    Rare.List.dividerLineColor=Color|#c0c0c0
+	Rare.ProgressPopup.background=Color|white@80
+	Rare.Button.minimumHeight=String|1.75ln
+	Rare.PushButton.borderInsets=Insets|7,7,7,7 [os="touch"]  
+	Rare.PushButton.borderInsets=Insets|3,3,3,3 [os="not_touch"]  
+  	Rare.android.EditText.disableImeExtractUI=Boolean|true
+  	Rare.icon.menu=Icon|resource:bv.icon.menu
+  	Rare.List.rowHeight=String|2ln [os="touch"]
+	Rare.Popup.restrictToWindow=Boolean|true [os=not_touch]
+	  	
+  	TrendPanel.labName=GridCell|{borders: matte [insets="0,0,1,0", color=darkBorder]}
+
+  	Rare.class.defaultPackage=String|com.sparseware.bellavista
+  	    >> [ inline="true" ]
+  resourceStringsURL: "resource_strings.properties"
+  resourceIconsURL: "resource_icons.properties"
+  actionItemsURL:<< 
+   Set {
+    {
+      name: "bv.action.lock"
+      icon: "resource:bv_icon_lock"
+      enabled: false
+      value: "{resource:bv.action.lock}"
+    }[onAction="class:Actions#onLock"]
+    {
+      name: "bv.action.help"
+      icon: "resource:bv_icon_help"
+      enabled: false
+      value: "{resource:bv.action.help}"
+    }[onAction="class:Actions#onHelp"]
+    {
+      name: "bv.action.preferences"
+      icon: "resource:bv_icon_preferences"
+      enabled: false
+      value: "{resource:bv.action.preferences}"
+    }[onAction="class:Actions#onPreferences"]
+    {
+      name: "bv.action.newOrders"
+      value: "{resource:bv.action.new_orders}"
+      enabled: false
+      icon: "resource:bv_icon_new_orders"
+    }[onAction="class:Actions#onNewOrders"]
+    {
+      name: "bv.action.changePatient"
+      value: "{resource:bv.action.new_patient}"
+      enabled: false
+      icon: "resource:bv_icon_find_patient"
+    }[onAction="class:Actions#onChangePatient"]
+    {
+      name: "bv.action.exit"
+      value: "{resource:bv.action.exit}"
+      enabled: true
+      icon: "resource:bv_icon_exit"
+    }[onAction="class:Actions#onExit"]
+    {
+      name: "bv.action.allergies"
+      value: "{resource:bv.action.allergies}"
+      enabled: false
+    }
+    {
+      name: "bv.action.alerts"
+      value: "{resource:bv.action.alerts}"
+      icon: "resource:bv.icon.alert"
+      enabled: false
+    }
+    {
+      name: "bv.action.flags"
+      value: "{resource:bv.action.flags}"
+      icon: "resource:bv.icon.flag"
+      enabled: false
+    } [onAction="class:Actions#onFlags"]
+    {
+      name: "bv.action.audio_chat"
+      icon: "resource:bv.icon.audio_chat"
+      enabled: false
+    }[onAction="class:Actions#onAudioChat"]
+    {
+      name: "bv.action.video_chat"
+      icon: "resource:bv.icon.video_chat"
+      enabled: false
+    }[onAction="class:Actions#onVideoChat"]
+    {
+      name: "bv.action.text_chat"
+      icon: "resource:bv.icon.text_chat"
+      enabled: false
+    }[onAction="class:Actions#onTextChat"]
+    {
+      name: "bv.action.fullscreen"
+      icon: "resource:bv.icon.fullscreen"
+    }[onAction="class:Actions#onFullscreen"]
+   }
+  >> [ inline="true" ]
+  attributesURL: "attributes.json"
+  defaultItemDateTimeFormat: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ;yyyy-MM-dd'T'HH:mm;yyyy-MM-dd'T'HH:mmzzz"
+  defaultDisplayDateTimeFormat: "MMM dd, yyyy'@'HH:mm"
+  defaultDisplayDateFormat: "MMM dd, yyyy"
+  defaultDisplayTimeFormat: "HH:mm"
+  autoAdjustFontSize: true
+  overlapAutoToolTips: true
+  viewersLocalByDefault: true
+  ignoreFormatExceptions: true
+  allTextFieldsDraggable: true
+  selectionPainter {
+    bgColor: "textHighlight+30,textHighlight+15"
+  }
+  pressedPainter {
+    bgColor: "#d0d0d0"
+  }
+  managedScreenSizes: small_medium_large [ smallScreenPointSize="480", mediumScreenPointSize="960", autoFallback="true" ]
+  desktopIconDensity: "mdpi"
+  customPropertyPrefix: "bv_"
+  applicationListenerClass: "com.sparseware.bellavista.ApplicationListener"
+}

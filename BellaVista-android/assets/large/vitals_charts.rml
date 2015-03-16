@@ -1,0 +1,75 @@
+GridPane {
+  name: "vitalsCharts"
+  local: false
+  rows: 2
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      verticalFill: preferred
+      viewer {
+        ToolBar {
+          name: "chartHeader"
+          borders {
+            empty [ insets="2,2,1,2" ]
+            matte [ insets="0,0,1,0" ]
+          }
+          horizontalAlign: full
+          actAsFormViewer: false
+          widgets {
+            {
+              Label {
+                name: "chartLabel"
+                verticalAlign: auto
+                horizontalAlign: full
+                value: " "
+                textHAlignment: center
+                textVAlignment: auto
+              } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+            }
+            {
+              PushButton {
+                name: "zoomin"
+                enabled: false
+                icon: "resource:bv.icon.zoom_in"
+                buttonStyle: toolbar
+              } [ onAction="class:Vitals#onZoomInAction" ]
+            }
+            {
+              PushButton {
+                name: "zoomout"
+                enabled: false
+                icon: "resource:bv.icon.zoom_out"
+                buttonStyle: toolbar
+              } [ onAction="class:Vitals#onZoomOutAction" ]
+            }
+            {
+              Bean {
+                name: "Rare.bean.separator"
+              }
+            }
+            {
+              PushButton {
+                templateName: "bv.pushbutton.fullscreen"
+              }
+            }
+          }
+        } [ onFling="class:MainEventHandler#onRegionFling" ]
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      viewer {
+        StackPane {
+          name: "chartPaneStack"
+          local: false
+          transitionAnimator: "SlideAnimation"
+          actAsFormViewer: false
+          viewerURLs{}
+        }
+      }
+    }
+  }
+} [ onLoad="class:Vitals#onChartsPanelLoaded" ]

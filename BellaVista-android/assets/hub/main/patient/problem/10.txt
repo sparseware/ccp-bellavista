@@ -1,0 +1,15 @@
+Essential Hypertension (401.9)
+ 
+   Onset: 6/1/98
+  Status: ACTIVE
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: CRAFT,ADAM
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 7/13/09
+ 
+ 

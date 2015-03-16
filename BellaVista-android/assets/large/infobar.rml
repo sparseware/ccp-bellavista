@@ -1,0 +1,340 @@
+Form {
+  name: "infobar"
+  local: false
+  title: "Patient Information"
+  bounds {
+    height: "-1" [ min="!" ]
+  }
+  propertyChangeHandlers: "pendingConfiguration=class:MainEventHandler#onInfobarOrientationWillChange"
+  collapsedTitle: "<html><b>Patient:</b> {@pt_name_mrn} - <b>Age/Sex:</b> {@pt_age_sex} - <b>Provider:</b> {@pt_provider}</html>"
+  layout: forms
+  rows: "d,2dluY"
+  columns: "2dluX,d,d:g"
+  widgets {
+    {
+      ImagePane {
+        name: "photo"
+        borders {
+          empty [ insets="2,2,2,2" ]
+          line [ padForArc="false", cornerArc="4", thickness="2", color="darkBorder" ]
+        }
+        verticalAlign: top
+        bounds {
+          x: "1"
+          y: "0"
+          width: "75"
+          height: "75"
+        }
+        zoomingAllowed: false
+        movingAllowed: false
+        autoScale: true
+        preserveAspectRatio: true [ fill="true" ]
+      }
+    }
+    {
+      GroupBox {
+        name: ""
+        bounds {
+          x: "2"
+          y: "0"
+        }
+        layout: forms
+        rows: "1dluY,d,1dluY,d,1dluY,d,2dluY"
+        columns: "1dluX,r:d,1dluX,[20dlu,d]:g,2dluX,d,2dluX,[20dlu,d],2dluX,d,[20dlu,d],2dluX,d,d"
+        widgets {
+          {
+            Label {
+              name: "name_label"
+              verticalAlign: bottom
+              horizontalAlign: right
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.name}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "age_sex_label"
+              horizontalAlign: right
+              bounds {
+                x: "1"
+                y: "3"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.age_sex}:"
+              textHAlignment: trailing
+              textVAlignment: top
+            }
+          }
+          {
+            Label {
+              name: "wt_ht_bmi_label"
+              bounds {
+                x: "1"
+                y: "5"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.wt_ht_bmi}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              bounds {
+                x: "9"
+                y: "5"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.admit_dx}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              bounds {
+                x: "9"
+                y: "3"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.admit_date}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "location_label"
+              bounds {
+                x: "5"
+                y: "3"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.loc}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            PushButton {
+              name: "name_mrn"
+              columnSpan: 6
+              horizontalAlign: left
+              font {
+                style: bold
+              }
+              bounds {
+                x: "3"
+                y: "1"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_name_mrn}"
+              textHAlignment: left
+              buttonStyle: hyperlink_always_underline
+            }
+          }
+          {
+            Label {
+              name: "location"
+              bounds {
+                x: "7"
+                y: "3"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_location_rmbd}"
+            }
+          }
+          {
+            Label {
+              name: "admit_date"
+              bounds {
+                x: "10"
+                y: "3"
+              }
+              contentPadding {
+                left: "3"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_admit_date}"
+            }
+          }
+          {
+            Label {
+              name: "age_sex"
+              bounds {
+                x: "3"
+                y: "3"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_age_sex}"
+            }
+          }
+          {
+            Label {
+              name: "wt_ht_bmi"
+              bounds {
+                x: "3"
+                y: "5"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_wt_ht_bmi}"
+            }
+          }
+          {
+            Label {
+              name: "admit_dx"
+              columnSpan: 4
+              bounds {
+                x: "10"
+                y: "5"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_admit_dx}"
+            }
+          }
+          {
+            Label {
+              name: "code_status_label"
+              bounds {
+                x: "5"
+                y: "5"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.code_status}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "code_status"
+              columnSpan: 1
+              bounds {
+                x: "7"
+                y: "5"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_code_status}"
+            }
+          }
+          {
+            Label {
+              name: "provider_label"
+              bounds {
+                x: "9"
+                y: "1"
+              }
+              templateName: "bv.label.clinicalPrompt"
+              value: "{resource:bv.text.provider}:"
+              textHAlignment: trailing
+            }
+          }
+          {
+            Label {
+              name: "provider"
+              columnSpan: 1
+              bounds {
+                x: "10"
+                y: "1"
+              }
+              templateName: "bv.label.value"
+              value: "{@pt_provider}"
+            }
+          }
+          {
+            ToolBar {
+              borders {
+                line [ padForArc="false", noTop="true", noRight="true", cornerArc="6", color="darkBorder" ]
+                empty [ insets="2,0,0,2" ]
+              }
+              rowSpan: 4
+              verticalAlign: top
+              actAsFormViewer: false
+              bgColor: "defaultBackground-10"
+              bounds {
+                x: "12"
+                y: "0"
+              }
+              widgets {
+                {
+                  PushButton {
+                    name: "careteam"
+                    icon: "resource:bv_icon_careteam"
+                    actionType: popup_widget
+                    buttonStyle: toolbar
+                    popupWidget {
+                    } [ url="/careteam.rml", scrollable="true", movable="false" ]
+                    useSharedBorderForPopup: true [ color="darkBorder" ]
+                  }
+                }
+                {
+                  PushButton {
+                    name: "bv.action.alerts"
+                    bounds {
+                      x: "2"
+                      y: "0"
+                    }
+                    actionType: popup_widget
+                    buttonStyle: toolbar
+                    popupWidget {
+                      Table {
+                        dataURL: "collection:alerts"
+                        templateName: "bv.table.summary"
+                        visibleRowCount: 5
+                        columns {
+                          {
+                            title: "{resource:bv.text.clinical_event}"
+                            width: "15ch"
+                            wordWrap: true
+                          }
+                          {
+                            title: "{resource:bv.text.due_date}"
+                            valueType: date_time_type
+                            valueContext: "|MMM dd, yyyy HH:mm"
+                            width: "11ch"
+                          }
+                        }
+                      }
+                    } [ scrollable="true" ]
+                    useSharedBorderForPopup: true [ color="darkBorder" ]
+                  }
+                }
+                {
+                  PushButton {
+                    name: "bv.action.flags"
+                    buttonStyle: toolbar
+                  }
+                }
+                {
+                  PushButton {
+                    name: "bv.action.allergies"
+                    fgColor: "allergies"
+                    templateName: "bv.pushbutton.popup_hyperlink"
+                    popupWidget {
+                      Table {
+                        dataURL: "collection:allergies"
+                        templateName: "bv.table.summary"
+                        visibleRowCount: 5
+                        columns {
+                          {
+                            title: "{resource:bv.text.allergen}"
+                            width: "11ch"
+                            fgColor: "allergies"
+                          }
+                          {
+                            title: "{resource:bv.text.reaction}"
+                            width: "12ch"
+                          }
+                        }
+                      }
+                    } [ scrollable="true" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} [ onConfigure="class:MainEventHandler#onConfigureInfoBar", onFling="class:MainEventHandler#onFlingInfoBar" ]

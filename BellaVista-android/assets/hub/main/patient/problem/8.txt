@@ -1,0 +1,15 @@
+Obesity (278.00)
+ 
+   Onset: 1/6/03
+  Status: ACTIVE/CHRONIC
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: CRAFT,ADAM
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 7/13/09
+ 
+ 

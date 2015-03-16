@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="shared"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/appnativa.spot.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/appnativa.util.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/j2objc_annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jfxrt.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jlayer.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/js.jar"/>
+  <classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jcommon.jar"/>
+  <classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jfreechart.jar"/>
+	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/swingx-all-1.6.4.jar"/>
+  <classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/timingframework-swing-7.3.jar"/>
+  <classpathentry exported="true" kind="lib" path="../../../sdk/lib/appnativa.rare.swing.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,91 @@
+{
+  "_rows": [
+    {
+      "id": "2",
+      "name": "DOE, JOHN",
+      "dob": "1945-11-18",
+      "gender": "Male",
+      "mrn": "DJ0000002",
+      "photo": "PIC-DJ0000002.jpg",
+      "attending_id": "2",
+      "attending_name": "USER, PHYSICIAN",
+      "encounter_date": "2008-09-09T03:42",
+      "encounter_reason": "ABDOMINAL PAIN",
+      "location_id": "12",
+      "location": "MED/SURG",
+      "external_data": "labs,meds,notes",
+      "host_patient_id": "4",
+      "facility_id": "3",
+      "facility_path": "vista",
+      "facility_name": "VA San Diego Medical Center",
+      "facility_shortname": "VA / La Jolla",
+      "facility_icon": "facility_va.png",
+      "wt": "250lb",
+      "ht": "71in",
+      "io_in": "1200",
+      "io_out": "1525",
+      "io_date": "2011-11-09T10:00:00.000-08:00",
+      "relationship": "1|Attending Physician",
+      "rm_bed": "101-1",
+      "has_monitor": "true",
+      "allergies": {
+        "_columns": ["allergen", "reactions"],
+        "_rows": [
+          {
+            "allergen": {
+              "linkedData": "12",
+              "value": "Lactose"
+            },
+            "reactions": "Diarrhea"
+          },
+          {
+            "allergen": {
+              "linkedData": "13",
+              "value": "Aspirin"
+            },
+            "reactions": "Epigastric Distress"
+          },
+          {
+            "allergen": {
+              "linkedData": "14",
+              "value": "Shell Fish"
+            },
+            "reactions": "Anaphylaxis"
+          },
+          {
+            "allergen": {
+              "linkedData": "15",
+              "value": "Penicillin"
+            },
+            "reactions": "Anaphylaxis"
+          }
+        ]
+      },
+      "alerts": {
+        "_columns": ["alert", "due_date"],
+        "_rows": [
+          {
+            "alert": {
+              "linkedData": "2",
+              "value": "Depression Screening"
+            },
+            "due_date": "DUE NOW"
+          },
+          {
+            "alert": {
+              "linkedData": "3",
+              "value": "Nutrition Education"
+            },
+            "due_date": "DUE NOW"
+          },
+          {
+            "alert": {
+              "linkedData": "4",
+              "value": "Tobacco Screening"
+            },
+            "due_date": "DUE NOW"
+          }
+        ]
+      }
+    }]
+}

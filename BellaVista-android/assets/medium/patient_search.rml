@@ -1,0 +1,120 @@
+Form {
+  name: "searchForm"
+  verticalAlign: center
+  horizontalAlign: center
+  local: false
+  layout: forms
+  rows: "8dluY,d,16dluY,d,4dluY,d,10dluY,d,4dluY"
+  columns: "2dluX,d,2dluX,d,2dluX"
+  widgets {
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        value: "{resource:bv.text.identifier}:"
+        textHAlignment: right
+      }
+    }
+    {
+      TextField {
+        name: "identifier"
+        bounds {
+          x: "3"
+          y: "3"
+        }
+        visibleCharacters: 15
+        keyboardReturnButtonType: search_type
+      } [ onAction="class:PatientSelect#onPatientSearch" ]
+    }
+    {
+      GroupBox {
+        bounds {
+          x: "3"
+          y: "5"
+        }
+        layout: forms
+        rows: "d"
+        columns: "d,d"
+        widgets {
+          {
+            RadioButton {
+              name: "F"
+              font {
+                size: "+2"
+              }
+              bounds {
+                x: "0"
+                y: "0"
+                width: "10ch"
+              }
+              value: "{resource:bv.text.female}"
+              groupName: "gender" [ allowDeselection="true" ]
+            }
+          }
+          {
+            RadioButton {
+              name: "M"
+              font {
+                size: "+2"
+              }
+              bounds {
+                x: "1"
+                y: "0"
+              }
+              value: "{resource:bv.text.male}"
+              groupName: "gender"
+            }
+          }
+        }
+      }
+    }
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "5"
+        }
+        value: "{resource:bv.text.gender}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Line {
+        columnSpan: -1
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "6"
+        }
+      }
+    }
+    {
+      PushButton {
+        columnSpan: 3
+        horizontalAlign: center
+        bounds {
+          x: "1"
+          y: "7"
+        }
+        value: "{resource:bv.text.search}"
+        icon: "resource:bv.icon.search"
+      }[ onAction="class:PatientSelect#onPatientSearch" ]
+    }
+    {
+      Label {
+        columnSpan: 3
+        bounds {
+          x: "1"
+          y: "1"
+          height: "2ln"
+        }
+        value: "{resource:bv.text.enter_patient_identifier}"
+        wordWrap: true
+      }
+    }
+  }
+} [ onConfigure="class:PatientSelect#onSearchFormConfigure" ]

@@ -1,0 +1,158 @@
+/**
+ * This markup provides the UI for the
+ * care team popup
+ */
+GridPane {
+  bgColor: "rowHilite"
+  bounds {
+    width: "25ch"
+    height: "20ln"
+  }
+  contentPadding {
+    top: "4"
+  }
+  rows: 2
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      viewer {
+        TabPane {
+          name: "careteam"
+          local: false
+          tabStyle: stacked
+          tabAreaPainter {
+            borders {
+              matte [ insets="0,0,6,0", color="defaultBackground," ]
+            }
+          }
+          tabs {
+            {
+              viewer {
+                ListBox {
+                  name: "physicians"
+                  borders {
+                    none
+                  }
+                  templateName: "bv.listbox"
+                  itemDescription {
+                    iconPosition: right_justified
+                    icon: "resource:bv.icon.status_offline"
+                  }
+                } [ onChange="class:CareTeam#onListChange", onShown="class:CareTeam#onListShown" ]
+              }
+              title: "Physicians"
+            }
+            {
+              viewer {
+                ListBox {
+                  name: "others"
+                  borders {
+                    none
+                  }
+                  templateName: "bv.listbox"
+                  itemDescription {
+                    iconPosition: right_justified
+                    icon: "resource:bv.icon.status_offline"
+                  }
+                } [ onChange="class:CareTeam#onListChange", onShown="class:CareTeam#onListShown" ]
+              }
+              title: "Others"
+            }
+          }
+          actAsFormViewer: false
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      verticalFill: preferred
+      viewer {
+        GroupBox {
+          columnSpan: 1
+          verticalAlign: full
+          horizontalAlign: full
+          bounds {
+            x: "0"
+            y: "3"
+          }
+          layout: forms
+          rows: "d,d:g,2dluY"
+          columns: "2dluX,d,2dluX,d,2dluX,d,d:g,d,2dluX"
+          widgets {
+            {
+              PushButton {
+                name: "bv.action.audio_chat"
+                bounds {
+                  x: "3"
+                  y: "1"
+                }
+                enabled: false
+                focusable: false
+                buttonStyle: toolbar
+              }
+            }
+            {
+              PushButton {
+                name: "bv.action.video_chat"
+                bounds {
+                  x: "5"
+                  y: "1"
+                }
+                enabled: false
+                focusable: false
+                buttonStyle: toolbar
+              }
+            }
+            {
+              PushButton {
+                bounds {
+                  x: "7"
+                  y: "1"
+                }
+                enabled: false
+                focusable: false
+                icon: "resource:bv.icon.contact"
+                buttonStyle: toolbar
+              }
+            }
+            {
+              Label {
+                name: "statusLabel"
+                bounds {
+                  x: "6"
+                  y: "1"
+                }
+                value: " "
+              }
+            }
+            {
+              Line {
+                columnSpan: -1
+                bounds {
+                  x: "0"
+                  y: "0"
+                  height: "8"
+                }
+              }
+            }
+            {
+              PushButton {
+                name: "bv.action.text_chat"
+                bounds {
+                  x: "1"
+                  y: "1"
+                }
+                enabled: false
+                focusable: false
+                buttonStyle: toolbar
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} [ onCreated="class:CareTeam#onCreated", onShown="class:CareTeam#onShown", onDispose="class:CareTeam#onDispose" ]

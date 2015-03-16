@@ -1,0 +1,52 @@
+GridPane {
+  name: "genericContainer"
+  rows: 2
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      verticalFill: preferred
+      viewer {
+        ToolBar {
+          name: "genericToolbar"
+          borders {
+            empty [ insets="2,0,1,0" ]
+            matte [ insets="0,0,1,0" ]
+          }
+          horizontalAlign: full
+          actAsFormViewer: false
+          widgets {
+            {
+              PushButton {
+                name: "backButton"
+                verticalAlign: full
+                templateName: "bv.pushbutton.back"
+              } [ onAction="class:MainEventHandler#goBackInStackPane" ]
+            }
+            {
+              Label {
+                name: "genericLabel"
+                verticalAlign: auto
+                horizontalAlign: full
+                value: " "
+                textHAlignment: center
+                textVAlignment: auto
+              } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
+            }
+            {
+              PushButton {
+                verticalAlign: full
+                templateName: "bv.pushbutton.fullscreen"
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+    }
+  }
+}

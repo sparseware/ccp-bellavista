@@ -1,0 +1,157 @@
+GroupBox {
+  name: "searchForm"
+  verticalAlign: center
+  horizontalAlign: center
+  contentPadding {
+    top: "4"
+    right: "4"
+    left: "4"
+  }
+  local: false
+  layout: forms
+  rows: "2dluY,d,8dluY,d,4dluY,d,16dluY,d,4dluY,d,10dluY,d,4dluY"
+  columns: "4dluX,d,2dluX,d,4dluX"
+  widgets {
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "7"
+        }
+        value: "{resource:bv.text.identifier}:"
+        textHAlignment: right
+      }
+    }
+    {
+      TextField {
+        name: "identifier"
+        bounds {
+          x: "3"
+          y: "7"
+        }
+        visibleCharacters: 20
+        keyboardReturnButtonType: search_type
+      } [ onAction="class:PatientSelect#onPatientSearch" ]
+    }
+    {
+      GroupBox {
+        bounds {
+          x: "3"
+          y: "9"
+        }
+        layout: forms
+        rows: "d"
+        columns: "d,d"
+        widgets {
+          {
+            RadioButton {
+              name: "F"
+              font {
+                size: "+2"
+              }
+              bounds {
+                x: "0"
+                y: "0"
+                width: "10ch"
+              }
+              value: "{resource:bv.text.female}"
+              groupName: "gender" [ allowDeselection="true" ]
+            }
+          }
+          {
+            RadioButton {
+              name: "M"
+              font {
+                size: "+2"
+              }
+              bounds {
+                x: "1"
+                y: "0"
+              }
+              value: "{resource:bv.text.male}"
+              groupName: "gender"
+            }
+          }
+        }
+      }
+    }
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "9"
+        }
+        value: "{resource:bv.text.gender}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Line {
+        columnSpan: -1
+        bgColor: "lightBackground"
+        bounds {
+          x: "0"
+          y: "10"
+        }
+      }
+    }
+    {
+      PushButton {
+        columnSpan: 3
+        horizontalAlign: center
+        bounds {
+          x: "1"
+          y: "11"
+        }
+        value: "{resource:bv.text.search}"
+        icon: "resource:bv.icon.search"
+      } [ onAction="class:PatientSelect#onPatientSearch" ]
+    }
+    {
+      Label {
+        columnSpan: 3
+        bounds {
+          x: "1"
+          y: "5"
+          height: "2ln"
+        }
+        focusable: true
+        customProperties: "android:focusable=true"
+        value: "{resource:bv.text.enter_patient_identifier}"
+        wordWrap: true
+      } [ onShown="class:PatientSelect#onShownIdentifierLabel" ]
+    }
+    {
+      PushButton {
+        name: "barcodeButton"
+        columnSpan: 3
+        verticalAlign: center
+        horizontalAlign: center
+        bounds {
+          x: "1"
+          y: "3"
+          width: "-1" [ min="12ch" ]
+        }
+        value: "{resource:bv.text.scan_barcode}"
+        icon: "resource:bv.icon.barcode"
+      } [ onAction="class:PatientSelect#onBarcodeButtonAction" ]
+    }
+    {
+      PushButton {
+        name: "nearbyButton"
+        columnSpan: 3
+        verticalAlign: center
+        horizontalAlign: center
+        bounds {
+          x: "1"
+          y: "1"
+          width: "-1" [ min="12ch" ]
+        }
+        value: "{resource:bv.text.nearby}"
+        icon: "resource:bv.icon.antenna"
+      } [ onAction="class:PatientSelect#onNearbyButtonAction" ]
+    }
+  }
+} [ onConfigure="class:PatientSelect#onSearchFormConfigure", onUnload="class:PatientSelect#onSearchFormUnloaded" ]

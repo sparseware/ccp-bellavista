@@ -1,0 +1,132 @@
+MainWindow {
+  title: "BellaVista"
+  bounds {
+    width: "1024" [ min="960" ]
+    height: "768" [ min="720" ]
+  }
+  templateURL: "/template.rml" [ cache="true" ]
+  icon: "resource:bv_icon,resource:bv_icon24,resource:bv_icon32,resource:bv_icon48"
+  menuBar {
+    title: "BellaVista"
+    bgColor: "defaultBackground+5,defaultBackground-10"
+    popupMenu {
+      {
+        name: "bv.action.changePatient"
+      }
+      {
+        name: "bv.action.preferences"
+      }
+      {
+        name: "bv.action.lock"
+      }
+      {
+        name: "bv.action.exit"
+      }
+    }
+    icon: "resource:bv_icon"
+  } [ installAsActionBar="true", actionButtonInsets="4,10,4,10" ]
+  viewer {
+    WidgetPane {
+      bgImageURL: "resource:bv_image" [ renderType="stretched" ]
+      widget {
+        Form {
+          name: "logonPanel"
+          borders {
+            line [ padForArc="false", cornerArc="12", color="white", thickness="4" ]
+          }
+          verticalAlign: center
+          horizontalAlign: center
+          bgColor: "#ffffff@50,#aaaaaa@50"
+          local: false
+          layout: forms
+          rows: "14dluY,d,14dluY,d,2dluY,d,2dluY,d,4dluY,d,14dluY"
+          columns: "14dluX,d,2dluX,d,14dluX"
+          widgets {
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "5"
+                }
+                value: "{resource:bv.text.username}:"
+                textHAlignment: right
+              }
+            }
+            {
+              TextField {
+                name: "username"
+                bounds {
+                  x: "3"
+                  y: "5"
+                }
+                visibleCharacters: 16
+              } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
+            }
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "7"
+                }
+                value: "{resource:bv.text.password}:"
+                textHAlignment: right
+              }
+            }
+            {
+              PasswordField {
+                name: "password"
+                bounds {
+                  x: "3"
+                  y: "7"
+                }
+              } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
+            }
+            {
+              ComboBox {
+                name: "server"
+                bounds {
+                  x: "3"
+                  y: "3"
+                }
+              } [ onConfigure="class:Settings#onConfigureLoginComboBox" ]
+            }
+            {
+              PushButton {
+                bounds {
+                  x: "3"
+                  y: "9"
+                }
+                value: "{resource:bv.text.sign_in}"
+              } [ onAction="class:MainEventHandler#signIn" ]
+            }
+            {
+              Label {
+                bounds {
+                  x: "1"
+                  y: "3"
+                }
+                value: "{resource:bv.text.server}:"
+                textHAlignment: right
+              }
+            }
+            {
+              Label {
+                columnSpan: 3
+                verticalAlign: full
+                horizontalAlign: full
+                bounds {
+                  x: "1"
+                  y: "1"
+                  width: "15ch"
+                }
+                icon: "resource:bv.launcher"
+                value: "{resource:bv.text.welcome}"
+                wordWrap: true
+              }
+            }
+          }
+        }[ onShown="class:MainEventHandler#requestFocus?username"]
+      }
+    }
+  }
+}

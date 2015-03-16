@@ -1,0 +1,89 @@
+GridPane {
+  bgColor: "defaultBackground"
+  rows: 2
+  columnSpacing: 0
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      borders {
+        matte [ insets="0,0,1,0" ]
+      }
+      name: "patient_info"
+      verticalFill: preferred
+      dataURL: "infobar.rml"
+    }
+    {
+      x: "0"
+      y: "1"
+      verticalFill: maximum
+      viewer {
+        TabPane {
+          name: "applicationTabs"
+          local: false
+          borders {
+            none
+          }
+          font {
+            size: "-2"
+          }
+          tabStyle: box
+          tabPainter {
+            bgColor: "darkBackground-30,darkBackground+15"
+          }
+          tabAreaPainter {
+            borders {
+              none
+            }
+          }
+          selectedIndex: 0
+          tabs {
+            {
+              name: "summary"
+              dataURL: "summary.rml"
+              title: "{resource:bv.text.summary}"
+              icon: "resource:bv.icon.summary"
+              reloadOnActivation: true
+            }
+            {
+              name: "vitals"
+              dataURL: "vitals.rml"
+              title: "{resource:bv.text.vitals}"
+              icon: "resource:bv.icon.vitals"
+              reloadOnActivation: true
+            }
+            {
+              name: "labs"
+              dataURL: "labs.rml"
+              title: "{resource:bv.text.labs}"
+              icon: "resource:bv.icon.labs"
+              reloadOnActivation: true
+            }
+            {
+              name: "orders"
+              dataURL: "orders.rml"
+              title: "{resource:bv.text.orders}"
+              icon: "resource:bv.icon.orders"
+              reloadOnActivation: true
+            }
+            {
+              name: "consults"
+              dataURL: "consults.rml"
+              title: "{resource:bv.text.consults}"
+              icon: "resource:bv.icon.consults"
+              reloadOnActivation: true
+            }
+            {
+              name: "notes"
+              dataURL: "notes.rml"
+              title: "{resource:bv.text.notes}"
+              icon: "resource:bv.icon.notes"
+              reloadOnActivation: true
+            }
+          }
+        } [onCreated="class:MainEventHandler#onTabPaneCreated"]
+      }
+    }
+  }
+} [ onConfigure="class:MainEventHandler#onConfigureMainView" ]

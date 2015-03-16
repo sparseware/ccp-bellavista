@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sparseware.bellavista"
+    android:versionCode="1"
+    android:versionName="0.8" >
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:name="com.appnativa.rare.platform.android.Main"
+        android:allowBackup="true"
+        android:icon="@drawable/bv_launcher"
+        android:label="BellaVista">
+        <meta-data
+            android:name="applicationURL"
+            android:value="lib:application.rml" />
+        <activity
+            android:name="com.sparseware.bellavista.MainActivity"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

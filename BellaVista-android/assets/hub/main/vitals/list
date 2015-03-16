@@ -1,0 +1,152 @@
+10000001|2011-08-16T00:00:00.000-07:00^bp|Blood Pressure Non-Invasive^102/68^^^34
+10000002|2011-08-16T00:00:00.000-07:00^hr|Heart Rate^H|114 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000003|2011-08-16T00:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^78^mmHg^50 - 150^36
+10000004|2011-08-16T00:00:00.000-07:00^resp|Respiratory Rate^H|21 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000005|2011-08-16T00:00:00.000-07:00^spo2|Oxygen Saturation^98^%^92 - 100^1d
+10000006|2011-08-16T00:00:00.000-07:00^temp|Temperature Oral^98.8^DegF^96 - 99.9^04
+10000007|2011-08-16T01:00:00.000-07:00^bp|Blood Pressure Non-Invasive^99/69^^^34
+10000008|2011-08-16T01:00:00.000-07:00^hr|Heart Rate^H|117 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000009|2011-08-16T01:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^78^mmHg^50 - 150^36
+10000010|2011-08-16T01:00:00.000-07:00^resp|Respiratory Rate^19^br/min^12 - 20^1b
+10000011|2011-08-16T01:00:00.000-07:00^spo2|Oxygen Saturation^98^%^92 - 100^1d
+10000012|2011-08-16T01:31:00.000-07:00^bp|Blood Pressure Non-Invasive^99/69^^^34
+10000013|2011-08-16T01:31:00.000-07:00^hr|Heart Rate^H|116 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000014|2011-08-16T01:31:00.000-07:00^resp|Respiratory Rate^18^br/min^12 - 20^1b
+10000015|2011-08-16T01:31:00.000-07:00^spo2|Oxygen Saturation^99^%^92 - 100^1d
+10000016|2011-08-16T02:00:00.000-07:00^bp|Blood Pressure Non-Invasive^123/82^^^34
+10000017|2011-08-16T02:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000018|2011-08-16T02:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^92^mmHg^50 - 150^36
+10000019|2011-08-16T02:00:00.000-07:00^resp|Respiratory Rate^H|23 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000020|2011-08-16T02:00:00.000-07:00^spo2|Oxygen Saturation^98^%^92 - 100^1d
+10000021|2011-08-16T03:00:00.000-07:00^bp|Blood Pressure Non-Invasive^110/75^^^34
+10000022|2011-08-16T03:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000023|2011-08-16T03:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^85^mmHg^50 - 150^36
+10000024|2011-08-16T03:00:00.000-07:00^resp|Respiratory Rate^H|22 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000025|2011-08-16T03:00:00.000-07:00^spo2|Oxygen Saturation^97^%^92 - 100^1d
+10000026|2011-08-16T03:45:00.000-07:00^bp|Blood Pressure^110/75^^^27
+10000027|2011-08-16T03:45:00.000-07:00^pulse|Pulse Rate^H|118 (H){fgColor: abnormal}^bpm^60 - 100^14
+10000028|2011-08-16T04:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^64^mmHg^50 - 150^36
+10000029|2011-08-16T04:00:00.000-07:00^resp|Respiratory Rate^H|22 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000030|2011-08-16T04:01:00.000-07:00^bp|Blood Pressure Non-Invasive^L|86/54 (L/L){fgColor: abnormal}^^^34
+10000031|2011-08-16T04:01:00.000-07:00^hr|Heart Rate^99^bpm^60 - 100^13
+10000032|2011-08-16T04:01:00.000-07:00^spo2|Oxygen Saturation^97^%^92 - 100^1d
+10000033|2011-08-16T05:00:00.000-07:00^bp|Blood Pressure Non-Invasive^106/71^^^34
+10000034|2011-08-16T05:00:00.000-07:00^hr|Heart Rate^H|108 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000035|2011-08-16T05:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^81^mmHg^50 - 150^36
+10000036|2011-08-16T05:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000037|2011-08-16T05:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000038|2011-08-16T06:05:00.000-07:00^bp|Blood Pressure Non-Invasive^115/77^^^34
+10000039|2011-08-16T06:05:00.000-07:00^hr|Heart Rate^H|111 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000040|2011-08-16T06:05:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^82^mmHg^50 - 150^36
+10000041|2011-08-16T06:05:00.000-07:00^resp|Respiratory Rate^H|21 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000042|2011-08-16T06:05:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000043|2011-08-16T07:00:00.000-07:00^bp|Blood Pressure Non-Invasive^111/70^^^34
+10000044|2011-08-16T07:00:00.000-07:00^hr|Heart Rate^H|113 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000045|2011-08-16T07:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^83^mmHg^50 - 150^36
+10000046|2011-08-16T07:00:00.000-07:00^resp|Respiratory Rate^H|22 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000047|2011-08-16T07:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000048|2011-08-16T08:00:00.000-07:00^bp|Blood Pressure Non-Invasive^117/85^^^34
+10000049|2011-08-16T08:00:00.000-07:00^hr|Heart Rate^H|117 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000050|2011-08-16T08:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^94^mmHg^50 - 150^36
+10000051|2011-08-16T08:00:00.000-07:00^resp|Respiratory Rate^H|28 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000052|2011-08-16T08:00:00.000-07:00^spo2|Oxygen Saturation^94^%^92 - 100^1d
+10000053|2011-08-16T08:00:00.000-07:00^temp|Temperature Oral^99.7^DegF^96 - 99.9^04
+10000054|2011-08-16T09:00:00.000-07:00^bp|Blood Pressure Non-Invasive^117/70^^^34
+10000055|2011-08-16T09:00:00.000-07:00^hr|Heart Rate^H|114 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000056|2011-08-16T09:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^87^mmHg^50 - 150^36
+10000057|2011-08-16T09:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000058|2011-08-16T09:00:00.000-07:00^spo2|Oxygen Saturation^98^%^92 - 100^1d
+10000059|2011-08-16T10:00:00.000-07:00^bp|Blood Pressure Non-Invasive^H/N|189/71 (H/N){fgColor: abnormal}^^^34
+10000060|2011-08-16T10:00:00.000-07:00^hr|Heart Rate^H|123 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000061|2011-08-16T10:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^H|167 (H){fgColor: abnormal}^mmHg^50 - 150^36
+10000062|2011-08-16T10:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000063|2011-08-16T10:00:00.000-07:00^spo2|Oxygen Saturation^100^%^92 - 100^1d
+10000064|2011-08-16T10:39:00.000-07:00^bp|Blood Pressure^137/71^^^27
+10000065|2011-08-16T10:39:00.000-07:00^pulse|Pulse Rate^H|120 (H){fgColor: abnormal}^bpm^60 - 100^14
+10000066|2011-08-16T11:00:00.000-07:00^bp|Blood Pressure Non-Invasive^N/L|101/53 (N/L){fgColor: abnormal}^^^34
+10000067|2011-08-16T11:00:00.000-07:00^hr|Heart Rate^H|112 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000068|2011-08-16T11:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^66^mmHg^50 - 150^36
+10000069|2011-08-16T11:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000070|2011-08-16T11:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000071|2011-08-16T12:00:00.000-07:00^bp|Blood Pressure Non-Invasive^100/64^^^34
+10000072|2011-08-16T12:00:00.000-07:00^hr|Heart Rate^H|112 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000073|2011-08-16T12:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^75^mmHg^50 - 150^36
+10000074|2011-08-16T12:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000075|2011-08-16T12:00:00.000-07:00^spo2|Oxygen Saturation^98^%^92 - 100^1d
+10000076|2011-08-16T13:00:00.000-07:00^bp|Blood Pressure Non-Invasive^112/71^^^34
+10000077|2011-08-16T13:00:00.000-07:00^hr|Heart Rate^H|112 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000078|2011-08-16T13:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^83^mmHg^50 - 150^36
+10000079|2011-08-16T13:00:00.000-07:00^resp|Respiratory Rate^H|26 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000080|2011-08-16T13:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000081|2011-08-16T14:00:00.000-07:00^bp|Blood Pressure Non-Invasive^123/60^^^34
+10000082|2011-08-16T14:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000083|2011-08-16T14:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^81^mmHg^50 - 150^36
+10000084|2011-08-16T14:00:00.000-07:00^resp|Respiratory Rate^H|28 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000085|2011-08-16T14:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000086|2011-08-16T15:00:00.000-07:00^bp|Blood Pressure Non-Invasive^126/70^^^34
+10000087|2011-08-16T15:00:00.000-07:00^hr|Heart Rate^H|113 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000088|2011-08-16T15:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^86^mmHg^50 - 150^36
+10000089|2011-08-16T15:00:00.000-07:00^resp|Respiratory Rate^H|24 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000090|2011-08-16T15:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000091|2011-08-16T16:00:00.000-07:00^bp|Blood Pressure Non-Invasive^116/70^^^34
+10000092|2011-08-16T16:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000093|2011-08-16T16:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^83^mmHg^50 - 150^36
+10000094|2011-08-16T16:00:00.000-07:00^resp|Respiratory Rate^H|24 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000095|2011-08-16T16:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000096|2011-08-16T16:00:00.000-07:00^temp|Temperature Oral^H|100.1 (H){fgColor: abnormal}^DegF^96 - 99.9^04
+10000097|2011-08-16T16:26:00.000-07:00^bp|Blood Pressure^116/70^^^27
+10000098|2011-08-16T16:26:00.000-07:00^pulse|Pulse Rate^H|117 (H){fgColor: abnormal}^bpm^60 - 100^14
+10000099|2011-08-16T17:00:00.000-07:00^bp|Blood Pressure Non-Invasive^119/71^^^34
+10000100|2011-08-16T17:00:00.000-07:00^hr|Heart Rate^H|107 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000101|2011-08-16T17:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^87^mmHg^50 - 150^36
+10000102|2011-08-16T17:00:00.000-07:00^resp|Respiratory Rate^H|26 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000103|2011-08-16T17:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000104|2011-08-16T18:00:00.000-07:00^bp|Blood Pressure Non-Invasive^113/75^^^34
+10000105|2011-08-16T18:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000106|2011-08-16T18:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^88^mmHg^50 - 150^36
+10000107|2011-08-16T18:00:00.000-07:00^resp|Respiratory Rate^H|24 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000108|2011-08-16T18:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000109|2011-08-16T19:00:00.000-07:00^bp|Blood Pressure Non-Invasive^122/64^^^34
+10000110|2011-08-16T19:00:00.000-07:00^hr|Heart Rate^H|117 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000111|2011-08-16T19:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^83^mmHg^50 - 150^36
+10000112|2011-08-16T19:00:00.000-07:00^resp|Respiratory Rate^H|25 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000113|2011-08-16T19:00:00.000-07:00^spo2|Oxygen Saturation^97^%^92 - 100^1d
+10000114|2011-08-16T20:00:00.000-07:00^bp|Blood Pressure Non-Invasive^N/L|116/59 (N/L){fgColor: abnormal}^^^34
+10000115|2011-08-16T20:00:00.000-07:00^hr|Heart Rate^H|115 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000116|2011-08-16T20:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^78^mmHg^50 - 150^36
+10000117|2011-08-16T20:00:00.000-07:00^resp|Respiratory Rate^H|22 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000118|2011-08-16T20:00:00.000-07:00^spo2|Oxygen Saturation^97^%^92 - 100^1d
+10000119|2011-08-16T20:00:00.000-07:00^temp|Temperature Oral^99.4^DegF^96 - 99.9^04
+10000120|2011-08-16T21:00:00.000-07:00^bp|Blood Pressure Non-Invasive^122/70^^^34
+10000121|2011-08-16T21:00:00.000-07:00^hr|Heart Rate^H|118 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000122|2011-08-16T21:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^85^mmHg^50 - 150^36
+10000123|2011-08-16T21:00:00.000-07:00^resp|Respiratory Rate^H|26 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000124|2011-08-16T21:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000125|2011-08-16T22:00:00.000-07:00^bp|Blood Pressure Non-Invasive^134/79^^^34
+10000126|2011-08-16T22:00:00.000-07:00^hr|Heart Rate^H|120 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000127|2011-08-16T22:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^94^mmHg^50 - 150^36
+10000128|2011-08-16T22:00:00.000-07:00^resp|Respiratory Rate^H|28 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000129|2011-08-16T22:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000130|2011-08-16T22:06:12.000-07:00^bp|Blood Pressure^134/79^^^27
+10000131|2011-08-16T22:06:12.000-07:00^pulse|Pulse Rate^H|119 (H){fgColor: abnormal}^bpm^60 - 100^14
+10000132|2011-08-16T23:00:00.000-07:00^bp|Blood Pressure Non-Invasive^N/L|97/56 (N/L){fgColor: abnormal}^^^34
+10000133|2011-08-16T23:00:00.000-07:00^hr|Heart Rate^H|108 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000134|2011-08-16T23:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^65^mmHg^50 - 150^36
+10000135|2011-08-16T23:00:00.000-07:00^resp|Respiratory Rate^H|24 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000136|2011-08-16T23:00:00.000-07:00^spo2|Oxygen Saturation^95^%^92 - 100^1d
+10000137|2011-08-15T00:00:00.000-07:00^bp|Blood Pressure Non-Invasive^115/63^^^34
+10000138|2011-08-15T00:00:00.000-07:00^hr|Heart Rate^H|118 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000139|2011-08-15T00:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^80^mmHg^50 - 150^36
+10000140|2011-08-15T00:00:00.000-07:00^resp|Respiratory Rate^H|23 (H){fgColor: abnormal}^br/min^12 - 20^1b
+10000141|2011-08-15T00:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d
+10000142|2011-08-15T00:00:00.000-07:00^temp|Temperature Oral^99.2^DegF^96 - 99.9^04
+10000143|2011-08-15T01:00:00.000-07:00^bp|Blood Pressure Non-Invasive^108/60^^^34
+10000144|2011-08-15T01:00:00.000-07:00^hr|Heart Rate^H|122 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000145|2011-08-15T01:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^71^mmHg^50 - 150^36
+10000146|2011-08-15T01:00:00.000-07:00^resp|Respiratory Rate^16^br/min^12 - 20^1b
+10000147|2011-08-15T01:00:00.000-07:00^spo2|Oxygen Saturation^94^%^92 - 100^1d
+10000148|2011-08-15T02:00:00.000-07:00^bp|Blood Pressure Non-Invasive^121/71^^^34
+10000149|2011-08-15T02:00:00.000-07:00^hr|Heart Rate^H|122 (H){fgColor: abnormal}^bpm^60 - 100^13
+10000150|2011-08-15T02:00:00.000-07:00^map|Mean Arterial Pressure Non-Invasive^82^mmHg^50 - 150^36
+10000151|2011-08-15T02:00:00.000-07:00^resp|Respiratory Rate^20^br/min^12 - 20^1b
+10000152|2011-08-15T02:00:00.000-07:00^spo2|Oxygen Saturation^96^%^92 - 100^1d

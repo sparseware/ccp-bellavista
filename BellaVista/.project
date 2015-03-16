@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>BellaVista</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.appnativa.studio.rareBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.appnativa.studio.rareNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>assets</name>
+			<type>2</type>
+      <locationURI>$%257BPARENT-1-PROJECT_LOC%257D/BellaVista-android/assets</locationURI>
+		</link>
+		<link>
+			<name>res</name>
+			<type>2</type>
+      <locationURI>$%257BPARENT-1-PROJECT_LOC%257D/BellaVista-android/res</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>

@@ -1,0 +1,79 @@
+GroupBox {
+  name: "settings"
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "f:d,d,d,d,d,4dluY,d:g,d"
+  columns: "d:g"
+  widgets {
+    {
+      CheckBox {
+        name: "gray_charts"
+        columnSpan: 1
+        horizontalAlign: left
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        value: "{resource:bv.text.settings.gray_charts}"
+      } [ onAction="class:Settings#onCheckBoxAction" ]
+    }
+    {
+      CheckBox {
+        name: "metric_weight"
+        columnSpan: 1
+        horizontalAlign: left
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        value: "{resource:bv.text.settings.weight_unit}"
+      } [ onAction="class:Settings#onCheckBoxAction" ]
+    }
+    {
+      CheckBox {
+        name: "metric_height"
+        columnSpan: 1
+        horizontalAlign: left
+        bounds {
+          x: "0"
+          y: "3"
+        }
+        value: "{resource:bv.text.settings.height_unit}"
+      } [ onAction="class:Settings#onCheckBoxAction" ]
+    }
+    {
+      Line {
+        bounds {
+          x: "0"
+          y: "4"
+        }
+      }
+    }
+    {
+      ListBox {
+        name: "otherOptions"
+        bgColor: "transparent"
+        bounds {
+          x: "0"
+          y: "6"
+        }
+        dataURL:<< 
+         1|bv.text.settings.manage_servers
+        >> [ inline="true", ldSeparator="|" ]
+        itemDescription {
+          iconPosition: right_justified
+          gridCell {
+            borders {
+              matte [ insets="0,0,1,0" ]
+            }
+          }
+          icon: "resource:bv.icon.paging_next"
+        }
+        showDividerLine: false
+        singleClickActionEnabled: true
+      } [ onFinishedLoading="class:Settings#onFinishedLoadingList", onAction="class:Settings#onOtherOptionsAction",
+          onHidden="class:MainEventHandler#clearSelection" ]
+    }
+  }
+} [ onConfigure="class:Settings#onConfigureBasicSettings" ]

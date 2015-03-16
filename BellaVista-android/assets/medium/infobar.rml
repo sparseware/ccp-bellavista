@@ -1,0 +1,118 @@
+ToolBar {
+  name: "infobar"
+  local: false
+  borders {
+    empty [ insets="2,0,0,2" ]
+  }
+  bgColor: "defaultBackground-10"
+  widgets {
+    {
+      PushButton {
+        name: "careteam"
+        bounds {
+          x: "2"
+          y: "0"
+        }
+        icon: "resource:bv_icon_careteam"
+        textHAlignment: left
+        buttonStyle: toolbar
+        actionType: popup_widget
+        popupWidget {
+        } [ url="/careteam.rml", scrollable=true]
+        useSharedBorderForPopup: true [ color="darkBorder" ]
+      }
+    }
+    {
+      PushButton {
+        name: "bv.action.alerts"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        showText: false
+        actionType: popup_widget
+        buttonStyle: toolbar
+        popupWidget {
+          Table {
+            dataURL: "collection:alerts"
+            templateName: "bv.table.summary"
+            visibleRowCount: 5
+            columns {
+              {
+                title: "{resource:bv.text.clinical_event}"
+                width: "15ch"
+                wordWrap: true
+              }
+              {
+                title: "{resource:bv.text.due_date}"
+                valueType: date_time_type
+                valueContext: "|MMM dd, yyyy HH:mm"
+                width: "11ch"
+              }
+            }
+          }
+        }[ scrollable=true ]
+        useSharedBorderForPopup: true [ color="darkBorder" ]
+      }
+    }
+    {
+      PushButton {
+        name: "bv.action.flags"
+        bounds {
+          x: "1"
+          y: "0"
+        }
+        buttonStyle: toolbar
+      } 
+    }
+    {
+      Bean {
+        name: "Rare.bean.expander"
+      }
+    }
+    {
+      PushButton {
+        value: "{resource:bv.text.problems}"
+        templateName: "bv.pushbutton.popup_hyperlink"
+        popupWidget {
+          Table {
+            dataURL: "collection:problems"
+            templateName: "bv.table.summary"
+            visibleRowCount: 5
+            columns {
+              {
+                title: "{resource:bv.text.problem}"
+                width: "25ch"
+              }
+            }
+          }
+        }[ scrollable=true ]
+      }
+    }
+    {
+      PushButton {
+        name: "bv.action.allergies"
+        fgColor: "allergies"
+        templateName: "bv.pushbutton.popup_hyperlink"
+        popupWidget {
+          Table {
+            dataURL: "collection:allergies"
+            templateName: "bv.table.summary"
+            visibleRowCount: 5
+            columns {
+              {
+                title: "{resource:bv.text.allergen}"
+                width: "11ch"
+                fgColor: "allergies"
+              }
+              {
+                title: "{resource:bv.text.reaction}"
+                width: "12ch"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}[ onConfigure="class:MainEventHandler#onConfigureInfoBar"]

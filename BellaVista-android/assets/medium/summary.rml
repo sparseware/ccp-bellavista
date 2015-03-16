@@ -1,0 +1,539 @@
+GridPane {
+  bgColor: "summaryBackground"
+  rows: 2
+  columnSpacing: 0
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      verticalFill: preferred
+      viewer {
+        GroupBox {
+          verticalAlign: full
+          horizontalAlign: full
+          bounds {
+            x: "0"
+            y: "0"
+          }
+          layout: forms
+          rows: "d,d,d,d,d,d,d"
+          columns: "d,1dlu,d:g,d,1dlu,[5dlu,d]"
+          widgets {
+            {
+              Label {
+                name: "age_sex"
+                bounds {
+                  x: "2"
+                  y: "1"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_age_sex}"
+              }
+            }
+            {
+              Label {
+                name: "admit_date"
+                columnSpan: -1
+                bounds {
+                  x: "2"
+                  y: "3"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_admit_date}"
+              }
+            }
+            {
+              Label {
+                name: "admit_dx"
+                columnSpan: -1
+                bounds {
+                  x: "2"
+                  y: "4"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_admit_dx}"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "1"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.age_sex}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "1"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.age_sex}:"
+              }
+            }
+            {
+              Label {
+                name: ""
+                bounds {
+                  x: "0"
+                  y: "0"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.mrn}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "3"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.admit_date}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "4"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.admit_dx}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "2"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.wt_ht_bmi}:"
+              }
+            }
+            {
+              Label {
+                columnSpan: -1
+                bounds {
+                  x: "2"
+                  y: "2"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_wt_ht_bmi}"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "6"
+                }
+                visible: false
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.code_status}:"
+              }
+            }
+            {
+              Label {
+                columnSpan: 4
+                bounds {
+                  x: "2"
+                  y: "6"
+                }
+                visible: false
+                templateName: "bv.label.codestatus"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "0"
+                  y: "5"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.provider}:"
+              }
+            }
+            {
+              Label {
+                name: "provider"
+                columnSpan: -1
+                bounds {
+                  x: "2"
+                  y: "5"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_provider}"
+              }
+            }
+            {
+              Label {
+                name: "mrn"
+                bounds {
+                  x: "2"
+                  y: "0"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_mrn}"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "3"
+                  y: "0"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.loc}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "3"
+                  y: "1"
+                }
+                templateName: "bv.label.clinicalPrompt"
+                value: "{resource:bv.text.rm_bed}:"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "5"
+                  y: "0"
+                }
+                contentPadding {
+                  right: "2"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_location}"
+              }
+            }
+            {
+              Label {
+                bounds {
+                  x: "5"
+                  y: "1"
+                }
+                templateName: "bv.label.value"
+                value: "{@pt_room_bed}"
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      x: "0"
+      y: "1"
+      viewer {
+        SplitPane {
+          splitOrientation: top_to_bottom
+          showGripper: false
+          dividerSize: 0
+          regions {
+            {
+              viewer {
+                GroupBox {
+                  layout: forms
+                  rows: "d,f:d:g"
+                  columns: "d:g"
+                  widgets {
+                    {
+                      Label {
+                        name: "labs_description"
+                        borders {
+                          matte [ color1="#999999", insets="1,0,,0" ]
+                          matte [ color1="darkBorder", insets="0,0,1,0" ]
+                        }
+                        columnSpan: -1
+                        verticalAlign: full
+                        horizontalAlign: full
+                        font {
+                          size: "-2"
+                        }
+                        fgColor: "summaryHeaderForeground"
+                        bgColor: "defaultBackground-10"
+                        bounds {
+                          x: "0"
+                          y: "0"
+                          height: "1.5ln" [ min="1.5ln" ]
+                        }
+                        contentPadding {
+                          left: "4"
+                        }
+                        value: "{resource:bv.text.no_summary_labs}"
+                        textHAlignment: left
+                        textVAlignment: center
+                      }
+                    }
+                    {
+                      Table {
+                        name: "summaryLabs"
+                        verticalAlign: full
+                        bounds {
+                          x: "0"
+                          y: "2"
+                        }
+                        dataURL: "/hub/main/labs/summary" [ columnSeparator="^", ldSeparator="|" ]
+                        templateName: "bv.table.summary"
+                        showStandardColumnHeader: false
+                        columns {
+                          {
+                            title: " "
+                            renderDetail: icon_only
+                            visible: false
+                          }
+                          {
+                            title: "{resource:bv.text.lab_test}"
+                            width: "12ch"
+                          }
+                          {
+                            title: "{resource:bv.text.value}"
+                            width: "8ch"
+                          }
+                        }
+                      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onSummaryTableAction" ]
+                    }
+                  }
+                }
+              }
+            }
+            {
+              viewer {
+                GridPane {
+                  columns: 2
+                  columnSpacing: 0
+                  regions {
+                    {
+                      x: "0"
+                      y: "0"
+                      horizontalFill: preferred
+                      viewer {
+                        GroupBox {
+                          verticalAlign: center
+                          bounds {
+                            x: "0"
+                            y: "1"
+                          }
+                          layout: forms
+                          rows: "d,2dluY,d,d,d,d,d,2dluY"
+                          columns: "4dlu,d,2dlu,d:g,4dlu"
+                          widgets {
+                            {
+                              Label {
+                                bounds {
+                                  x: "1"
+                                  y: "2"
+                                }
+                                templateName: "bv.label.clinicalPrompt"
+                                value: "{resource:bv.text.vitals_resp}:"
+                                textHAlignment: right
+                              }
+                            }
+                            {
+                              Label {
+                                name: "resp"
+                                bounds {
+                                  x: "3"
+                                  y: "2"
+                                }
+                                templateName: "bv.label.value"
+                                value: "---"
+                              }
+                            }
+                            {
+                              Label {
+                                bounds {
+                                  x: "1"
+                                  y: "3"
+                                }
+                                templateName: "bv.label.clinicalPrompt"
+                                value: "{resource:bv.text.vitals_temp}:"
+                                textHAlignment: right
+                              }
+                            }
+                            {
+                              Label {
+                                name: "temp"
+                                bounds {
+                                  x: "3"
+                                  y: "3"
+                                  width: "6ch"
+                                }
+                                templateName: "bv.label.value"
+                                value: "---"
+                              }
+                            }
+                            {
+                              Label {
+                                name: "hrPrompt"
+                                bounds {
+                                  x: "1"
+                                  y: "6"
+                                }
+                                templateName: "bv.label.clinicalPrompt"
+                                value: "{resource:bv.text.vitals_hr}:"
+                                textHAlignment: right
+                              }
+                            }
+                            {
+                              Label {
+                                name: "hr"
+                                bounds {
+                                  x: "3"
+                                  y: "6"
+                                }
+                                templateName: "bv.label.value"
+                                value: "---"
+                              }
+                            }
+                            {
+                              Label {
+                                bounds {
+                                  x: "1"
+                                  y: "4"
+                                }
+                                templateName: "bv.label.clinicalPrompt"
+                                value: "{resource:bv.text.vitals_map}:"
+                                textHAlignment: right
+                              }
+                            }
+                            {
+                              Label {
+                                name: "map"
+                                bounds {
+                                  x: "3"
+                                  y: "4"
+                                }
+                                templateName: "bv.label.value"
+                                value: "---"
+                              }
+                            }
+                            {
+                              Label {
+                                name: "vitals_description"
+                                borders {
+                                  matte [ insets="1,0,1,0" ]
+                                }
+                                columnSpan: -1
+                                verticalAlign: full
+                                horizontalAlign: full
+                                font {
+                                  size: "-2"
+                                }
+		                        fgColor: "summaryHeaderForeground"
+		                        bgColor: "defaultBackground-10"
+                                bounds {
+                                  x: "0"
+                                  y: "0"
+                                  height: "1.5ln" [ min="1.5ln" ]
+                                }
+                                contentPadding {
+                                  left: "4"
+                                }
+                                value: "{resource:bv.text.no_summary_vitals}"
+                                textHAlignment: left
+                                textVAlignment: center
+                              }
+                            }
+                            {
+                              Label {
+                                name: "pulsePrompt"
+                                bounds {
+                                  x: "1"
+                                  y: "5"
+                                }
+                                templateName: "bv.label.clinicalPrompt"
+                                value: "{resource:bv.text.vitals_pulse}:"
+                                textHAlignment: right
+                              }
+                            }
+                            {
+                              Label {
+                                name: "pulse"
+                                bounds {
+                                  x: "3"
+                                  y: "5"
+                                }
+                                templateName: "bv.label.value"
+                                value: "---"
+                              }
+                            }
+                          }
+                        } [ onCreated="class:SummaryVitalsHandler#onCreated", onClick="class:Vitals#onSummaryClick" ]
+                      }
+                    }
+                    {
+                      x: "1"
+                      y: "0"
+                      viewer {
+                        GroupBox {
+                          layout: forms
+                          rows: "d,d:g"
+                          columns: "d:g"
+                          widgets {
+                            {
+                              Table {
+                                verticalAlign: full
+                                bounds {
+                                  x: "0"
+                                  y: "1"
+                                }
+                                dataURL: "/hub/main/orders/medications/summary" [ columnSeparator="^", ldSeparator="|" ]
+                                templateName: "bv.table.summary"
+                                showStandardColumnHeader: false
+                                columns {
+                                  {
+                                    title: " "
+                                    converterClass: "String"
+                                  }
+                                }
+                              } [ onAction="class:Orders#onSummaryTableAction" ]
+                            }
+                            {
+                              Label {
+                                borders {
+                                  matte [ insets="1,0,1,0" ]
+                                }
+                                columnSpan: -1
+                                verticalAlign: full
+                                horizontalAlign: full
+                                font {
+                                  size: "-2"
+                                }
+		                        fgColor: "summaryHeaderForeground"
+		                        bgColor: "defaultBackground-10"
+                                bounds {
+                                  x: "0"
+                                  y: "0"
+                                  height: "1.5ln" [ min="1.5ln" ]
+                                }
+                                contentPadding {
+                                  left: "8"
+                                }
+                                value: "{resource:bv.text.active_medications}"
+                                textHAlignment: left
+                                textVAlignment: center
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

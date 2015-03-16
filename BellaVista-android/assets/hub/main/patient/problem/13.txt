@@ -1,0 +1,15 @@
+Cellulitis and abscess of unspecified sites (682.9)
+ 
+   Onset: 10/4/03
+  Status: ACTIVE
+ SC Cond: UNKNOWN
+Exposure: None
+ 
+Provider: KEEP,NIGEL
+  Clinic: 
+ 
+Recorded: 7/13/09, by KEEP,NIGEL
+ Entered: 7/13/09, by KEEP,NIGEL
+ Updated: 7/13/09
+ 
+ 
