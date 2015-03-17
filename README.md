@@ -33,7 +33,7 @@ While the REST API documentation is pending (check it status in the WiKi), the B
 For general discussions regarding the platform please join the [Clinical Client Platform (CCP) discussion group](http://groups.google.com/d/forum/clinical-client-platform)
 
 ## License
-BellaVista is available under the Apache license. See the LICENSE file for more info.
+BellaVista is available under the Apache license. See the [LICENSE](LICENSE) file for more info.
 
 ##Acknowledgements
 Most of the icons used in this project are from <a xmlns:cc='http://creativecommons.org/ns#' href='http://www.snipicons.com' target='_blank' property='cc:attributionName' rel='cc:attributionURL'>www.snipicons.com</a>
