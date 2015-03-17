@@ -1,5 +1,5 @@
 #BellaVista
-BellaVista is part of the open source Clinical Client Platform (CCP). This platform provides a framework and an implementation of a Native, Multi-Platform Clinical Client that is EMR agnostic. The client provides core clinical results reporting functionality and a framework for integrating external functionality like:
+The BellVista client is an implementation of a Native, Multi-Platform Clinical Client that is EMR agnostic. It is part of a new open source Clinical Client Platform (CCP). This platform provides a framework and an implementation of a Native, Multi-Platform Clinical Client that is EMR agnostic. The client provides core clinical results reporting functionality and a framework for integrating external functionality like:
 
 * QR code and Bluetooth Beacon based patient identification
 * Real-time patient vitals monitoring and EKGs
