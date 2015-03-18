@@ -14,6 +14,10 @@ Currently the client is runs natively on iOS, Android, and on any desktop enviro
 
 The client has a demo mode which allows you to tests out its UI and functionality without having to talk to any back end systems.
 
+##Screenshots & Design
+
+Please see the [WiKi](https://github.com/sparseware/ccp-bellavista/wiki) for screenshots and design information
+
 ##Development Requirements
 * Eclipse 4.3 or newer
 * appNativa SDK v1.2
@@ -27,7 +31,7 @@ To actually have the client work with a real EMR system, a RESTful web service i
 * Clone this project to the projects directory of the SDK
 * Select “Import” from the Eclipse file and then choose the top level BellaVista directory to import all the projects.
 
-While the REST API documentation is pending (check it status in the WiKi), the BellaVista-android/assets/hub directory contains the data used in demo mode and mirrors the REST API (sans supported optional parameters) used when accessing a web service. To learn more about the API you can look at the code in the [RaVe](https://github.com/sparseware/ccp-rave) project here on GitHub
+While the documentation is under development (check it's status in the WiKi), the BellaVista-android/assets/hub directory contains the data used in demo mode and mirrors the REST API (sans supported optional parameters) used when accessing a web service. To learn more about the API you can look at the code in the [RaVe](https://github.com/sparseware/ccp-rave) project here on GitHub
 
 ##Discussions
 For general discussions regarding the platform please join the [Clinical Client Platform (CCP) discussion group](http://groups.google.com/d/forum/clinical-client-platform)
