@@ -429,5 +429,34 @@ TemplateContext {
         customProperties: "autoInsertMetaContent=true;android:hardwareAccelerated=false"
       }
     }
+    {
+      Widget {
+        borders {
+          empty [ insets="2, 2, 2, 2" ]
+          line [ cornerArc="6", color="darkBackground", thickness="2" ]
+          empty [ insets="2, 2, 2, 2" ]
+        }
+        horizontalAlign: full
+        bgColor: "black"
+        templateName: "bv.monitor.gb"
+      }
+    }
+    {
+      SplitPane {
+        bgColor: "darkBackground"
+        templateName: "bv.monitor.splitpane"
+        splitOrientation: top_to_bottom;
+        splitProportions{
+        	.6 
+        }
+        showGripper: false
+        regions {
+        	{
+        	}
+        	{
+        	}
+        }
+      }
+    }
   }
 }

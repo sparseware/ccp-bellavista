@@ -7,12 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		161705D11AC100B2001CE3D8 /* BVBeaconMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705D01AC100B2001CE3D8 /* BVBeaconMonitor.m */; };
+		161705DF1AC100CE001CE3D8 /* aBeaconLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705D31AC100CE001CE3D8 /* aBeaconLocator.m */; };
+		161705E01AC100CE001CE3D8 /* aBeaconLocatorSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705D51AC100CE001CE3D8 /* aBeaconLocatorSupport.m */; };
+		161705E11AC100CE001CE3D8 /* BluetoothBeaconLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705D71AC100CE001CE3D8 /* BluetoothBeaconLocator.m */; };
+		161705E21AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705D91AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m */; };
+		161705E31AC100CE001CE3D8 /* DemoBarcodeReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705DB1AC100CE001CE3D8 /* DemoBarcodeReader.m */; };
+		161705E41AC100CE001CE3D8 /* DemoPatientLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705DC1AC100CE001CE3D8 /* DemoPatientLocator.m */; };
+		161705E51AC100CE001CE3D8 /* RemoteMonitorEventHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705DE1AC100CE001CE3D8 /* RemoteMonitorEventHandler.m */; };
+		161705E81AC100EA001CE3D8 /* MessageException.m in Sources */ = {isa = PBXBuildFile; fileRef = 161705E71AC100EA001CE3D8 /* MessageException.m */; };
 		1619065A1A84434D000C604E /* Actions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1619063A1A84434D000C604E /* Actions.m */; };
 		1619065B1A84434D000C604E /* CareTeam.m in Sources */ = {isa = PBXBuildFile; fileRef = 1619063C1A84434D000C604E /* CareTeam.m */; };
 		1619065C1A84434D000C604E /* CollectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1619063E1A84434D000C604E /* CollectionManager.m */; };
 		1619065D1A84434D000C604E /* DefaultImageViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 161906401A84434D000C604E /* DefaultImageViewer.m */; };
-		1619065E1A84434D000C604E /* DemoBarcodeReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 161906421A84434D000C604E /* DemoBarcodeReader.m */; };
-		1619065F1A84434D000C604E /* DemoPatientLocator.m in Sources */ = {isa = PBXBuildFile; fileRef = 161906441A84434D000C604E /* DemoPatientLocator.m */; };
 		161906601A84434D000C604E /* aAttachmentHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 161906491A84434D000C604E /* aAttachmentHandler.m */; };
 		161906611A84434D000C604E /* aBarcodeReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 1619064B1A84434D000C604E /* aBarcodeReader.m */; };
 		161906621A84434D000C604E /* aCommunicationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1619064D1A84434D000C604E /* aCommunicationHandler.m */; };
@@ -64,6 +71,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		161705CF1AC100B2001CE3D8 /* BVBeaconMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVBeaconMonitor.h; sourceTree = "<group>"; };
+		161705D01AC100B2001CE3D8 /* BVBeaconMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BVBeaconMonitor.m; sourceTree = "<group>"; };
+		161705D21AC100CE001CE3D8 /* aBeaconLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aBeaconLocator.h; sourceTree = "<group>"; };
+		161705D31AC100CE001CE3D8 /* aBeaconLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aBeaconLocator.m; sourceTree = "<group>"; };
+		161705D41AC100CE001CE3D8 /* aBeaconLocatorSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aBeaconLocatorSupport.h; sourceTree = "<group>"; };
+		161705D51AC100CE001CE3D8 /* aBeaconLocatorSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aBeaconLocatorSupport.m; sourceTree = "<group>"; };
+		161705D61AC100CE001CE3D8 /* BluetoothBeaconLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluetoothBeaconLocator.h; sourceTree = "<group>"; };
+		161705D71AC100CE001CE3D8 /* BluetoothBeaconLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothBeaconLocator.m; sourceTree = "<group>"; };
+		161705D81AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluetoothBeaconLocatorSupport.h; sourceTree = "<group>"; };
+		161705D91AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothBeaconLocatorSupport.m; sourceTree = "<group>"; };
+		161705DA1AC100CE001CE3D8 /* DemoBarcodeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBarcodeReader.h; sourceTree = "<group>"; };
+		161705DB1AC100CE001CE3D8 /* DemoBarcodeReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBarcodeReader.m; sourceTree = "<group>"; };
+		161705DC1AC100CE001CE3D8 /* DemoPatientLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoPatientLocator.m; sourceTree = "<group>"; };
+		161705DD1AC100CE001CE3D8 /* RemoteMonitorEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteMonitorEventHandler.h; sourceTree = "<group>"; };
+		161705DE1AC100CE001CE3D8 /* RemoteMonitorEventHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteMonitorEventHandler.m; sourceTree = "<group>"; };
+		161705E61AC100EA001CE3D8 /* MessageException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageException.h; sourceTree = "<group>"; };
+		161705E71AC100EA001CE3D8 /* MessageException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageException.m; sourceTree = "<group>"; };
 		161906391A84434D000C604E /* Actions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Actions.h; sourceTree = "<group>"; };
 		1619063A1A84434D000C604E /* Actions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Actions.m; sourceTree = "<group>"; };
 		1619063B1A84434D000C604E /* CareTeam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CareTeam.h; sourceTree = "<group>"; };
@@ -72,10 +96,6 @@
 		1619063E1A84434D000C604E /* CollectionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionManager.m; sourceTree = "<group>"; };
 		1619063F1A84434D000C604E /* DefaultImageViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultImageViewer.h; sourceTree = "<group>"; };
 		161906401A84434D000C604E /* DefaultImageViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultImageViewer.m; sourceTree = "<group>"; };
-		161906411A84434D000C604E /* DemoBarcodeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBarcodeReader.h; sourceTree = "<group>"; };
-		161906421A84434D000C604E /* DemoBarcodeReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBarcodeReader.m; sourceTree = "<group>"; };
-		161906431A84434D000C604E /* DemoPatientLocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoPatientLocator.h; sourceTree = "<group>"; };
-		161906441A84434D000C604E /* DemoPatientLocator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoPatientLocator.m; sourceTree = "<group>"; };
 		161906481A84434D000C604E /* aAttachmentHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aAttachmentHandler.h; sourceTree = "<group>"; };
 		161906491A84434D000C604E /* aAttachmentHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aAttachmentHandler.m; sourceTree = "<group>"; };
 		1619064A1A84434D000C604E /* aBarcodeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aBarcodeReader.h; sourceTree = "<group>"; };
@@ -188,6 +208,19 @@
 		161906471A84434D000C604E /* external */ = {
 			isa = PBXGroup;
 			children = (
+				161705D21AC100CE001CE3D8 /* aBeaconLocator.h */,
+				161705D31AC100CE001CE3D8 /* aBeaconLocator.m */,
+				161705D41AC100CE001CE3D8 /* aBeaconLocatorSupport.h */,
+				161705D51AC100CE001CE3D8 /* aBeaconLocatorSupport.m */,
+				161705D61AC100CE001CE3D8 /* BluetoothBeaconLocator.h */,
+				161705D71AC100CE001CE3D8 /* BluetoothBeaconLocator.m */,
+				161705D81AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.h */,
+				161705D91AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m */,
+				161705DA1AC100CE001CE3D8 /* DemoBarcodeReader.h */,
+				161705DB1AC100CE001CE3D8 /* DemoBarcodeReader.m */,
+				161705DC1AC100CE001CE3D8 /* DemoPatientLocator.m */,
+				161705DD1AC100CE001CE3D8 /* RemoteMonitorEventHandler.h */,
+				161705DE1AC100CE001CE3D8 /* RemoteMonitorEventHandler.m */,
 				161906481A84434D000C604E /* aAttachmentHandler.h */,
 				161906491A84434D000C604E /* aAttachmentHandler.m */,
 				1619064A1A84434D000C604E /* aBarcodeReader.h */,
@@ -218,6 +251,8 @@
 		16BC9C251A49F84100EAFFD1 /* bellavista */ = {
 			isa = PBXGroup;
 			children = (
+				161705E61AC100EA001CE3D8 /* MessageException.h */,
+				161705E71AC100EA001CE3D8 /* MessageException.m */,
 				16CF83621AA2615B00A19C2F /* Consults.h */,
 				16CF83631AA2615B00A19C2F /* Consults.m */,
 				166E28881A97F59300F5FDB9 /* Settings.h */,
@@ -230,10 +265,6 @@
 				1619063E1A84434D000C604E /* CollectionManager.m */,
 				1619063F1A84434D000C604E /* DefaultImageViewer.h */,
 				161906401A84434D000C604E /* DefaultImageViewer.m */,
-				161906411A84434D000C604E /* DemoBarcodeReader.h */,
-				161906421A84434D000C604E /* DemoBarcodeReader.m */,
-				161906431A84434D000C604E /* DemoPatientLocator.h */,
-				161906441A84434D000C604E /* DemoPatientLocator.m */,
 				161906471A84434D000C604E /* external */,
 				161906561A84434D000C604E /* PickList.h */,
 				161906571A84434D000C604E /* PickList.m */,
@@ -324,6 +355,8 @@
 		16FD5C8F191E9FC600CE456D /* BellaVista */ = {
 			isa = PBXGroup;
 			children = (
+				161705CF1AC100B2001CE3D8 /* BVBeaconMonitor.h */,
+				161705D01AC100B2001CE3D8 /* BVBeaconMonitor.m */,
 				16FD5D05191EBA4B00CE456D /* AppDelegate.h */,
 				16FD5D06191EBA4B00CE456D /* AppDelegate.m */,
 				16FD5D07191EBA4B00CE456D /* main.m */,
@@ -420,6 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1619065C1A84434D000C604E /* CollectionManager.m in Sources */,
+				161705E81AC100EA001CE3D8 /* MessageException.m in Sources */,
 				16BC9C3A1A49F84100EAFFD1 /* Utils.m in Sources */,
 				16BC9C361A49F84100EAFFD1 /* Labs.m in Sources */,
 				164BFB4B1A50C82100DB8546 /* ClinicalValue.m in Sources */,
@@ -430,12 +464,15 @@
 				16BC9C371A49F84100EAFFD1 /* MainEventHandler.m in Sources */,
 				1619065B1A84434D000C604E /* CareTeam.m in Sources */,
 				164BFB1E1A4DCD6800DB8546 /* SummaryVitalsHandler.m in Sources */,
+				161705E51AC100CE001CE3D8 /* RemoteMonitorEventHandler.m in Sources */,
 				1619065D1A84434D000C604E /* DefaultImageViewer.m in Sources */,
+				161705E01AC100CE001CE3D8 /* aBeaconLocatorSupport.m in Sources */,
+				161705E41AC100CE001CE3D8 /* DemoPatientLocator.m in Sources */,
 				1619065A1A84434D000C604E /* Actions.m in Sources */,
 				16BC9C381A49F84100EAFFD1 /* OrderManager.m in Sources */,
 				16BC9C351A49F84100EAFFD1 /* iValueChecker.m in Sources */,
 				161906611A84434D000C604E /* aBarcodeReader.m in Sources */,
-				1619065E1A84434D000C604E /* DemoBarcodeReader.m in Sources */,
+				161705D11AC100B2001CE3D8 /* BVBeaconMonitor.m in Sources */,
 				161906621A84434D000C604E /* aCommunicationHandler.m in Sources */,
 				163A81D21A74276F002C5FB4 /* Orders.m in Sources */,
 				163A81CD1A74276F002C5FB4 /* aResultsManager.m in Sources */,
@@ -445,13 +482,16 @@
 				161906641A84434D000C604E /* aRemoteMonitor.m in Sources */,
 				163A81D31A74276F002C5FB4 /* Vitals.m in Sources */,
 				16BC9C341A49F84100EAFFD1 /* aEventHandler.m in Sources */,
+				161705E31AC100CE001CE3D8 /* DemoBarcodeReader.m in Sources */,
+				161705DF1AC100CE001CE3D8 /* aBeaconLocator.m in Sources */,
 				164BFB4A1A50C82100DB8546 /* aChartHandler.m in Sources */,
 				166E288A1A97F59300F5FDB9 /* Settings.m in Sources */,
 				163A81D11A74276F002C5FB4 /* Notes.m in Sources */,
 				161906631A84434D000C604E /* aPatientLocator.m in Sources */,
 				16DF0F291A59CB400035647B /* ApplicationListener.m in Sources */,
-				1619065F1A84434D000C604E /* DemoPatientLocator.m in Sources */,
 				16BC9C391A49F84100EAFFD1 /* PatientSelect.m in Sources */,
+				161705E11AC100CE001CE3D8 /* BluetoothBeaconLocator.m in Sources */,
+				161705E21AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m in Sources */,
 				16CF83641AA2615B00A19C2F /* Consults.m in Sources */,
 				168BE2BF1A79639000D26F12 /* ResultsView.m in Sources */,
 			);

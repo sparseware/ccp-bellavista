@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import com.appnativa.rare.Platform;
@@ -178,20 +177,37 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       name = widget.getName();
     }
     if (UIScreen.isLargeScreen() && "spreadsheet".equals(name)) { //if going to the spreadsheet go to same result type
-      String key=getSelectedChartableKey();
-      if(key!=null) {
-        keyPath=new ActionPath(key);
+      String key = getSelectedChartableKey();
+      if (key != null) {
+        keyPath = new ActionPath(key);
       }
     }
     super.changeView(eventName, widget, event);
   }
+
+  /**
+   * Called by the summary screen to dispose of the lab object.
+   */
+  public void onSummaryDispose(String eventName, iWidget widget, EventObject event) {
+    if (dataTable == widget) {//this will be false if we create the labs page is created before summary is disposed
+      super.onDispose(eventName, widget, event);
+    }//else reset() already called so no need to cleanup
+  }
+
   @Override
   public ActionPath getDisplayedActionPath() {
-    if(isSummary) {
-      return  new ActionPath(Utils.getPatientID(), "summary");
+    if (isSummary) {
+      return new ActionPath(Utils.getPatientID(), "summary");
     }
     return super.getDisplayedActionPath();
   }
+
+  /**
+   * Filters the table base on the specified category filter item
+   * 
+   * @param filterItem
+   *          the item to use to filter
+   */
   protected void filterTable(RenderableDataItem filterItem) {
     if (filterItem != null) {
       WindowViewer w = Platform.getWindowViewer();
@@ -217,7 +233,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       }
       if (all) {
         table.unfilter();
-        if(!table.isEmpty()) {
+        if (!table.isEmpty()) {
           table.scrollRowToTop(0);
         }
       } else {
@@ -236,7 +252,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
             }
           }
         });
-        if(!table.isEmpty()) {
+        if (!table.isEmpty()) {
           table.scrollRowToTop(0);
         }
       }
@@ -324,31 +340,19 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
     return true;
   }
 
-  public ActionPath getActionPath() {
-    RenderableDataItem row;
-    ActionPath p = new ActionPath("labs");
-    p.add(currentView.toString().toLowerCase(Locale.US));
+  @Override
+  protected void addCurrentPathID(ActionPath path) {
     switch (currentView) {
-      case CHARTS:
       case DOCUMENT:
-        row = dataTable.getSelectedItem();
+        RenderableDataItem row = dataTable.getSelectedItem();
         if (row != null) {
-          p.add((String) row.get(DATE_POSITION).getLinkedData());
-        }
-        break;
-      case SPREADSHEET:
-        TableViewer table = (TableViewer) Platform.getWindowViewer().getViewer("spreadsheetTable");
-        if (table != null) {
-          row = table.getSelectedItem();
-          if (row != null) {
-            p.add((String) row.get(0).getLinkedData());
-          }
+          String id = (String) row.get(RESULT_ID_POSITION).getValue();
+          path.add(id);
         }
         break;
       default:
         break;
     }
-    return p;
   }
 
   /**
@@ -393,8 +397,8 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
     Document doc = (Document) gp.getLinkedData(); // calling
                                                   // Document.proplateViewer(ActionLink)
                                                   // will set this value
-    
-    if(doc!=null) {
+
+    if (doc != null) {
       gp.setLinkedData(null);
       WindowViewer w = Platform.getWindowViewer();
       StackPaneViewer sp = (StackPaneViewer) gp.getWidget("reportStack");
@@ -414,7 +418,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
         } else {
           loadStains(w, doc, sp.getViewer(2));
         }
-  
+
       }
     }
   }
@@ -960,8 +964,8 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   @Override
   protected void reset() {
     super.reset();
-    if(UIScreen.isLargeScreen()) {
-      currentView=ResultsView.TRENDS;
+    if (UIScreen.isLargeScreen()) {
+      currentView = ResultsView.TRENDS;
     }
     overViewLoaded = false;
   }

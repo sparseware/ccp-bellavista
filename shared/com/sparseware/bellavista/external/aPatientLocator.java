@@ -15,15 +15,15 @@
  */
 package com.sparseware.bellavista.external;
 
-import java.util.List;
+import java.util.EventObject;
 
 import com.appnativa.rare.iFunctionCallback;
-import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.iChangeListener;
 
 /**
- * This class provides a base implementation for location based
- * patient selection
+ * This class provides a base implementation for location based patient
+ * selection
  * 
  * @author Don DeCoteau
  */
@@ -33,30 +33,31 @@ public abstract class aPatientLocator {
   public aPatientLocator() {
   }
 
+  /**
+   * Disposes of the locator
+   */
   public abstract void dispose();
 
   /**
-   * Gets the nearby list of patients
-   * 
-   * @param cb the callback to call with the results
-   */
-  public abstract void getNearbyPatients(iFunctionCallback cb);
-
-  /**
    * Gets the updated list nearby list of patients.
-   * The is meant to be called after the caller receives
-   * a state changed event.
    * 
-   * @return the list of nearby patients
+   * @param event
+   *          the change event that this call is a response to
+   * @param cb
+   *          the callback to call with the results
+   *
    */
-  public abstract List<RenderableDataItem> getUpdatedNearbyPatients();
+  public abstract void getNearbyPatients(EventObject event, iFunctionCallback cb);
 
   /**
    * Gets the nearby locations of patients
    * 
-   * @param cb the callback to call with the results
+   * @param cb
+   *          the callback to call with the results
+   * @param event
+   *          the change event that this call is a response to
    */
-  public abstract void getNearbyLocations(iFunctionCallback cb);
+  public abstract void getNearbyLocations(EventObject event, iFunctionCallback cb);
 
   /**
    * Set the change listener to call when the nearby list of patient changes
@@ -81,4 +82,75 @@ public abstract class aPatientLocator {
    * @return true if it is; false otherwise
    */
   public abstract boolean isNearbyLocationsSupported();
+
+  /**
+   * Called to stop listening for nearby patients
+   */
+  public abstract void stopListeningForNearbyPatients();
+
+  /**
+   * Called to stop listening for nearby locations
+   */
+  public abstract void stopListeningForNearbyLocations();
+
+  /**
+   * Called to start listening for nearby patients
+   */
+  public abstract void startListeningForNearbyPatients();
+
+  /**
+   * Called to start listening for nearby locations
+   */
+  public abstract void startListeningForNearbyLocations();
+
+  /**
+   * Enum representing the type of locator change we are being notified about
+   * 
+   * @author Don DeCoteau
+   *
+   */
+  public enum LocatorChangeType {
+    PATIENTS, LOCATIONS,ACCESS_DENIED
+  }
+
+  /**
+   * Called to notify the locator that we are ignoring the event. Calling this
+   * method allows to notified to discard any resources it may be holding on to
+   * in regards to this event.
+   * 
+   * @param e
+   *          the event
+   */
+  public abstract void ignoreEvent(EventObject e);
+
+  /**
+   * Class representing a locator change event
+   * 
+   * @author Don DeCoteau
+   *
+   */
+  public static class LocatorChangeEvent extends DataEvent {
+
+    /** the change type */
+    protected LocatorChangeType changeType;
+
+    public LocatorChangeEvent(Object source, LocatorChangeType type) {
+      super(source, null);
+      changeType = type;
+    }
+
+    public LocatorChangeEvent(Object source, LocatorChangeType type, Object data) {
+      super(source, data);
+      changeType = type;
+    }
+
+    /**
+     * Gets the change type
+     * 
+     * @return the change type
+     */
+    public LocatorChangeType getChangeType() {
+      return changeType;
+    }
+  }
 }

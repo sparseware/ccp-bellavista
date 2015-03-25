@@ -309,7 +309,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
           }
         }
         if (!found) {// should only happen when normal numeric value is non-numeric - middleware should prevent this
-          Platform.debugLog("SPREADSHEET ENTRY NOT FOUND"+ orow);
+          Platform.debugLog("SPREADSHEET ENTRY NOT FOUND" + orow);
         }
       }
       if (categorize) {
@@ -346,7 +346,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
           rows.addAll(clist);
         }
       }
-      
+
       table.setAll(rows);
       Runnable r = new Runnable() {
 
@@ -360,13 +360,12 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
             String s = w.getString("bv.text.page_of_page", page, pageCount);
             label.setValue(s);
           }
-          String key=keyPath==null ? null : keyPath.shift();
-          if(key==null) {
-            if(UIScreen.isLargeScreen()) {
+          String key = keyPath == null ? null : keyPath.shift();
+          if (key == null) {
+            if (UIScreen.isLargeScreen()) {
               selectFirstChartableItem(table, true);
             }
-          }
-          else {
+          } else {
             handlePathKey(table, key, 0, true);
           }
         }
@@ -406,6 +405,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       clearCharts(table);
     }
   }
+
   protected void clearCharts(TableViewer table) {
     StackPaneViewer stack = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
     if (stack != null) {
@@ -422,9 +422,9 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
         }
       }
     }
-    
+
   }
-  
+
   public void showMostRecent(String eventName, iWidget widget, EventObject event) {
 
   }
@@ -465,12 +465,12 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
         showSpreesheet(parent);
         break;
       default:
-        changeViewEx(view);
+        changeViewEx(widget, view);
         break;
     }
   }
 
-  protected void changeViewEx(ResultsView view) {
+  protected void changeViewEx(iWidget widget, ResultsView view) {
 
   }
 
@@ -642,10 +642,10 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       sp.setSplitProportions(0.5f);
       try {
         iViewer v = sp.getViewer(1);
-        if (v==null || !v.getName().equals(namePrefix + "Charts")) {
+        if (v == null || !v.getName().equals(namePrefix + "Charts")) {
           iTarget t = sp.getRegion(1);
           t.removeViewer();
-          if(v!=null) {
+          if (v != null) {
             v.dispose();
           }
           w.activateViewer(namePrefix + "_charts.rml", t.getName());
@@ -671,6 +671,33 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     });
   }
 
+  protected void showRegularTableEx(iContainer fv) {
+    WindowViewer w = Platform.getWindowViewer();
+    TableViewer table = (TableViewer) w.getViewer("spreadsheetTable");
+    if (table != null) {
+      SplitPaneViewer sp = null;
+      if (fv instanceof SplitPaneViewer) {
+        sp = (SplitPaneViewer) fv;
+      }
+      GroupBoxViewer gb = (GroupBoxViewer) table.getParent();
+      Object constraints = gb.getConsraints(table);
+      gb.removeWidget(table);
+      table.dispose();
+      gb.addWidget(dataTable, constraints, -1);
+      if (sp != null) {
+        sp.setTopToBottom(!UIScreen.isWider());
+        sp.setAutoOrient(true);
+        sp.setSplitProportions(0.4f);
+
+      }
+      setNavigationButtonsVisible(fv, false);
+      iWidget label = fv.getWidget("tableLabel");
+      if (label != null) {
+        label.setValue(" ");
+      }
+    }
+  }
+
   protected void showRegularTable(iContainer fv, boolean trends) {
     SplitPaneViewer sp = null;
     if (fv instanceof SplitPaneViewer) {
@@ -678,25 +705,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     }
     WindowViewer w = Platform.getWindowViewer();
     try {
-      TableViewer table = (TableViewer) w.getViewer("spreadsheetTable");
-      if (table != null) {
-        GroupBoxViewer gb = (GroupBoxViewer) table.getParent();
-        Object constraints = gb.getConsraints(table);
-        gb.removeWidget(table);
-        table.dispose();
-        gb.addWidget(dataTable, constraints, -1);
-        if (sp != null) {
-          sp.setTopToBottom(!UIScreen.isWider());
-          sp.setAutoOrient(true);
-          sp.setSplitProportions(0.4f);
-
-        }
-        setNavigationButtonsVisible(fv, false);
-        iWidget label = fv.getWidget("tableLabel");
-        if (label != null) {
-          label.setValue(" ");
-        }
-      }
+      showRegularTableEx(fv);
       if (trends) {
         String url = namePrefix + "_trends.rml";
         dataTable.clearSelection();
@@ -711,19 +720,17 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       } else {
         if (sp != null) {
           iViewer v = sp.getViewer(1);
-          if (v!=null && v.getName().equals(namePrefix + "Charts")) {
+          if (v != null && v.getName().equals(namePrefix + "Charts")) {
             v.getFormViewer().getWidget("chartHeader").setVisible(true);
-            String key=keyPath==null ? null : keyPath.shift();
-            if(key==null) {
-              if(!dataTable.hasSelection()) {
+            String key = keyPath == null ? null : keyPath.shift();
+            if (key == null) {
+              if (!dataTable.hasSelection()) {
                 selectFirstChartableItem(dataTable, true);
-              }
-              else {
+              } else {
                 dataTable.fireActionForSelected();
               }
-            }
-            else {
-              handlePathKey(table, key, 1, true);
+            } else {
+              handlePathKey(dataTable, key, 1, true);
             }
           } else {
             if (chartHandler != null) {
@@ -813,9 +820,8 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       } else {
         String key = keyPath == null ? null : keyPath.shift();
         if (key != null) {
-          handlePathKey(table, key, table==dataTable ? 1 : 0, chartsLoaded || !UIScreen.isLargeScreen());
-        }
-        else {
+          handlePathKey(table, key, table == dataTable ? 1 : 0, chartsLoaded || !UIScreen.isLargeScreen());
+        } else {
           selectFirstChartableItem(table, true);
         }
       }
@@ -1021,8 +1027,8 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   protected void slideToChartableItem(boolean next, boolean horizontal) {
     WindowViewer w = Platform.getWindowViewer();
     TableViewer table = spreadsheetTable;
-    if(table==null) {
-      table=(TableViewer) w.getViewer("spreadsheetTable");
+    if (table == null) {
+      table = (TableViewer) w.getViewer("spreadsheetTable");
     }
     if (table == null) {
       table = dataTable;
@@ -1089,17 +1095,17 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   }
 
   protected void handlePathKey(TableViewer table, String key, int column, boolean fireAction) {
-    int len=table.size();
-    int n=-1;
-    for(int i=0;i<len;i++) {
+    int len = table.size();
+    int n = -1;
+    for (int i = 0; i < len; i++) {
       RenderableDataItem item = table.getItem(i, column);
       String val = item == null ? null : (String) item.getLinkedData();
-      if(key.equals(val)) {
-        n=i;
+      if (key.equals(val)) {
+        n = i;
         break;
       }
     }
-    if(n!=-1) {
+    if (n != -1) {
       table.setSelectedIndex(n);
       table.scrollRowToVisible(n);
       if (fireAction) {

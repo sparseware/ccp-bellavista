@@ -24,5 +24,8 @@ public enum ResultsView {
   CHARTS,
   DOCUMENT,
   SPREADSHEET,
-  TRENDS
+  TRENDS,
+  CUSTOM_1,
+  CUSTOM_2,
+  CUSTOM_3,
 }

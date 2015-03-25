@@ -148,14 +148,14 @@ SplitPane {
                   }
                   {
                     RadioButton {
-                      name: "realtime_vitals"
+                      name: "custom_1"
                       enabled: false
                       templateName: "bv.radiobutton.toolbar"
                       value: "{resource:bv.text.realtime_vitals}"
                       icon: "resource:bv.icon.ecg"
                       showText: false
                       groupName: "views"
-                    } [ onAction="class:Vitals#changeView" ]
+                    } [ onConfigure="class:Vitals#onConfigureRealtimeVitalsButton", onAction="class:Vitals#changeView" ]
                   }
                 }
               }

@@ -28,23 +28,31 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.iPlatformAppContext;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.spot.Chart;
 import com.appnativa.rare.ui.ColorUtils;
 import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.UIDimension;
 import com.appnativa.rare.ui.RenderableDataItem.HorizontalAlign;
 import com.appnativa.rare.ui.UIColor;
 import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.chart.ChartDataItem;
 import com.appnativa.rare.util.SubItemComparator;
 import com.appnativa.rare.viewer.ChartViewer;
+import com.appnativa.rare.viewer.SplitPaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
+import com.appnativa.rare.viewer.WindowViewer;
+import com.appnativa.rare.viewer.iContainer;
+import com.appnativa.rare.viewer.iTarget;
+import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.aGroupableButton;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.MutableInteger;
 import com.appnativa.util.json.JSONObject;
+import com.sparseware.bellavista.external.aRemoteMonitor;
 
 /**
  * This provides a core set of functionality for managing results for display
@@ -54,6 +62,10 @@ import com.appnativa.util.json.JSONObject;
  * @author Don DeCoteau
  */
 public class Vitals extends aResultsManager implements iValueChecker {
+  static boolean        checkForMonitoringSupport;
+  static Class          monitoringClass;
+  static aRemoteMonitor monitorInstance;
+
   public Vitals() {
     super("vitals", "Vitals");
     iPlatformAppContext app = Platform.getAppContext();
@@ -66,6 +78,16 @@ public class Vitals extends aResultsManager implements iValueChecker {
     if (info.optBoolean("hasReferenceRange", false)) {
       RANGE_POSITION = 4;
     }
+    if (!checkForMonitoringSupport) {
+      String cls = info.optString("monitoringClass", null);
+      if (cls != null && cls.length() > 0) {
+        try {
+          monitoringClass = Platform.loadClass(cls);
+        } catch (Exception ignore) {
+        }
+      }
+
+    }
   }
 
   @Override
@@ -76,6 +98,74 @@ public class Vitals extends aResultsManager implements iValueChecker {
   public void onSummaryClick(String eventName, iWidget widget, EventObject event) {
     ActionPath path = new ActionPath("vitals", "combo");
     Utils.handleActionPath(path);
+  }
+
+  public void onConfigureRealtimeVitalsButton(String eventName, iWidget widget, EventObject event) {
+    if (monitoringClass != null && Utils.getPatient().optBoolean("has_monitor", false)) {
+      widget.setEnabled(true);
+    }
+  }
+
+  protected void changeViewEx(final iWidget widget, final ResultsView view) {
+    if (view != ResultsView.CUSTOM_1) {
+      return;
+    }
+    final WindowViewer w = Platform.getWindowViewer();
+    if (monitorInstance == null) {
+      try {
+        monitorInstance = (aRemoteMonitor) monitoringClass.newInstance();
+      } catch (Exception e) {
+        monitoringClass = null;
+        widget.setEnabled(false);
+        w.alert(w.getString("bv.text.failed_to_create_monitor"));
+        return;
+      }
+    }
+    final iContainer fv = widget.getFormViewer();
+    final SplitPaneViewer sp;
+    if (fv instanceof SplitPaneViewer) {
+      sp = (SplitPaneViewer) fv;
+    } else {
+      sp = null;
+    }
+
+    iFunctionCallback cb = new iFunctionCallback() {
+
+      @Override
+      public void finished(boolean canceled, Object returnValue) {
+        w.hideWaitCursor();
+        if (widget.isDisposed()) {
+          return;
+        }
+        if (returnValue instanceof Throwable) {
+          Utils.handleError((Throwable) returnValue);
+        } else if (returnValue == null) {
+          widget.setEnabled(false);
+          w.alert(w.getString("bv.text.failed_to_create_monitor"));
+        } else {
+          currentView = view;
+          iViewer v = (iViewer) returnValue;
+          dataTable.clearSelection();
+          if (chartHandler != null) {
+            chartHandler.resetChartPoints();
+          }
+          if (sp == null) {
+            Utils.pushWorkspaceViewer(v);
+          } else {
+            w.activateViewer(v, sp.getRegion(1).getName());
+          }
+        }
+      }
+    };
+    showRegularTableEx(fv);
+    w.showWaitCursor();
+    UIDimension targetSize;
+    if (sp != null) {
+      targetSize = sp.getSize();
+    } else {
+      targetSize = w.getTarget(iTarget.TARGET_WORKSPACE).getTargetSize();
+    }
+    monitorInstance.createViewer(Utils.getPatient(), sp == null ? w : sp, targetSize, cb);
   }
 
   @Override
@@ -97,7 +187,6 @@ public class Vitals extends aResultsManager implements iValueChecker {
     showComboChart((StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack"));
   }
 
-  @Override
   public boolean checkRow(RenderableDataItem row, int index, int expandableColumn, int rowCount) {
     try {
       do {
@@ -235,17 +324,16 @@ public class Vitals extends aResultsManager implements iValueChecker {
     dataLoaded = true;
     ActionPath path = Utils.getActionPath(true);
     String key = path == null ? null : path.pop();
-    if(key==null && UIScreen.isLargeScreen()) {
-      key="combo";
+    if (key == null && UIScreen.isLargeScreen()) {
+      key = "combo";
     }
-    if(key!=null) {
-      if(UIScreen.isLargeScreen() && !chartsLoaded) {
-        keyPath=new ActionPath(key);
-      }
-      else {
+    if (key != null) {
+      if (UIScreen.isLargeScreen() && !chartsLoaded) {
+        keyPath = new ActionPath(key);
+      } else {
         handlePathKey(table, key, 0, true);
       }
-   }
+    }
   }
 
   protected void showComboChart(StackPaneViewer sp) {

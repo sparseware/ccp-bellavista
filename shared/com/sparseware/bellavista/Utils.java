@@ -431,11 +431,36 @@ public class Utils {
     }
   }
 
+  /**
+   * Returns whether or not polling for updates should continue
+   * 
+   * @return true to continue; false toe stop
+   */
   public static boolean continuePollingForUpdates() {
     if (isApplicationLocked() || getPatient() == null) {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Creates a disabled table row and sets the value of the specified column to
+   * the value of the named resource
+   * 
+   * @param resource
+   *          the name of the resource
+   * @param resourceColumn
+   *          the column to set the value of
+   * 
+   * @return the created row
+   */
+  public static RenderableDataItem createDisabledTableRow(String resource, int resourceColumn) {
+    RenderableDataItem row = Platform.getWindowViewer().createRow(3, true);
+    row.setEnabled(false);
+    RenderableDataItem item = row.get(1);
+    item.setValue(Platform.getResourceAsString(resource));
+    item.setEnabled(false);
+    return row;
   }
 
   public static ActionLink createLink(iWidget context, String url, boolean rowInfo) {
@@ -456,6 +481,15 @@ public class Utils {
     return link;
   }
 
+  /**
+   * Creates and action link for retrieving a patient's photo
+   * 
+   * @param id
+   *          the patient's id
+   * @param thumbnail
+   *          true to create a link for a thumbnail, false for the full photo
+   * @return the link
+   */
   public static ActionLink createPhotosActionLink(String id, boolean thumbnail) {
     JSONObject ps = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
     String s = ps.optString(thumbnail ? "photosThumbnailsURL" : "photosURL", null);
@@ -465,6 +499,9 @@ public class Utils {
     return new ActionLink(Functions.format(s, id));
   }
 
+  /**
+   * Exits the application, prompting as appropriate
+   */
   public static void exit() {
     if (wasClosing) {
       return;
@@ -486,7 +523,7 @@ public class Utils {
       public void finished(boolean canceled, Object returnValue) {
         if (!canceled && Boolean.TRUE.equals(returnValue)) {
           Platform.invokeLater(new Runnable() {
-            
+
             @Override
             public void run() {
               exitEx();
@@ -791,7 +828,7 @@ public class Utils {
   }
 
   public static void handleError(Throwable ex) {
-    if(ex instanceof ClosedChannelException || ex instanceof ClosedByInterruptException) { //we forcibly closed the connection (most likely logging out)
+    if (ex instanceof ClosedChannelException || ex instanceof ClosedByInterruptException) { //we forcibly closed the connection (most likely logging out)
       return;
     }
     final WindowViewer w = Platform.getWindowViewer();
@@ -801,6 +838,10 @@ public class Utils {
       @Override
       public void run() {
         if (applicationLock != null) {
+          return;
+        }
+        if (e instanceof MessageException) {
+          w.alert(((MessageException) e).getMessage());
           return;
         }
         if (e instanceof PollingConnectionRefused) {
@@ -1258,8 +1299,8 @@ public class Utils {
       username = username.trim();
     }
     String href = server.serverURL;
-    if(!href.endsWith("/")) {
-      href+="/";
+    if (!href.endsWith("/")) {
+      href += "/";
     }
     final WindowViewer w = Platform.getWindowViewer();
 
@@ -1302,7 +1343,7 @@ public class Utils {
         n = root.lastIndexOf('/');
         if (n == -1) {
           root = "";
-        } else if(n>0){
+        } else if (n > 0) {
           root = root.substring(0, n);
         }
         //root is root path for the server (e.g. if the url was https://ccp/mydomain/cerner the root would be cerner)
@@ -1483,7 +1524,7 @@ public class Utils {
     }
     iContainer rv = (iContainer) w.createViewer(w, reloginConfig);
     StackPaneViewer panel = (StackPaneViewer) rv.getWidget("reloginPanel");
-    iWidget reason = ((iContainer)panel.getViewer(0)).getWidget("reasonLabel");
+    iWidget reason = ((iContainer) panel.getViewer(0)).getWidget("reasonLabel");
     switch (type) {
       case TIMEOUT:
         reason.setValue(w.getString("bv.text.client_timedout"));
@@ -1869,7 +1910,7 @@ public class Utils {
       }
       try {
         if (isDemo()) {
-          // actionPath = new ActionPath("2");
+          // actionPath = new ActionPath("2", "vitals");
         }
         if (applicationLock != null) { //we are re-logging in 
           actionPath = applicationLock.actionPath;

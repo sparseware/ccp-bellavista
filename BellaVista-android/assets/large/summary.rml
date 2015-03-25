@@ -368,7 +368,7 @@ SplitPane {
                             width: "8ch"
                           }
                         }
-                      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onSummaryTableAction" ]
+                      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onSummaryTableAction", onDispose="class:Labs#onSummaryDispose" ]
                     }
                   }
                 }

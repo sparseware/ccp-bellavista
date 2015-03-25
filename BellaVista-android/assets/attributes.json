@@ -65,7 +65,16 @@
     "searchPageSize": 100,
     "photosThumbnailsURL": "/data/photos/thumbs/%s",
     "photosURL": "/data/photos/%s",
-    "patientLocatorClass": "",
+    "patientLocatorClass": "BluetoothBeaconLocator",
+    "beaconInfo": {
+    	"patientBeacons": [
+	    	"DB3D6645-E0EB-4E25-8AA6-29515E210496",
+	    	"0E7D80F7-592A-4EE1-A528-F7F178188371",
+	    	"B4D90800-9CA3-499A-BA46-474B8D47EDA5"
+    	],
+    	"locationsSignalColumn" : 1
+    	
+     },
     "barcodeReaderClass": "",
     "listCategories": [
       {
@@ -217,6 +226,7 @@
       }]
   },
   "vitalsInfo": {
+    "monitoringClass": "com.sparseware.bellavista.monitoring.SoteraVitalsMonitor",
     "hasReferenceRange": true,
     "dataPageSize": 3,
     "spreadSheetPageSize": 50,

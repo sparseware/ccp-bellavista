@@ -40,8 +40,6 @@ Application {
     summaryBackground=Color|white
     summaryHeaderForeground=Color|darkBorder-10
     summaryHeaderBackground=Color|darkBackground
-//    summaryHeaderBackground=Color|darkBackground
-	
 	
   	Rare.Chart.foreground=Color|clinicalPrompt
   	Rare.Chart.plotBackground=Color|"white,#dddddd"

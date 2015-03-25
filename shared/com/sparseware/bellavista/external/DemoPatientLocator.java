@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sparseware.bellavista;
+package com.sparseware.bellavista.external;
 
 import java.net.MalformedURLException;
-import java.util.List;
+import java.util.EventObject;
 
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.net.ActionLink;
-import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.util.ObjectHolder;
-import com.sparseware.bellavista.external.aPatientLocator;
+import com.sparseware.bellavista.Utils;
 
 public class DemoPatientLocator extends aPatientLocator{
 
@@ -37,7 +36,7 @@ public class DemoPatientLocator extends aPatientLocator{
 
  
   @Override
-  public void getNearbyPatients(final iFunctionCallback cb) {
+  public void getNearbyPatients(EventObject event,final iFunctionCallback cb) {
     WindowViewer w=Platform.getWindowViewer();
     iFunctionCallback mcb=new iFunctionCallback() {
       
@@ -70,7 +69,7 @@ public class DemoPatientLocator extends aPatientLocator{
     }, 200);
   }
   @Override
-  public void getNearbyLocations(iFunctionCallback cb) {
+  public void getNearbyLocations(EventObject event,iFunctionCallback cb) {
   }
 
   @Override
@@ -85,8 +84,32 @@ public class DemoPatientLocator extends aPatientLocator{
   }
 
   @Override
-  public List<RenderableDataItem> getUpdatedNearbyPatients() {
-    return null;
+  public void stopListeningForNearbyPatients() {
+  }
+
+  @Override
+  public void stopListeningForNearbyLocations() {
+  }
+
+  @Override
+  public void startListeningForNearbyPatients() {
+    Platform.invokeLater(new Runnable() {
+      
+      @Override
+      public void run() {
+        changeListener.stateChanged(new LocatorChangeEvent(DemoPatientLocator.this,LocatorChangeType.PATIENTS));
+      }
+    });
+  }
+
+  @Override
+  public void startListeningForNearbyLocations() {
+  }
+
+  @Override
+  public void ignoreEvent(EventObject e) {
+    // TODO Auto-generated method stub
+    
   }
 
 }

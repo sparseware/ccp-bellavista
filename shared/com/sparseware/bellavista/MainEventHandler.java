@@ -197,6 +197,9 @@ public class MainEventHandler implements iEventHandler {
 
   public void requestFocus(String eventName, iWidget widget, EventObject event) {
     String name = ((EventBase) event).getQueryString();
+    if("username".equals(name) && Platform.isTouchDevice()) {
+      return;
+    }
     iFormViewer fv = widget.getFormViewer();
     fv.getWidget(name).requestFocus();
   }

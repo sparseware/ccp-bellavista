@@ -360,10 +360,13 @@ public class Document extends aWorkerTask {
    *          the viewer to populate
    */
   public void loadAndPopulateViewer(final iContainer fv) {
+    final WindowViewer w=Platform.getWindowViewer();
     iFunctionCallback cb = new iFunctionCallback() {
 
       @Override
       public void finished(boolean canceled, Object returnValue) {
+        w.hideWaitCursor();
+        
         if (returnValue instanceof Exception) {
           Utils.handleError((Throwable) returnValue);
         } else {
@@ -371,6 +374,7 @@ public class Document extends aWorkerTask {
         }
       }
     };
+    w.showWaitCursor();
     load(cb);
   }
 
