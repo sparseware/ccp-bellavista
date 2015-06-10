@@ -205,9 +205,10 @@ public abstract class aChartHandler {
   }
 
   public void adjustForSize(ChartViewer cv) {
+    boolean cardstack=Utils.isCardStack();
     int oangle=cv.getDomainAxis().getAngle();
     boolean oshow=cv.getChartDefinition().isShowPlotLabels();
-    int angle=getDomainAngleBasedOnPlotSize(cv);
+    int angle=cardstack? 0 : getDomainAngleBasedOnPlotSize(cv);
     boolean show=shouldPlotLabelsBeVisible(cv);
     if(show!=oshow || angle!=oangle) {
       ChartDefinition cd=cv.getChartDefinition();
@@ -254,7 +255,7 @@ public abstract class aChartHandler {
         }
         count += mw*6;
         pointWidth = count;
-        series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, pointWidth);
+       series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, pointWidth);
       }
       return size.width > pointWidth;
     } else {
@@ -325,7 +326,7 @@ public abstract class aChartHandler {
     int min = 0;
     int max = 0;
     ChartViewer cv;
-    StackPaneViewer sp = (StackPaneViewer) fv.getWidget("chartPaneStack");
+    StackPaneViewer sp = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
     iViewer v = sp.getActiveViewer();
     if (v instanceof ChartViewer) {
       cv = (ChartViewer) v;
@@ -480,7 +481,7 @@ public abstract class aChartHandler {
    *          points)
    */
   public void zoom(iContainer fv, boolean in) {
-    StackPaneViewer sp = (StackPaneViewer) fv.getWidget("chartPaneStack");
+    StackPaneViewer sp = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
     iViewer v = sp.getActiveViewer();
     if (v instanceof ChartViewer) {
       zoom((ChartViewer) v, in, true);
@@ -519,7 +520,7 @@ public abstract class aChartHandler {
     JSONObject o = chartsInfo.optJSONObject(key);
     Map<String, String> attrs = o == null ? Collections.EMPTY_MAP : o.getObjectMap();
 
-    boolean gray = Utils.getPreferences().getBoolean("gray_charts", false);
+    boolean gray = Utils.isCardStack() || Utils.getPreferences().getBoolean("gray_charts", false);
 
     cfg.showLegends.setValue(false);
     cfg.autoSort.setValue(true);
@@ -536,6 +537,9 @@ public abstract class aChartHandler {
 
     cfg.domainAxis.valueContext.setValue((s == null) ? "|M/d@HH:mm' '" : s);
     s = attrs.get("domain");
+    if(Utils.isCardStack()) {
+      s="";
+    }
     cfg.domainAxis.spot_setAttribute("label", (s == null) ? "Date" : s);
     s = attrs.get("chartType");
 
@@ -557,7 +561,7 @@ public abstract class aChartHandler {
     } else {
       s = (cfg.chartType.intValue() == Chart.CChartType.line) ? "lineChartColor" : "barChartColor";
     }
-    cfg.rangeAxis.setValue(series.getTitle());
+    cfg.rangeAxis.setValue(getRangeTitle(series.getTitle()));
     cfg.rangeAxis.getGridCellReference().bgColor.setValue(s);
 
     if (s.indexOf(',') != -1) {
@@ -589,6 +593,12 @@ public abstract class aChartHandler {
 
     JSONObject o = chartsInfo.optJSONObject(key);
     return o == null ? "line" : o.optString("chartType", "line");
+  }
+
+  protected String getRangeTitle(String title) {
+
+    JSONObject o = chartsInfo.optJSONObject("shortNamesMap");
+    return o == null ? title : o.optString(title, title);
   }
 
   protected static Number createNumber(String type, String value) {

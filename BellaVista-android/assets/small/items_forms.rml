@@ -1,0 +1,159 @@
+Form {
+  templateName: "bv.stackpane.card"
+  local: false
+  layout: forms
+  rows: "d:g,d"
+  columns: "d:g"
+  widgets {
+    {
+      Form {
+        name: "itemsForm"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        layout: forms
+        rows: "[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g"
+        columns: "[10dlu,d]:g,[10dlu,d]:g"
+        widgets {
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "0"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "1"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "2"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "2"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "3"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "3"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "4"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "4"
+              }
+              wordWrap: true
+            }
+          }
+        }
+      }
+    }
+    {
+      Label {
+        name: "tapLabel"
+        verticalAlign: full
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        fgColor: "clinicalPrompt"
+        textHAlignment: center
+        textVAlignment: bottom
+        value: "{resource:bv.text.tap_to_see_details}"
+      }
+    }
+  }
+} [ onKeyUp="class:CardStack#onKeyUpEvent", onClick="class:CardStack#onTapEvent", onFling="class:CardStack#onFlingEvent",
+    onChange="class:CardStack#onChangeEvent"]

@@ -117,15 +117,13 @@ GroupBox {
           y: "5"
           height: "2ln"
         }
-        focusable: true
         customProperties: "android:focusable=true"
         value: "{resource:bv.text.enter_patient_identifier}"
-        wordWrap: true
-      } [ onShown="class:PatientSelect#onShownIdentifierLabel" ]
+      } [ onShown="class:PatientSelect#onIdentifierLabelShown" ]
     }
     {
       PushButton {
-        name: "barcodeButton"
+        name: "bv.action.scan_barcode"
         columnSpan: 3
         verticalAlign: center
         horizontalAlign: center
@@ -134,13 +132,11 @@ GroupBox {
           y: "3"
           width: "-1" [ min="12ch" ]
         }
-        value: "{resource:bv.text.scan_barcode}"
-        icon: "resource:bv.icon.barcode"
-      } [ onAction="class:PatientSelect#onBarcodeButtonAction" ]
+      }
     }
     {
       PushButton {
-        name: "nearbyButton"
+        name: "bv.action.nearby_patients"
         columnSpan: 3
         verticalAlign: center
         horizontalAlign: center
@@ -149,9 +145,7 @@ GroupBox {
           y: "1"
           width: "-1" [ min="12ch" ]
         }
-        value: "{resource:bv.text.nearby}"
-        icon: "resource:bv.icon.antenna"
-      } [ onAction="class:PatientSelect#onNearbyButtonAction" ]
+      } 
     }
   }
 } [ onConfigure="class:PatientSelect#onSearchFormConfigure", onUnload="class:PatientSelect#onSearchFormUnloaded" ]

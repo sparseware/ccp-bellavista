@@ -467,7 +467,7 @@ GridPane {
                               }
                             }
                           }
-                        } [ onCreated="class:SummaryVitalsHandler#onCreated", onClick="class:Vitals#onSummaryClick" ]
+                        } [ onCreated="class:Summary#onCreated", onClick="class:Vitals#onSummaryClick" ]
                       }
                     }
                     {

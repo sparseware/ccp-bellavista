@@ -20,6 +20,7 @@ SplitPane {
                   name: "summary_allergies"
                   dataURL: "collection:allergies"
                   templateName: "bv.table.summary"
+                  selectionMode: none
                   columns {
                     {
                       title: "{resource:bv.text.allergen}"
@@ -38,6 +39,7 @@ SplitPane {
               viewer {
                 Table {
                   name: "summary_problems"
+                  selectionMode: none
                   borders {
                     matte [ insets="1,0,0,0", color="darkBorder" ]
                   }
@@ -242,7 +244,7 @@ SplitPane {
                           bgColor: "lightBackground,lightBackground-10"
                           gridLine: none
                         }
-                      } [ onCreated="class:SummaryVitalsHandler#onCreated", onClick="class:Vitals#onSummaryClick" ]
+                      } [ onCreated="class:Summary#onCreated", onClick="class:Vitals#onSummaryClick" ]
                     }
                   }
                 } [ onClick="class:Vitals#onSummaryClick" ]
@@ -272,6 +274,7 @@ SplitPane {
                   name: "summary_reminders"
                   dataURL: "/hub/main/patient/alerts" [ columnSeparator="^", ldSeparator="|" ]
                   templateName: "bv.table.summary"
+		          selectionMode: none
                   columns {
                     {
                       title: "{resource:bv.text.clinical_event}"

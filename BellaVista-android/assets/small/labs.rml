@@ -1,0 +1,117 @@
+Form {
+  templateName: "bv.stackpane.card"
+  title: "{resource:bv.text.labs}"
+  name: "labs"
+  local: false
+  layout: forms
+  rows: "d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      TreeTable {
+        name: "labsTable"
+        verticalAlign: full
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        visible: false
+        dataURL: "/hub/main/labs/list" [ columnSeparator="^", ldSeparator="|" ]
+        templateName: "bv.table.data"
+      } [ onCreated="class:Labs#onTableCreated", onFinishedLoading="class:Labs#onFinishedLoading" ]
+    }
+    {
+      Form {
+        name: "trends"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        layout: forms
+        rows: "[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g"
+        columns: "[10dlu,d]:g,2dluX,[10dlu,d]:g"
+        widgets {
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "1"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "2"
+                y: "1"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "2"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "2"
+                y: "2"
+              }
+              iconPosition: right_justified
+              wordWrap: true
+            }
+          }
+        }
+      }
+    }
+  }
+} [ onCreated="class:Labs#onCreated", onKeyUp="class:CardStack#onKeyUpEvent", onClick="class:CardStack#onTapEvent", onFling="class:CardStack#onFlingEvent",
+	onDispose="class:Labs#onDispose"]

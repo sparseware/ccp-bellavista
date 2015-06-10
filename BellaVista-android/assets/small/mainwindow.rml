@@ -1,0 +1,75 @@
+MainWindow {
+  title: "BellaVista"
+  bounds {
+    width: "640"
+    height: "360"
+  }
+  templateURL: "/template.rml" [ cache="true" ]
+  icon: "resource:bv_icon"
+  menuBar {
+    title: "BellaVista"
+    icon: "resource:bv_icon"
+  } [ installAsActionBar="true" ]
+  viewer {
+    StackPane {
+      viewers {
+        {
+          Form {
+            name: "logonPanel"
+            borders {
+              line [ cornerArc="10", color="#ffffff@10" ]
+            }
+            verticalAlign: center
+            horizontalAlign: center
+            local: false
+            layout: forms
+            rows: "14dluY,d,14dluY,2dluY,d,12dluY,d"
+            columns: "14dluX,d,2dluX,d:g,14dluX"
+            widgets {
+              {
+                Label {
+                  columnSpan: 3
+                  verticalAlign: full
+                  horizontalAlign: full
+                  bounds {
+                    x: "1"
+                    y: "1"
+                    width: "15ch"
+                  }
+                  icon: "resource:bv.launcher"
+                  value: "{resource:bv.text.welcome}"
+                  wordWrap: true
+                }
+              }
+              {
+                Label {
+                  bounds {
+                    x: "3"
+                    y: "4"
+                    width: "20ch"
+                  }
+                  value: "{resource:bv.text.cardstack.enter_pin_on_device}"
+                  wordWrap: true
+                }
+              }
+              {
+                Label {
+                  name: "pinValue"
+                  font {
+                    size: "+4"
+                  }
+                  bounds {
+                    x: "3"
+                    y: "6"
+                  }
+                  value: "1234"
+                  textHAlignment: center
+                } [ onConfigure="class:CardStack#onConfigurePinValue" ]
+              }
+            }
+          }
+        }
+      }
+    } [ onConfigure="class:Settings#onEvent", onKeyUp="class:MainEventHandler#onCardStackLogin", onClick="class:MainEventHandler#onCardStackLogin" ]
+  }
+}

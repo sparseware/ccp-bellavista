@@ -36,6 +36,7 @@ ToolBar {
           Table {
             dataURL: "collection:alerts"
             templateName: "bv.table.summary"
+            selectionMode: none
             visibleRowCount: 5
             columns {
               {
@@ -78,6 +79,7 @@ ToolBar {
           Table {
             dataURL: "collection:problems"
             templateName: "bv.table.summary"
+            selectionMode: none
             visibleRowCount: 5
             columns {
               {
@@ -98,6 +100,7 @@ ToolBar {
           Table {
             dataURL: "collection:allergies"
             templateName: "bv.table.summary"
+            selectionMode: none
             visibleRowCount: 5
             columns {
               {

@@ -33,13 +33,16 @@
 		163A81D31A74276F002C5FB4 /* Vitals.m in Sources */ = {isa = PBXBuildFile; fileRef = 163A81CC1A74276F002C5FB4 /* Vitals.m */; };
 		163F3BD919CBC9070018395B /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 163F3BD719CBC9070018395B /* libCorePlot-CocoaTouch.a */; };
 		163F3BDA19CBC9070018395B /* libjre_emul.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 163F3BD819CBC9070018395B /* libjre_emul.a */; };
-		164BFB1E1A4DCD6800DB8546 /* SummaryVitalsHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 164BFB1D1A4DCD6800DB8546 /* SummaryVitalsHandler.m */; };
 		164BFB4A1A50C82100DB8546 /* aChartHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 164BFB471A50C82100DB8546 /* aChartHandler.m */; };
 		164BFB4B1A50C82100DB8546 /* ClinicalValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 164BFB491A50C82100DB8546 /* ClinicalValue.m */; };
 		164BFB5B1A50D27000DB8546 /* TrendPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 164BFB5A1A50D27000DB8546 /* TrendPanel.m */; };
 		166E288A1A97F59300F5FDB9 /* Settings.m in Sources */ = {isa = PBXBuildFile; fileRef = 166E28891A97F59300F5FDB9 /* Settings.m */; };
 		168BE2BF1A79639000D26F12 /* ResultsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 168BE2BE1A79639000D26F12 /* ResultsView.m */; };
 		168BE2C41A7B086700D26F12 /* ActionPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 168BE2C31A7B086700D26F12 /* ActionPath.m */; };
+		16AF71D51B2653FF00BA569D /* CardStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AF71CD1B2653FF00BA569D /* CardStack.m */; };
+		16AF71D61B2653FF00BA569D /* CardStackCollectionActionListener.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AF71CF1B2653FF00BA569D /* CardStackCollectionActionListener.m */; };
+		16AF71D71B2653FF00BA569D /* CardStackUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AF71D11B2653FF00BA569D /* CardStackUtils.m */; };
+		16AF71D81B2653FF00BA569D /* Summary.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AF71D41B2653FF00BA569D /* Summary.m */; };
 		16BC9C341A49F84100EAFFD1 /* aEventHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 16BC9C271A49F84100EAFFD1 /* aEventHandler.m */; };
 		16BC9C351A49F84100EAFFD1 /* iValueChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 16BC9C291A49F84100EAFFD1 /* iValueChecker.m */; };
 		16BC9C361A49F84100EAFFD1 /* Labs.m in Sources */ = {isa = PBXBuildFile; fileRef = 16BC9C2B1A49F84100EAFFD1 /* Labs.m */; };
@@ -127,8 +130,6 @@
 		163A81CC1A74276F002C5FB4 /* Vitals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vitals.m; sourceTree = "<group>"; };
 		163F3BD719CBC9070018395B /* libCorePlot-CocoaTouch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libCorePlot-CocoaTouch.a"; path = "../../../../sdk/lib/apple/libCorePlot-CocoaTouch.a"; sourceTree = "<group>"; };
 		163F3BD819CBC9070018395B /* libjre_emul.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjre_emul.a; path = ../../../../sdk/lib/apple/libjre_emul.a; sourceTree = "<group>"; };
-		164BFB1C1A4DCD6800DB8546 /* SummaryVitalsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SummaryVitalsHandler.h; sourceTree = "<group>"; };
-		164BFB1D1A4DCD6800DB8546 /* SummaryVitalsHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SummaryVitalsHandler.m; sourceTree = "<group>"; };
 		164BFB461A50C82100DB8546 /* aChartHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aChartHandler.h; sourceTree = "<group>"; };
 		164BFB471A50C82100DB8546 /* aChartHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aChartHandler.m; sourceTree = "<group>"; };
 		164BFB481A50C82100DB8546 /* ClinicalValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClinicalValue.h; sourceTree = "<group>"; };
@@ -141,6 +142,15 @@
 		168BE2BE1A79639000D26F12 /* ResultsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultsView.m; sourceTree = "<group>"; };
 		168BE2C21A7B086700D26F12 /* ActionPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionPath.h; sourceTree = "<group>"; };
 		168BE2C31A7B086700D26F12 /* ActionPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionPath.m; sourceTree = "<group>"; };
+		16AF71CC1B2653FF00BA569D /* CardStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardStack.h; sourceTree = "<group>"; };
+		16AF71CD1B2653FF00BA569D /* CardStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardStack.m; sourceTree = "<group>"; };
+		16AF71CE1B2653FF00BA569D /* CardStackCollectionActionListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardStackCollectionActionListener.h; sourceTree = "<group>"; };
+		16AF71CF1B2653FF00BA569D /* CardStackCollectionActionListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardStackCollectionActionListener.m; sourceTree = "<group>"; };
+		16AF71D01B2653FF00BA569D /* CardStackUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardStackUtils.h; sourceTree = "<group>"; };
+		16AF71D11B2653FF00BA569D /* CardStackUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardStackUtils.m; sourceTree = "<group>"; };
+		16AF71D21B2653FF00BA569D /* CollectionActionListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionActionListener.h; sourceTree = "<group>"; };
+		16AF71D31B2653FF00BA569D /* Summary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Summary.h; sourceTree = "<group>"; };
+		16AF71D41B2653FF00BA569D /* Summary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Summary.m; sourceTree = "<group>"; };
 		16BC9C261A49F84100EAFFD1 /* aEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aEventHandler.h; sourceTree = "<group>"; };
 		16BC9C271A49F84100EAFFD1 /* aEventHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aEventHandler.m; sourceTree = "<group>"; };
 		16BC9C281A49F84100EAFFD1 /* iValueChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iValueChecker.h; sourceTree = "<group>"; };
@@ -251,6 +261,15 @@
 		16BC9C251A49F84100EAFFD1 /* bellavista */ = {
 			isa = PBXGroup;
 			children = (
+				16AF71CC1B2653FF00BA569D /* CardStack.h */,
+				16AF71CD1B2653FF00BA569D /* CardStack.m */,
+				16AF71CE1B2653FF00BA569D /* CardStackCollectionActionListener.h */,
+				16AF71CF1B2653FF00BA569D /* CardStackCollectionActionListener.m */,
+				16AF71D01B2653FF00BA569D /* CardStackUtils.h */,
+				16AF71D11B2653FF00BA569D /* CardStackUtils.m */,
+				16AF71D21B2653FF00BA569D /* CollectionActionListener.h */,
+				16AF71D31B2653FF00BA569D /* Summary.h */,
+				16AF71D41B2653FF00BA569D /* Summary.m */,
 				161705E61AC100EA001CE3D8 /* MessageException.h */,
 				161705E71AC100EA001CE3D8 /* MessageException.m */,
 				16CF83621AA2615B00A19C2F /* Consults.h */,
@@ -292,8 +311,6 @@
 				164BFB471A50C82100DB8546 /* aChartHandler.m */,
 				164BFB481A50C82100DB8546 /* ClinicalValue.h */,
 				164BFB491A50C82100DB8546 /* ClinicalValue.m */,
-				164BFB1C1A4DCD6800DB8546 /* SummaryVitalsHandler.h */,
-				164BFB1D1A4DCD6800DB8546 /* SummaryVitalsHandler.m */,
 				16BC9C261A49F84100EAFFD1 /* aEventHandler.h */,
 				16BC9C271A49F84100EAFFD1 /* aEventHandler.m */,
 				16BC9C281A49F84100EAFFD1 /* iValueChecker.h */,
@@ -458,12 +475,12 @@
 				16BC9C361A49F84100EAFFD1 /* Labs.m in Sources */,
 				164BFB4B1A50C82100DB8546 /* ClinicalValue.m in Sources */,
 				16FD5D0A191EBA4B00CE456D /* main.m in Sources */,
+				16AF71D61B2653FF00BA569D /* CardStackCollectionActionListener.m in Sources */,
 				163A81CE1A74276F002C5FB4 /* Document.m in Sources */,
 				161906651A84434D000C604E /* PickList.m in Sources */,
 				164BFB5B1A50D27000DB8546 /* TrendPanel.m in Sources */,
 				16BC9C371A49F84100EAFFD1 /* MainEventHandler.m in Sources */,
 				1619065B1A84434D000C604E /* CareTeam.m in Sources */,
-				164BFB1E1A4DCD6800DB8546 /* SummaryVitalsHandler.m in Sources */,
 				161705E51AC100CE001CE3D8 /* RemoteMonitorEventHandler.m in Sources */,
 				1619065D1A84434D000C604E /* DefaultImageViewer.m in Sources */,
 				161705E01AC100CE001CE3D8 /* aBeaconLocatorSupport.m in Sources */,
@@ -471,6 +488,7 @@
 				1619065A1A84434D000C604E /* Actions.m in Sources */,
 				16BC9C381A49F84100EAFFD1 /* OrderManager.m in Sources */,
 				16BC9C351A49F84100EAFFD1 /* iValueChecker.m in Sources */,
+				16AF71D71B2653FF00BA569D /* CardStackUtils.m in Sources */,
 				161906611A84434D000C604E /* aBarcodeReader.m in Sources */,
 				161705D11AC100B2001CE3D8 /* BVBeaconMonitor.m in Sources */,
 				161906621A84434D000C604E /* aCommunicationHandler.m in Sources */,
@@ -478,9 +496,11 @@
 				163A81CD1A74276F002C5FB4 /* aResultsManager.m in Sources */,
 				161906601A84434D000C604E /* aAttachmentHandler.m in Sources */,
 				168BE2C41A7B086700D26F12 /* ActionPath.m in Sources */,
+				16AF71D51B2653FF00BA569D /* CardStack.m in Sources */,
 				16FD5D08191EBA4B00CE456D /* AppDelegate.m in Sources */,
 				161906641A84434D000C604E /* aRemoteMonitor.m in Sources */,
 				163A81D31A74276F002C5FB4 /* Vitals.m in Sources */,
+				16AF71D81B2653FF00BA569D /* Summary.m in Sources */,
 				16BC9C341A49F84100EAFFD1 /* aEventHandler.m in Sources */,
 				161705E31AC100CE001CE3D8 /* DemoBarcodeReader.m in Sources */,
 				161705DF1AC100CE001CE3D8 /* aBeaconLocator.m in Sources */,

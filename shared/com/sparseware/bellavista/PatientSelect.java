@@ -37,11 +37,12 @@ import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.net.ActionLink.RequestMethod;
 import com.appnativa.rare.scripting.Functions;
+import com.appnativa.rare.spot.StackPane;
 import com.appnativa.rare.spot.TabPane;
 import com.appnativa.rare.spot.Table;
-import com.appnativa.rare.ui.ActionBar;
 import com.appnativa.rare.ui.ColorUtils;
 import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.UICompoundIcon;
 import com.appnativa.rare.ui.UIImage;
 import com.appnativa.rare.ui.UIImageIcon;
 import com.appnativa.rare.ui.UIMenuItem;
@@ -92,48 +93,50 @@ import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeType;
  * @author Don DeCoteau
  */
 public class PatientSelect implements iEventHandler, iChangeListener {
-  public static final int      ADMIT_DATE  = 6;
-  public static final int      ADMIT_DX    = 7;
-  public static final int      DOB         = 2;
-  public static final int      DOCTOR      = 5;
-  public static final int      GENDER      = 3;
-  public static final int      ID          = 0;
-  public static final int      LOCATION    = 8;
-  public static final int      MRN         = 4;
-  public static final int      NAME        = 1;
-  public static final int      PHOTO       = 10;
-  public static final int      SIGNAL      = 11;
-  public static final int      RM_BED      = 9;
-  static String                lastPatientID;
-  static String                lastTabName;
-  TableViewer                  patientsTable;
-  iWidget                      locatorWidget;
-  aPatientLocator              patientLocator;
-  aBarcodeReader               barcodeReader;
-  static iPlatformIcon         signalIcons[];
-  public static UILineBorder   photoBorder;
-  public static UIImageIcon    noPhotoIcon;
-  private static CharSequence  actionBarTitle;
-  private static iPlatformIcon actionBarIcon;
-  Class                        barcodeReaderClass;
-  Class                        patientLocatorClass;
-  RenderableDataItem           patientListLoaded;
-  RenderableDataItem           noPatientsFound;
-  RenderableDataItem           noPatientListLoaded;
-  RenderableDataItem           searchingForPatients;
-  boolean                      autoShowDefaultList;
-  ArrayList<ActionLink>        pagingStack = new ArrayList<ActionLink>();
-  ActionLink                   pagingNext;
-  String                       nextHREF;
-  int                          searchPageSize;
+  public static final int            ADMIT_DATE             = 6;
+  public static final int            ADMIT_DX               = 7;
+  public static final int            DOB                    = 2;
+  public static final int            DOCTOR                 = 5;
+  public static final int            GENDER                 = 3;
+  public static final int            ID                     = 0;
+  public static final int            LOCATION               = 8;
+  public static final int            MRN                    = 4;
+  public static final int            NAME                   = 1;
+  public static final int            PHOTO                  = 10;
+  public static final int            SIGNAL                 = 11;
+  public static final int            RM_BED                 = 9;
+  static String                      lastPatientID;
+  static String                      lastTabName;
+  TableViewer                        patientsTable;
+  iWidget                            locatorWidget;
+  aPatientLocator                    patientLocator;
+  aBarcodeReader                     barcodeReader;
+  static iPlatformIcon               signalIcons[];
+  public static UILineBorder         photoBorder;
+  public static UIImageIcon          noPhotoIcon;
+  Class                              barcodeReaderClass;
+  Class                              patientLocatorClass;
+  RenderableDataItem                 patientListLoaded;
+  RenderableDataItem                 noPatientsFound;
+  RenderableDataItem                 noPatientListLoaded;
+  RenderableDataItem                 searchingForPatients;
+  boolean                            autoShowDefaultList;
+  ArrayList<ActionLink>              pagingStack            = new ArrayList<ActionLink>();
+  ActionLink                         pagingNext;
+  String                             nextHREF;
+  int                                searchPageSize;
+  CardPatientSelectionActionListener psActionListener;
+  private UIPopupMenu selectionMenu;
+  static final String                PATIENT_SELECTION_TYPE = "pt_selection_type";
+  static final String                PATIENT_SELECT_PAGE    = "pt_select_paage";
+  static final String                PATIENT_SELECT         = "pt_select_patient";
   static {
     signalIcons = new iPlatformIcon[5];
     for (int i = 0; i < 4; i++) {
       signalIcons[i] = Platform.getResourceAsIcon("bv.icon.signal" + (i + 1));
     }
     signalIcons[4] = Platform.getResourceAsIcon("bv.icon.signal");
-    photoBorder = new UILineBorder(ColorUtils.getColor("darkBorder"), UIScreen.platformPixelsf(1.25f),
-        UIScreen.PLATFORM_PIXELS_6);
+    photoBorder = new UILineBorder(ColorUtils.getColor("darkBorder"), UIScreen.platformPixelsf(1.25f), UIScreen.PLATFORM_PIXELS_6);
     noPhotoIcon = (UIImageIcon) Platform.getResourceAsIcon("bv.icon.no_photo");
     noPhotoIcon.setImageBorder(photoBorder);
 
@@ -174,7 +177,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     patientListLoaded.setEnabled(false);
     noPatientListLoaded = new RenderableDataItem();
     noPatientListLoaded.setEnabled(false);
-    noPatientsFound = Utils.createDisabledTableRow("bv.text.no_patients_found",1);
+    noPatientsFound = Utils.createDisabledTableRow("bv.text.no_patients_found", 1);
   }
 
   /**
@@ -196,7 +199,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
             w.beep();
           }
           if (returnValue instanceof Throwable) {
-            w.alert(ApplicationException.getMessageEx((Throwable) returnValue));
+            Utils.alert(ApplicationException.getMessageEx((Throwable) returnValue));
           } else {
             if (returnValue == null) {
               returnValue = Collections.EMPTY_LIST;
@@ -232,12 +235,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   /**
-   * Called when the barcode button is pressed.
+   * Called when the patient selection from is created
    */
-  public void onChangePatient(String eventName, final iWidget widget, EventObject event) {
-
-  }
-
   public void onCreated(String eventName, iWidget widget, EventObject event) {
     if (patientLocatorClass != null) {
       try {
@@ -254,12 +253,22 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         Platform.ignoreException("faled to instantiate barcode reader", e);
       }
     }
+    if(Utils.isCardStack()) {
+      StackPane cfg = (StackPane) ((DataEvent) event).getData();
+      selectionMenu = new UIPopupMenu(Platform.getWindowViewer(), cfg.getPopupMenu());
+      cfg.setPopupMenu(null);
+    }
   }
 
   /**
    * Called when the patient selection view is disposed
    */
   public void onDispose(String eventName, iWidget widget, EventObject event) {
+    if(Utils.isCardStack()) {
+      if(patientsTable != null) {
+        patientsTable.dispose();
+      }
+    }
     patientsTable = null;
     if (patientLocator != null) {
       patientLocator.dispose();
@@ -270,10 +279,22 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     barcodeReader = null;
     patientLocator = null;
     locatorWidget = null;
+    psActionListener = null;
   }
 
   @Override
   public void onEvent(String eventName, iWidget widget, EventObject event) {
+  }
+
+  /**
+   * Called when the patient identifier field is shown. On android we will give
+   * it focus. This will prevent the text field from automatically gaining focus
+   * if the find nearby and bar code buttons are disabled
+   */
+  public void onIdentifierLabelShown(String eventName, final iWidget widget, EventObject event) {
+    if (Platform.isAndroid()) {
+      widget.requestFocus();
+    }
   }
 
   /**
@@ -314,9 +335,17 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   /**
+   * Called when the most recent action is invoked
+   */
+  public void onMostRecentAction(String eventName, iWidget widget, EventObject event) {
+    loadPatientList(patientsTable, Utils.createLink(patientsTable, "/hub/main/util/patients/most_recent", true), null, null);
+
+  }
+
+  /**
    * Called when the nearby patients button is pressed.
    */
-  public void onNearbyButtonAction(String eventName, final iWidget widget, EventObject event) {
+  public void onNearbyPatientsAction(String eventName, final iWidget widget, EventObject event) {
     iContainer fv = (iContainer) Platform.getWindowViewer().getViewer("patientSelectionForm");
     aGroupableButton pb = (aGroupableButton) fv.getWidget("signalButton");
     if (pb != null && !pb.isVisible()) {
@@ -435,7 +464,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   public void onPatientsTableCreated(String eventName, final iWidget widget, EventObject event) {
     Table table = (Table) ((DataEvent) event).getData();
-    float px = UIScreen.toPlatformPixelHeight("2ln", null, 0,false);
+    float px = UIScreen.toPlatformPixelHeight("2ln", null, 0, false);
     float px54 = UIScreen.platformPixelsf(54);
     if (px < px54) {
       table.rowHeight.setValue("54");
@@ -452,12 +481,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
   }
 
+
   /**
    * Called to configure the search form form
    */
   public void onSearchFormConfigure(String eventName, iWidget widget, EventObject event) {
     iFormViewer fv = widget.getFormViewer();
-    aGroupableButton pb = (aGroupableButton) fv.getWidget("barcodeButton");
+    aGroupableButton pb = (aGroupableButton) fv.getWidget("bv.action.scan_barcode");
     if (pb != null) {
       if (barcodeReader != null) {
         iPlatformIcon icon = barcodeReader.getButtonIcon();
@@ -473,7 +503,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         pb.setEnabled(false);
       }
     }
-    pb = (aGroupableButton) fv.getWidget("nearbyButton");
+    pb = (aGroupableButton) fv.getWidget("bv.action.nearby_patients");
     if (pb != null) {
       if (patientLocator != null) {
         pb.setEnabled(patientLocator.isNearbyPatientsSupported());
@@ -491,95 +521,65 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void onSearchFormUnloaded(String eventName, final iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
   }
-
+  
   /**
-   * Called to configure the selection form
+   * Called after the selection form has been configured
    */
   public void onSelectionFormConfigure(String eventName, final iWidget widget, EventObject event) {
+    boolean cardStack = Utils.isCardStack();
     WindowViewer w = Platform.getWindowViewer();
     iFormViewer fv = widget.getFormViewer();
-    final aGroupableButton pb = (aGroupableButton) fv.getWidget("patient");
-    UIPopupMenu pm = pb.getPopupMenu();
     patientsTable = (TableViewer) fv.getWidget("patientsTable");
-    String format = w.getString("bv.format.text.goto");
-    int len = pm.size();
-    iActionListener al = new MenuActionListener();
-    for (int i = 0; i < len; i++) {
-      UIMenuItem mi = pm.getMenuItem(i);
-      String name = mi.getName();
-      String s = w.getString("bv.text." + name);
-      mi.setText(Functions.format(format, s));
-      mi.setActionListener(al);
-    }
-    if (!UIScreen.isLargeScreen()) {
-      aGroupableButton pb2 = (aGroupableButton) fv.getWidget("smallBarcodeButton");
-      if (pb2 != null) {
-        if (barcodeReader != null) {
-          iPlatformIcon icon = barcodeReader.getButtonIcon();
-          if (icon != null) {
-            pb2.setIcon(icon);
-          }
-          String text = barcodeReader.getButtonText();
-          if (text != null) {
-            pb2.setText(text);
-          }
-          pb2.setEnabled(barcodeReader.isReaderAvailable());
-        } else {
-          pb2.setEnabled(false);
-        }
+    if (cardStack) {
+      if(patientsTable==null) { //to keep things simple we will create a hidden table so that code that relys on the table can be used
+        Table cfg = (Table)w.createConfigurationObject("Table", "bv.table.patients");
+        cfg.spot_clearAttributes(); //remove event handlers so that they are not called
+        patientsTable = (TableViewer) w.createWidget(cfg);
       }
-      pb2 = (aGroupableButton) fv.getWidget("signalButton");
-      if (pb2 != null) {
-        UIImage sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
-        UISpriteIcon icon = new UISpriteIcon(sprite);
-        icon.setFrozen(true);
-        pb2.setIcon(icon);
-        pb2.setEnabled(patientLocator != null && patientLocator.isNearbyPatientsSupported());
-      }
-
-    }
-  }
-
-  /**
-   * Called when the patient identifier field is shown. On android we will give
-   * it focus. This will prevent the text field from automatically gaining focus
-   * if the find nearby and bar code buttons are disabled
-   */
-  public void onShownIdentifierLabel(String eventName, final iWidget widget, EventObject event) {
-    if (Platform.isAndroid()) {
-      widget.requestFocus();
-    }
-  }
-
-  /**
-   * Called when the signal button is clicked. We will stop updating the list
-   * via the patient locator
-   */
-  public void onSignalButtonAction(String eventName, iWidget widget, EventObject event) {
-    patientLocator.stopListeningForNearbyPatients();
-    aGroupableButton pb = (aGroupableButton) widget;
-    UISpriteIcon icon = (UISpriteIcon) pb.getIcon();
-    if (UIScreen.isLargeScreen()) {
-      stopListeningForNearbyPatients();
+      final StackPaneViewer sp=(StackPaneViewer)widget;
+      CardStackUtils.createListItemsViewer(sp, null, null, selectionMenu, null,true, false);
+      StackPane cfg = (StackPane) ((DataEvent) event).getData();
+      final int n=cfg.selectedIndex.intValue();
+      sp.switchTo(n);
     } else {
-      if (icon.isFrozen()) {
-        StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
-        sp.switchTo(0);
-        showNearbyPatients(widget);
-        icon.setFrozen(false);
-      } else {
-        stopListeningForNearbyPatients();
+      final aGroupableButton pb = (aGroupableButton) fv.getWidget("patient");
+      UIPopupMenu pm = pb.getPopupMenu();
+      String format = w.getString("bv.format.goto");
+      int len = pm.size();
+      iActionListener al = new MenuActionListener();
+      for (int i = 0; i < len; i++) {
+        UIMenuItem mi = pm.getMenuItem(i);
+        String name = mi.getName();
+        String s = w.getString("bv.text." + name);
+        mi.setText(Functions.format(format, s));
+        mi.setActionListener(al);
       }
+      if (!UIScreen.isLargeScreen()) {
 
-    }
-  }
-
-  public void onTabPaneCreated(String eventName, iWidget widget, EventObject event) {
-    if (UIScreen.isLargeScreen()) {
-      if ((barcodeReader != null && barcodeReader.isReaderAvailable())
-          || (patientLocator != null && patientLocator.isNearbyPatientsSupported())) {
-        TabPane cfg = (TabPane) ((DataEvent) event).getData();
-        cfg.selectedIndex.setValue(1);
+        aGroupableButton pb2 = (aGroupableButton) fv.getWidget("bv.action.scan_barcode");
+        if (pb2 != null) {
+          if (barcodeReader != null) {
+            iPlatformIcon icon = barcodeReader.getButtonIcon();
+            if (icon != null) {
+              pb2.setIcon(icon);
+            }
+            String text = barcodeReader.getButtonText();
+            if (text != null) {
+              pb2.setText(text);
+            }
+            pb2.setEnabled(barcodeReader.isReaderAvailable());
+          } else {
+            pb2.setEnabled(false);
+          }
+        }
+        pb2 = (aGroupableButton) fv.getWidget("signalButton");
+        if (pb2 != null) {
+          UIImage sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
+          UISpriteIcon icon = new UISpriteIcon(sprite);
+          icon.setFrozen(true);
+          pb2.setIcon(icon);
+          pb2.setEnabled(patientLocator != null && patientLocator.isNearbyPatientsSupported());
+        }
       }
     }
   }
@@ -615,25 +615,26 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   /**
-   * Call by a toolbar button to show the stack pane form with the same name as
-   * the button
+   * Called when the signal button is clicked. We will stop updating the list
+   * via the patient locator
    */
-  public void showFormForButton(String eventName, iWidget widget, EventObject event) {
-    stopListeningForNearbyPatients();
-    WindowViewer w = widget.getAppContext().getWindowViewer();
-    iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
-    clearPreview(fv);
-    String name = widget.getName();
-    StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
-    if (name.equals("listsButton") && sp.isViewerLoaded(name)) {
-      iContainer c = (iContainer) sp.getViewer(name);
-      ComboBoxWidget cb = (ComboBoxWidget) c.getWidget("listCategories");
-      PatientList pl = (PatientList) cb.getSelectionData();
-      if (pl != null && pl.isContainsPatients()) {
-        cb.clearSelection();
+  public void onSignalButtonAction(String eventName, iWidget widget, EventObject event) {
+    patientLocator.stopListeningForNearbyPatients();
+    aGroupableButton pb = (aGroupableButton) widget;
+    UISpriteIcon icon = (UISpriteIcon) pb.getIcon();
+    if (UIScreen.isLargeScreen()) {
+      stopListeningForNearbyPatients();
+    } else {
+      if (icon.isFrozen()) {
+        StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
+        sp.switchTo(0);
+        showNearbyPatients(widget);
+        icon.setFrozen(false);
+      } else {
+        stopListeningForNearbyPatients();
       }
+
     }
-    sp.switchTo(name);
   }
 
   public void onSortByName(String eventName, iWidget widget, EventObject event) {
@@ -664,13 +665,52 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     table.sort(c);
   }
 
+  public void onTabPaneCreated(String eventName, iWidget widget, EventObject event) {
+    if (UIScreen.isLargeScreen()) {
+      if ((barcodeReader != null && barcodeReader.isReaderAvailable())
+          || (patientLocator != null && patientLocator.isNearbyPatientsSupported())) {
+        TabPane cfg = (TabPane) ((DataEvent) event).getData();
+        cfg.selectedIndex.setValue(1);
+      }
+    }
+  }
+
+  /**
+   * Called when the nearby patients button is pressed.
+   */
+  public void onVoiceSearchAction(String eventName, final iWidget widget, EventObject event) {
+
+  }
+
+  /**
+   * Call by a toolbar button to show the stack pane form with the same name as
+   * the button
+   */
+  public void showFormForButton(String eventName, iWidget widget, EventObject event) {
+    stopListeningForNearbyPatients();
+    WindowViewer w = widget.getAppContext().getWindowViewer();
+    iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
+    clearPreview(fv);
+    String name = widget.getName();
+    StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
+    if (name.equals("listsButton") && sp.isViewerLoaded(name)) {
+      iContainer c = (iContainer) sp.getViewer(name);
+      ComboBoxWidget cb = (ComboBoxWidget) c.getWidget("listCategories");
+      PatientList pl = (PatientList) cb.getSelectionData();
+      if (pl != null && pl.isContainsPatients()) {
+        cb.clearSelection();
+      }
+    }
+    sp.switchTo(name);
+  }
+
   @Override
   public void stateChanged(EventObject e) {
     LocatorChangeEvent ce = (LocatorChangeEvent) e;
-    if(ce.getChangeType()==LocatorChangeType.ACCESS_DENIED) {
+    if (ce.getChangeType() == LocatorChangeType.ACCESS_DENIED) {
       stopListeningForNearbyPatients();
       WindowViewer w = Platform.getWindowViewer();
-      w.alert(w.getString("bv.text.location_service_denied_access"));
+      Utils.alert(w.getString("bv.text.location_service_denied_access"));
       return;
     }
     iFunctionCallback cb = new iFunctionCallback() {
@@ -682,17 +722,16 @@ public class PatientSelect implements iEventHandler, iChangeListener {
             Utils.handleError((Throwable) returnValue);
           } else {
             try {
-              TableViewer table=patientsTable;
-              List<RenderableDataItem> list=(List<RenderableDataItem>) returnValue;
-              if(areSamePatientsInSameOrder(list,table)) {
-                int len=list.size();
-                for(int i=0;i<len;i++) {
-                  if(!list.get(i).get(SIGNAL).valueEquals(table.get(i).get(SIGNAL))) {
+              TableViewer table = patientsTable;
+              List<RenderableDataItem> list = (List<RenderableDataItem>) returnValue;
+              if (areSamePatientsInSameOrder(list, table)) {
+                int len = list.size();
+                for (int i = 0; i < len; i++) {
+                  if (!list.get(i).get(SIGNAL).valueEquals(table.get(i).get(SIGNAL))) {
                     table.rowChanged(i);
                   }
                 }
-              }
-              else {
+              } else {
                 patientsTable.setAll(processPatientsList(patientsTable, (List<RenderableDataItem>) returnValue, true));
               }
             } catch (Exception e) {
@@ -703,19 +742,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       }
     };
     patientLocator.getNearbyPatients(e, cb);
-  }
-
-  boolean areSamePatientsInSameOrder(List<RenderableDataItem> list, TableViewer table) {
-    int len=list.size();
-    if(table.size()!=len) {
-      return false;
-    }
-    for(int i=0;i<len;i++) {
-      if(!list.get(i).get(0).valueEquals(table.getValueAt(i, 0))) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /**
@@ -779,22 +805,24 @@ public class PatientSelect implements iEventHandler, iChangeListener {
               }
               List<RenderableDataItem> rows = (List<RenderableDataItem>) result;
               table.resetData(rows);
-              patientsTableUpdated(table, link);
+              patientsTableUpdated(table, link, empty);
+              if (!Utils.isCardStack()) {
 
-              StackPaneViewer sp = (StackPaneViewer) w.getWidget("selectionStack");
+                StackPaneViewer sp = (StackPaneViewer) w.getWidget("selectionStack");
 
-              if (empty) {
-                if (sp != null) {
-                  if (sp.getActiveViewerIndex() != 0) {
-                    w.alert(w.getString("bv.text.no_patients_found"));
+                if (empty) {
+                  if (sp != null) {
+                    if (sp.getActiveViewerIndex() != 0) {
+                      Utils.alert(w.getString("bv.text.no_patients_found"));
+                    }
                   }
+                } else {
+                  if (sp != null) {
+                    sp.switchTo(0);
+                  }
+                  table.setSelectedIndex(0);
+                  showPreview(table);
                 }
-              } else {
-                if (sp != null) {
-                  sp.switchTo(0);
-                }
-                table.setSelectedIndex(0);
-                showPreview(table);
               }
             } catch (Exception e) {
               Utils.handleError(e);
@@ -858,6 +886,99 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     return rows;
   }
 
+  /**
+   * Populates a patient preview form
+   *
+   * @param fv
+   *          the container for the preview form
+   * @param row
+   *          the row for the preview
+   *
+   * @throws Exception
+   */
+  protected void populatePreview(iContainer fv, RenderableDataItem row) {
+    WindowViewer w = Platform.getWindowViewer();
+
+    RenderableDataItem item = row.get(NAME);
+    String mrn = (String) row.get(MRN).getValue();
+
+    String s = (String) item.getLinkedData();
+
+    fv.getWidget("patient").setValue(s);
+
+    if ((mrn != null) && (mrn.length() > 0)) {
+      s += " (" + mrn + ")";
+    }
+
+    iWidget field = fv.getWidget("mrn");
+
+    if (field != null) {
+      field.setValue(mrn);
+    }
+
+    fv.getWidget("age_sex").setValue(row.get(DOB).getLinkedData());
+    item = row.get(ADMIT_DATE);
+    item.setType(RenderableDataItem.TYPE_DATETIME);
+    s = item.toString();
+    fv.getWidget("admit_date").setValue(s);
+
+    item = row.get(ADMIT_DX);
+    s = (String) item.getValue();
+    field = fv.getWidget("admit_dx");
+
+    if (field != null) {
+      field.setValue(s);
+    }
+
+    item = row.get(LOCATION);
+
+    String loc = item.toString();
+
+    if ((loc == null) || (loc == "")) {
+      loc = w.getString("bv.text.unknownLocation");
+    }
+
+    field = fv.getWidget("location");
+    if (field != null) {
+      field.setValue(loc);
+    }
+
+    item = row.get(RM_BED);
+    s = item.toString();
+
+    if ((s == null) || (s == "")) {
+      s = "";
+    }
+
+    field = fv.getWidget("rmbed");
+
+    if (field != null) {
+      field.setValue(s);
+    }
+    field = fv.getWidget("location_rm_bed");
+    if (field != null) {
+      if (s.length() > 0) {
+        field.setValue(w.getString("bv.format.location_rm_bed", loc, s));
+      } else {
+        field.setValue(loc);
+      }
+    }
+
+    s = (String) row.get(PHOTO).getValue();
+
+    ImagePaneViewer ip = (ImagePaneViewer) fv.getWidget("photo");
+
+    if (ip != null) {
+      UIImageIcon icon = (UIImageIcon) row.get(0).getIcon();
+      if (icon != null) {
+        ip.setImage(icon.getImage());
+      } else {
+        ip.setImage(null); // should never happen
+      }
+    }
+
+  }
+
   @SuppressWarnings("resource")
   protected List<RenderableDataItem> processPatientsList(final TableViewer widget, final List<RenderableDataItem> rows,
       boolean checkForSignal) throws IOException {
@@ -875,7 +996,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     String s;
     Date date;
     CharArray ca = new CharArray();
-    boolean small =!UIScreen.isLargeScreen();
+    boolean small = !UIScreen.isLargeScreen();
     CharArray sb = new CharArray(64);
 
     for (int i = len - 1; i >= 0; i--) {
@@ -964,8 +1085,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     locatorWidget = widget;
     patientLocator.setChangeListener(PatientSelect.this);
     patientLocator.startListeningForNearbyPatients();
-    if(searchingForPatients==null) {
-      searchingForPatients = Utils.createDisabledTableRow("bv.text.search_dots",1);
+    if (searchingForPatients == null) {
+      searchingForPatients = Utils.createDisabledTableRow("bv.text.search_dots", 1);
     }
     patientsTable.clear();
     patientsTable.add(searchingForPatients);
@@ -980,7 +1101,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * @throws Exception
    */
   protected void showPreview(TableViewer widget) {
-    WindowViewer w = Platform.getWindowViewer();
     RenderableDataItem row = widget.getSelectedItem();
     iContainer fv = widget.getFormViewer();
 
@@ -995,85 +1115,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
     patient.setEnabled(true);
     patient.setLinkedData(row);
-
-    RenderableDataItem item = row.get(NAME);
-    String mrn = (String) row.get(MRN).getValue();
-
-    String s = (String) item.getLinkedData();
-
-    fv.getWidget("patient").setValue(s);
-
-    if ((mrn != null) && (mrn.length() > 0)) {
-      s += " (" + mrn + ")";
-    }
-
-    iWidget field = fv.getWidget("mrn");
-
-    if (field != null) {
-      field.setValue(mrn);
-    }
-
-    fv.getWidget("age_sex").setValue(row.get(DOB).getLinkedData());
-    item = row.get(ADMIT_DATE);
-    item.setType(RenderableDataItem.TYPE_DATETIME);
-    s = item.toString();
-    fv.getWidget("admit_date").setValue(s);
-
-    item = row.get(ADMIT_DX);
-    s = (String) item.getValue();
-    field = fv.getWidget("admit_dx");
-
-    if (field != null) {
-      field.setValue(s);
-    }
-
-    item = row.get(LOCATION);
-
-    String loc = item.toString();
-
-    if ((loc == null) || (loc == "")) {
-      loc = w.getString("bv.text.unknownLocation");
-    }
-
-    field = fv.getWidget("location");
-    if (field != null) {
-      field.setValue(loc);
-    }
-
-    item = row.get(RM_BED);
-    s = item.toString();
-
-    if ((s == null) || (s == "")) {
-      s = "";
-    }
-
-    field = fv.getWidget("rmbed");
-
-    if (field != null) {
-      field.setValue(s);
-    }
-    field = fv.getWidget("location_rm_bed");
-    if (field != null) {
-      if (s.length() > 0) {
-        field.setValue(w.getString("bv.format.location_rm_bed", loc, s));
-      } else {
-        field.setValue(loc);
-      }
-    }
-
-    s = (String) row.get(PHOTO).getValue();
-
-    ImagePaneViewer ip = (ImagePaneViewer) fv.getWidget("photo");
-
-    if (ip != null) {
-      UIImageIcon icon = (UIImageIcon) row.get(0).getIcon();
-      if (icon != null) {
-        ip.setImage(icon.getImage());
-      } else {
-        ip.setImage(null); // should never happen
-      }
-    }
-
+    populatePreview(fv, row);
   }
 
   private iFilter createPatientNameFilter(String filter) {
@@ -1099,28 +1141,70 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     return f;
   }
 
-  void patientsTableUpdated(TableViewer table, ActionLink link) {
-    String pn = null;
-    iFormViewer fv = table.getFormViewer();
-    if (link.getAttributes() != null) { //we searched/or set a max number
-      pagingStack.add(link);
-      pn = link == null ? null : link.getPagingNext();
-      if (pn != null) {
-        ActionLink l = (ActionLink) link.clone();
-        l.setRequestMethod(RequestMethod.POST);
-        l.getAttributes().putAll(CharScanner.parseOptionString(pn, '^'));
-        pagingNext = l;
+  boolean areSamePatientsInSameOrder(List<RenderableDataItem> list, TableViewer table) {
+    int len = list.size();
+    if (table.size() != len) {
+      return false;
+    }
+    for (int i = 0; i < len; i++) {
+      if (!list.get(i).get(0).valueEquals(table.getValueAt(i, 0))) {
+        return false;
       }
+    }
+    return true;
+  }
+
+  void patientsTableUpdated(TableViewer table, ActionLink link, boolean empty) {
+    WindowViewer w = Platform.getWindowViewer();
+    if (Utils.isCardStack()) {
+      iActionListener al = psActionListener;
+      if (al == null) {
+        al = psActionListener = new CardPatientSelectionActionListener();
+      }
+      int len = table.size();
+      ArrayList<RenderableDataItem> list = new ArrayList<RenderableDataItem>(len);
+      for (int i = 0; i < len; i++) {
+        RenderableDataItem row = table.get(i);
+        iPlatformIcon icon = row.get(0).getIcon();
+        if (icon == null) { //row does not contain a patient
+          continue;
+        }
+        RenderableDataItem item = row.get(NAME).copy();
+        iPlatformIcon signal = row.get(2).getIcon();
+        if (signal != null) {
+          UICompoundIcon ci = new UICompoundIcon(signal, icon);
+          item.setIcon(ci);
+        } else {
+          item.setIcon(icon);
+        }
+        item.setActionListener(al);
+        list.add(item);
+        item.setLinkedData(i);
+      }
+      Utils.pushWorkspaceViewer(CardStackUtils.createListItemsOrPageViewer(null, w, list, 3,-1,null,true, false));
     } else {
-      pagingStack.clear();
-    }
-    aGroupableButton pb = (aGroupableButton) fv.getWidget("nextPage");
-    if (pb != null) {
-      pb.setEnabled(pagingNext != null);
-    }
-    pb = (aGroupableButton) fv.getWidget("previousPage");
-    if (pb != null) {
-      pb.setEnabled(pagingStack.size() > 1);
+      String pn = null;
+      iFormViewer fv = table.getFormViewer();
+      if (link.getAttributes() != null) { //we searched/or set a max number
+        pagingStack.add(link);
+        pn = link == null ? null : link.getPagingNext();
+        if (pn != null) {
+          ActionLink l = (ActionLink) link.clone();
+          l.setRequestMethod(RequestMethod.POST);
+          l.getAttributes().putAll(CharScanner.parseOptionString(pn, '^'));
+          pagingNext = l;
+        }
+      } else {
+        pagingStack.clear();
+      }
+      aGroupableButton pb = (aGroupableButton) fv.getWidget("nextPage");
+      if (pb != null) {
+        pb.setEnabled(pagingNext != null);
+      }
+      pb = (aGroupableButton) fv.getWidget("previousPage");
+      if (pb != null) {
+        pb.setEnabled(pagingStack.size() > 1);
+      }
     }
   }
 
@@ -1137,7 +1221,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           pb.setVisible(false);
           fv = (iContainer) Platform.getWindowViewer().getViewer("searchForm");
           if (fv != null) {
-            pb = (aGroupableButton) fv.getWidget("nearbyButton");
+            pb = (aGroupableButton) fv.getWidget("bv.action.nearby_patients");
             if (pb != null) {
               pb.setEnabled(true);
             }
@@ -1146,7 +1230,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           icon.setFrozen(true);
         }
       }
-      if(patientsTable.size()==1 && patientsTable.get(0)==searchingForPatients) {
+      if (patientsTable.size() == 1 && patientsTable.get(0) == searchingForPatients) {
         patientsTable.setAll(Arrays.asList(noPatientsFound));
       }
     }
@@ -1206,20 +1290,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     Platform.getAppContext().clearData("pt_");
     Platform.getAppContext().removeData("patient");
     CollectionManager.getInstance().clear();
-    resetActionBar();
+    Utils.resetActionBar();
   }
 
   public static boolean isShowing() {
     return Platform.getWindowViewer().getViewer("patientSelectionForm") != null;
   }
 
-  public static void resetActionBar() {
-    if (actionBarTitle != null) {
-      ActionBar ab = Platform.getWindowViewer().getActionBar();
-      ab.setTitle(actionBarTitle);
-      ab.setTitleIcon(actionBarIcon);
-    }
-  }
 
   public static void showPatientSelectView(iWidget widget) {
     final WindowViewer w = Platform.getWindowViewer();
@@ -1235,6 +1312,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           Utils.toggleActions(false);
           iViewer v = (iViewer) returnValue;
           w.activateViewer(v, iTarget.TARGET_WORKSPACE);
+          if(Utils.isCardStack()) {
+            CardStackUtils.updateTitle(v, true);
+          }
         }
       }
     };
@@ -1247,20 +1327,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
   }
 
-  public static void updateActionBar() {
-    if (UIScreen.isMediumScreen()) {
-      ActionBar ab = Platform.getWindowViewer().getActionBar();
-      if (actionBarTitle == null) {
-        actionBarTitle = ab.getTitleComponent().getText();
-        actionBarIcon = ab.getTitleComponent().getIcon();
-      }
-      if (Utils.getPatient() != null) {
-        ab.setTitle(Platform.getAppContext().getData("pt_name").toString());
-        UIImageIcon thumbnail = (UIImageIcon) Platform.getAppContext().getData("pt_thumbnail");
-        ab.setTitleIcon(thumbnail);
-      }
-    }
-  }
+  
 
   /**
    * Called to do the actual work of establishing a relation with a patient.
@@ -1527,6 +1594,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     } else {
       app.putData("pt_age_sex", "/" + sex);
     }
+    
+    app.putData("pt_name_age_sex", w.getString("bv.format.name_age_gender", name, app.getData("pt_age_sex")));
+    
     obj = patient.opt("encounter_date");
     date = null;
     if (obj instanceof String) {
@@ -1703,6 +1773,34 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     app.putData("pt_wt_ht_bmi", sb.toString());
     app.putData("pt_bmi", bmi);
+
+  }
+
+  class CardPatientSelectionActionListener implements iActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      final WindowViewer w = Platform.getWindowViewer();
+      RenderableDataItem item = (RenderableDataItem) e.getSource();
+      RenderableDataItem row = patientsTable.get((Integer) item.getLinkedData());
+      String id = (String) row.get(0).getValue();
+      final UIImageIcon icon = (UIImageIcon) row.get(0).getIcon();
+      iFunctionCallback cb = new iFunctionCallback() {
+
+        @Override
+        public void finished(boolean canceled, Object returnValue) {
+          w.hideWaitCursor();
+          if (returnValue instanceof Throwable) {
+            Utils.handleError((Throwable) returnValue);
+          } else if (!canceled) {
+            Platform.getAppContext().putData("pt_thumbnail", icon);
+            Utils.showMainView();
+          }
+        }
+      };
+      loadPatientEx(w, id, cb);
+      w.showWaitCursor();
+    }
 
   }
 

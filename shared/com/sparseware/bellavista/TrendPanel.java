@@ -15,14 +15,18 @@
  */
 package com.sparseware.bellavista;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.Label;
 import com.appnativa.rare.ui.ColorUtils;
 import com.appnativa.rare.ui.FontUtils;
@@ -39,6 +43,7 @@ import com.appnativa.rare.ui.painter.PaintBucket;
 import com.appnativa.rare.ui.painter.iPlatformComponentPainter;
 import com.appnativa.rare.viewer.TableViewer;
 import com.appnativa.rare.viewer.WindowViewer;
+import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.widget.LabelWidget;
 import com.appnativa.util.Helper;
 import com.appnativa.util.SNumber;
@@ -46,7 +51,7 @@ import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 
 /**
- * This class manages the Labs Trends panel
+ * This class manages the trending
  * 
  * @author Don DeCoteau
  */
@@ -56,6 +61,8 @@ public class TrendPanel {
   String                                  title;
   Map<String, String>                     keyMap;
   Map<String, Trend>                      trends;
+  Map<String,String> peers;
+  boolean                                 reverseChronologicalOrder;
   static RenderableDataItem               dateLabel   = new RenderableDataItem();
   static RenderableDataItem               valueLabel  = new RenderableDataItem();
   static RenderableDataItem               trendLabel  = new RenderableDataItem();
@@ -65,16 +72,23 @@ public class TrendPanel {
   static int                              timePeriodFontHeight;
 
   /**
-   * Creates a new panel to hold trends for labs values
-   * corresponding to the specified list of lab keys
+   * Creates a new panel to hold trends for labs values corresponding to the
+   * specified list of result keys
    * 
-   * @param name the name of the panel
-   * @param title the title for the panel
-   * @param keys the list of keys that are allowed in this panel
+   * @param name
+   *          the name of the panel
+   * @param title
+   *          the title for the panel
+   * @param keys
+   *          the list of keys that are allowed in this panel
+   * @param reverseChronologicalOrder
+   *          true if trends will be added in reverse chronological order; false
+   *          otherwise
    */
-  public TrendPanel(String name, String title, JSONArray keys) {
+  public TrendPanel(String name, String title, JSONArray keys, boolean reverseChronologicalOrder) {
     this.title = title;
     this.name = name;
+    this.reverseChronologicalOrder = reverseChronologicalOrder;
     if (keys != null) {
       keyMap = trendMap.get(title);
       if (keyMap == null) {
@@ -82,7 +96,15 @@ public class TrendPanel {
         Map<String, String> map = new LinkedHashMap<String, String>(len);
         for (int i = 0; i < len; i++) {
           JSONObject o = keys.getJSONObject(i);
-          map.put(o.getString("key"), o.getString("name"));
+          String key=o.getString("key");
+          map.put(key, o.getString("name"));
+          String peer=o.optString("peer",null);
+          if(peer!=null) {
+            if(peers==null) {
+              peers=new HashMap<String,String>(2);
+            }
+            peers.put(key,peer);
+          }
         }
         keyMap = map;
         trendMap.put(title, map);
@@ -92,10 +114,11 @@ public class TrendPanel {
 
   /**
    * Attempts to add a trend to the panel. The keyMap is used to find the name
-   * of the lab value. The trend will only be added if the key has been mapped
+   * of the result value. The trend will only be added if the key has been
+   * mapped
    * 
    * @param key
-   *          the key that uniquely identifies the type of lab
+   *          the key that uniquely identifies the type of result
    * @param date
    *          the date of the trend value
    * @param valueItem
@@ -112,7 +135,7 @@ public class TrendPanel {
     }
     Trend t = trends.get(key);
     if (t == null) {
-      t = new Trend(name);
+      t = new Trend(name, reverseChronologicalOrder);
       trends.put(key, t);
     }
     t.add(date, valueItem.toString(), valueItem.getForeground());
@@ -124,7 +147,7 @@ public class TrendPanel {
    * Adds a trend to the panel
    * 
    * @param key
-   *          the key that uniquely identifies the type of lab
+   *          the key that uniquely identifies the type of result
    * @param date
    *          the date of the trend value
    * @param name
@@ -140,7 +163,7 @@ public class TrendPanel {
     }
     Trend t = trends.get(key);
     if (t == null) {
-      t = new Trend(name);
+      t = new Trend(name, reverseChronologicalOrder);
       trends.put(key, t);
     }
     t.add(date, valueItem.toString(), valueItem.getForeground());
@@ -155,6 +178,25 @@ public class TrendPanel {
   }
 
   /**
+   * Removes the peer of a trend
+   * that exists
+   */
+  public void removePeers() {
+    if (peers != null && trends!=null) {
+      Iterator<Entry<String, String>> it = peers.entrySet().iterator();
+      while(it.hasNext()) {
+        Entry<String, String> e = it.next();
+        String key=e.getKey();
+        if(trends.containsKey(key)) {
+          String peer=e.getValue();
+          trends.remove(peer);
+          trendMap.remove(peer);
+        }
+      }
+    }
+  }
+
+  /**
    * Populates a table with trends
    * 
    * @param table
@@ -163,8 +205,11 @@ public class TrendPanel {
    *          a map of field names/forms layout values
    */
   public void popuplateTable(TableViewer table, Map<String, String> layout) {
-    int colCount = table.getColumnCount();
     WindowViewer w = Platform.getWindowViewer();
+    if(timePeriodFont==null) {
+      TrendPanel.setupLabels(w);
+    }
+    int colCount = table.getColumnCount();
     LabelWidget label = LabelWidget.create(table.getFormViewer(),
         (Label) w.createConfigurationObject("Label", "bv.label.trendPanelHeader"));
     label.setValue(title);
@@ -203,7 +248,7 @@ public class TrendPanel {
     RenderableDataItem row = null;
     int n = 0;
     int i = 0;
-    PaintBucket pb = Platform.getUIDefaults().getPaintBucket("TrendPanel.labName");
+    PaintBucket pb = Platform.getUIDefaults().getPaintBucket("TrendPanel.trendName");
     iPlatformComponentPainter cp = pb == null ? null : pb.getCachedComponentPainter();
     UIFont font = nameFont;
     ;
@@ -256,6 +301,91 @@ public class TrendPanel {
   }
 
   /**
+   * Populates a form with trends
+   * 
+   * @param fv
+   *          the form to populate
+   * @return a string representing the date range of the values added to the
+   *         form
+   */
+  public String popuplateForm(iContainer fv) {
+    WindowViewer w = Platform.getWindowViewer();
+    if(timePeriodFont==null) {
+      TrendPanel.setupLabels(w);
+    }
+    int count = Math.min(trends == null ? 0 : trends.size(), fv.getWidgetCount());
+    if (count == 0) {
+      return null;
+    }
+    String format = w.getString("bv.format.trend");
+    Date beg = null;
+    Date end = null;
+    boolean html = format.startsWith("<html>");
+    Iterator<String> it;
+    if (keyMap == null) {
+      it = trends.keySet().iterator();
+    } else {
+      it = keyMap.keySet().iterator();
+    }
+
+    StringBuilder sb = html ? new StringBuilder() : null;
+    String fg;
+    String dfg = ColorUtils.getForeground().toHexString();
+    String pfg = html ? ColorUtils.getColor("clinicalPrompt").toHexString() : null;
+    SimpleDateFormat df = new SimpleDateFormat(w.getString("bv.format.time.small_trend_date"));
+    int i=0;
+    while(i<count) {
+      Trend t = trends.get(it.next());
+      if(t==null) {
+        continue;
+      }
+      if (t.colors[3] != null) {
+        fg = t.colors[3].toHexString();
+      } else {
+        fg = dfg;
+      }
+      if (beg == null) {
+        beg = t.startDate;
+        end = t.date;
+      } else {
+        //values are in reverse chronological order
+        if (t.date.after(end)) {
+          end = t.date;
+        }
+        if (t.startDate.before(beg)) {
+          beg = t.startDate;
+        }
+      }
+
+      String date = df.format(t.date);
+      if (html) {
+        sb.setLength(0);
+        sb.append("<font color=\"").append(pfg).append("\">");
+        sb.append(date).append("</font>");
+        date = sb.toString();
+      }
+      if(html && t.valueNeedsHTMLEncoding()) {
+        t.value=Functions.escapeHTML(t.value, true, false);
+      }
+      String text = Functions.format(format, t.name, fg, t.value, date);
+      LabelWidget label = (LabelWidget) fv.getWidget(i++);
+      label.setValue(text);
+      label.setIcon(t);
+    }
+    String s = w.getString("bv.format.time.general_short");
+
+    df = new SimpleDateFormat(s);
+
+    if (beg.equals(end)) {
+      s = df.format(beg);
+    } else {
+      s = df.format(beg) + " - " + df.format(end);
+    }
+
+    return s;
+  }
+
+  /**
    * Sets up reuse-able items that will be used to label values on the trend
    * panel
    * 
@@ -301,6 +431,8 @@ public class TrendPanel {
     private boolean drawTimePeriod = true;
     String          timePeroid;
     private float   timePeriodWidth;
+    boolean         reverseChronologicalOrder;
+    String peer;
 
     /**
      * Creates a new trend
@@ -308,10 +440,13 @@ public class TrendPanel {
      * @param name
      *          the name of the trend
      */
-    public Trend(String name) {
+    public Trend(String name, boolean reverseChronologicalOrder) {
       this.name = name;
+      this.reverseChronologicalOrder = reverseChronologicalOrder;
     }
-
+    void setPeer(String peer) {
+      this.peer=peer;
+    }
     /**
      * Adds a value to the trend
      * 
@@ -325,10 +460,15 @@ public class TrendPanel {
     void add(Date date, String value, UIColor color) {
       if (index > 0) {
         if (this.date == null) {
+          this.startDate = date;
           this.date = date;
           this.value = value;
         }
-        startDate = date;
+        if (reverseChronologicalOrder) {
+          this.startDate = date;
+        } else {
+          this.date = date;
+        }
         numbers[--index] = new SNumber(value, false).floatValue();
         colors[index] = color;
       }
@@ -394,7 +534,7 @@ public class TrendPanel {
       height = ih;
       float d1 = ScreenUtils.PLATFORM_PIXELS_1;
       float d2 = ScreenUtils.PLATFORM_PIXELS_2;
-      y += ScreenUtils.PLATFORM_PIXELS_4;
+      //  y += ScreenUtils.PLATFORM_PIXELS_4;
       height -= ScreenUtils.PLATFORM_PIXELS_4;
       float sy = startingY + y;
       float ny = sy;
@@ -403,8 +543,11 @@ public class TrendPanel {
       UIColor oc = g.getColor();
       float sw = g.getStrokeWidth();
       g.setStrokeWidth(d1);
-      g.setPaint(ColorUtils.getColor("trendBackground"));
-      g.fillRect(x, y, width, height);
+      boolean cardStack = Utils.isCardStack();
+      if (!cardStack) {
+        g.setPaint(ColorUtils.getColor("trendBackground"));
+        g.fillRect(x, y, width, height);
+      }
       g.setColor(ColorUtils.getControlShadow());
       g.drawRect(x, y, width, height);
       if (drawTimePeriod) {
@@ -435,16 +578,20 @@ public class TrendPanel {
 
         lv = num;
         g.drawLine(sx, sy, sx + segmentLength, ny);
-        g.setColor(UIColor.BLACK);
+        g.setColor(cardStack ? UIColor.WHITE : UIColor.BLACK);
         g.drawRoundRect(sx - d1, sy - d1, d2, d2, d2, d2);
 
         sy = ny;
         sx += segmentLength;
       }
-      g.setColor(UIColor.BLACK);
+      g.setColor(cardStack ? UIColor.WHITE : UIColor.BLACK);
       g.drawRoundRect(sx, sy - d1, d2, d2, d2, d2);
       g.setColor(oc);
       g.setStrokeWidth(sw);
+    }
+
+    boolean valueNeedsHTMLEncoding() {
+      return value.indexOf('>') != -1 || value.indexOf('<') != -1;
     }
 
     /**

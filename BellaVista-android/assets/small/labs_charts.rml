@@ -1,0 +1,20 @@
+GridPane {
+  name: "labsCharts"
+  local: false
+  rows: 1
+  rowSpacing: 0
+  regions {
+    {
+      x: "0"
+      y: "0"
+      viewer {
+        StackPane {
+          name: "chartPaneStack"
+          local: false
+          transitionAnimator: "SlideAnimation"
+          actAsFormViewer: false
+        }
+      }
+    }
+  }
+} [ onLoad="class:Labs#onChartsPanelLoaded" ]

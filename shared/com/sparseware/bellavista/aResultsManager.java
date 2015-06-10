@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -37,11 +38,13 @@ import java.util.Map.Entry;
 
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aWorkerTask;
+import com.appnativa.rare.iConstants;
 import com.appnativa.rare.converters.DateTimeConverter;
 import com.appnativa.rare.converters.iDataConverter;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.ItemDescription;
+import com.appnativa.rare.spot.StackPane;
 import com.appnativa.rare.spot.Table;
 import com.appnativa.rare.ui.ColorUtils;
 import com.appnativa.rare.ui.RenderableDataItem;
@@ -51,15 +54,18 @@ import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.chart.ChartDataItem;
 import com.appnativa.rare.ui.effects.iTransitionAnimator;
+import com.appnativa.rare.ui.event.ActionEvent;
 import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.FlingEvent;
 import com.appnativa.rare.ui.event.ScaleEvent;
+import com.appnativa.rare.ui.event.iActionListener;
 import com.appnativa.rare.util.SubItemComparator;
 import com.appnativa.rare.viewer.ChartViewer;
 import com.appnativa.rare.viewer.GroupBoxViewer;
 import com.appnativa.rare.viewer.SplitPaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
+import com.appnativa.rare.viewer.ToolBarViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iTarget;
@@ -73,6 +79,7 @@ import com.appnativa.util.Helper;
 import com.appnativa.util.MutableInteger;
 import com.appnativa.util.StringCache;
 import com.appnativa.util.iFilterableList;
+import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 import com.sparseware.bellavista.ActionPath.iActionPathSupporter;
 
@@ -94,7 +101,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   protected int                                   dataPageSize            = 7;
   protected String                                namePrefix;
   protected aChartHandler                         chartHandler;
-  private iTransitionAnimator                     transitionAnimation;
+  protected iTransitionAnimator                   transitionAnimation;
   protected List<RenderableDataItem>              originalRows;
 
   protected LinkedHashMap<String, MutableInteger> itemCounts;
@@ -121,7 +128,9 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
   /** whether we are in multi chart mode */
   protected boolean                               multiChartMode;
-  private HashMap<String, Boolean>                chartableItems;
+  /** manages chartable items traversal */
+  protected ChartableItemsManager                 chartableItemsManager;
+
   static int                                      MIN_POINTSLABEL_HEIGHT  = 400;
 
   public aResultsManager(String namePrefix, String scriptClassName) {
@@ -145,10 +154,22 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
     float x = e.getXVelocity();
     float y = e.getYVelocity();
+    if (Utils.isReverseFling()) {
+      y *= -1;
+      x *= -1;
+    }
     if (Math.abs(x) > Math.abs(y)) {
       slideToChartableItem(x < 0, true);
     } else {
-      slideToChartableItem(y < 0, false);
+      if (Utils.isCardStack()) {
+        if (!Utils.isGoogleGlass()) {
+          if (!Utils.popWorkspaceViewer()) {
+            Platform.getWindowViewer().buzz();
+          }
+        }
+      } else {
+        slideToChartableItem(y < 0, false);
+      }
     }
 
   }
@@ -158,6 +179,14 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     ActionPath path = new ActionPath(Utils.getPatientID(), namePrefix, currentView.toString().toLowerCase(Locale.US));
     addCurrentPathID(path);
     return path;
+  }
+
+  protected void updateCardStackTitle(String title, String subtitle) {
+    iContainer fv = (iContainer) Platform.getWindowViewer().getViewer(namePrefix);
+    if (fv != null) {
+      CardStackUtils.setViewerTitle(fv, fv.expandString(title, false), subtitle);
+      CardStackUtils.updateTitle(fv, false);
+    }
   }
 
   public void handleActionPath(ActionPath path) {
@@ -237,6 +266,35 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     if (table != null) {
       table.clearSelection();
     }
+  }
+
+  /**
+   * Creates trend panels for the specified configuration array
+   * 
+   * @param trends
+   *          the array of trends
+   * 
+   * @param reverseChronologicalOrder
+   *          true if trends will be added in reverse chronological order; false
+   *          otherwise
+   * @return the array or panels or null
+   */
+  protected TrendPanel[] createTrendPanels(JSONArray trends, boolean reverseChronologicalOrder) {
+    int len = trends == null ? 0 : trends.size();
+    if (len == 0) {
+      return null;
+    }
+    final WindowViewer w = Platform.getWindowViewer();
+    List<TrendPanel> list = new ArrayList<TrendPanel>(len);
+    for (int i = 0; i < len; i++) {
+      JSONObject o = trends.getJSONObject(i);
+      String os = o.optString("os");
+      if (os == null || Platform.getAppContext().okForOS(os)) {
+        list.add(new TrendPanel(o.getString("name"), w.expandString(o.getString("title")), o.getJSONArray("keys"),
+            reverseChronologicalOrder));
+      }
+    }
+    return list.isEmpty() ? null : list.toArray(new TrendPanel[list.size()]);
   }
 
   /**
@@ -380,29 +438,33 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
   public void showChartForSelectedItem(TableViewer table) {
     if (chartHandler != null && isChartable(table.getSelectedItem())) {
-      WindowViewer w = Platform.getWindowViewer();
       StackPaneViewer stack = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
       if (stack == null) {
-        String url = namePrefix + "_charts.rml";
-        try {
-          if (!UIScreen.isLargeScreen()) {
-            if (currentView == ResultsView.SPREADSHEET) {
-              spreadsheetTable = table;
-            }
-            Utils.pushWorkspaceViewer(url);
-          } else {
-            SplitPaneViewer sp = (SplitPaneViewer) table.getFormViewer();
-            w.activateViewer(url, sp.getRegion(1).getName());
-
-          }
-        } catch (IOException e) {
-          w.handleException(e);
-        }
+        showChartsView(table);
       } else {
         showChartForSelectedItemEx(table, stack, null, true);
       }
     } else if (UIScreen.isLargeScreen()) {
       clearCharts(table);
+    }
+  }
+
+  protected void showChartsView(TableViewer table) {
+    WindowViewer w = Platform.getWindowViewer();
+    String url = namePrefix + "_charts.rml";
+    try {
+      if (!UIScreen.isLargeScreen()) {
+        if (currentView == ResultsView.SPREADSHEET) {
+          spreadsheetTable = table;
+        }
+        Utils.pushWorkspaceViewer(url);
+      } else {
+        SplitPaneViewer sp = (SplitPaneViewer) table.getFormViewer();
+        w.activateViewer(url, sp.getRegion(1).getName());
+
+      }
+    } catch (IOException e) {
+      w.handleException(e);
     }
   }
 
@@ -517,7 +579,9 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
         ChartDataItem series = (ChartDataItem) result;
         ChartViewer cv = chartHandler.createChart(sp.getFormViewer(), key, 1, series);
         iTransitionAnimator ta = forward == null ? null : transitionAnimation;
-
+        if (Utils.isCardStack()) {
+          CardStackUtils.setViewerSubTitle(cv, chartableItemsManager.createCardStackTitle(key));
+        }
         Utils.setViewerInStackPaneViewer(sp, cv, ta, forward == null ? true : forward.booleanValue(), horizontal, true);
         chartHandler.updateZoomButtons(sp.getFormViewer());
       }
@@ -607,6 +671,52 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     }
   }
 
+  /**
+   * Creates a row to a table that displays that no data was found for the
+   * result type
+   * 
+   * @param table
+   *          the table that will contain the row
+   * @return the create row
+   */
+  protected RenderableDataItem createNoDataRow(TableViewer table) {
+    int cc = table.getColumnCount();
+    RenderableDataItem row = table.createRow(cc, true);
+    row.setEnabled(false);
+    RenderableDataItem item = row.get(cc > 2 ? 1 : 0);
+    item.setEnabled(false);
+    item.setColumnSpan(-1);
+    item.setValue(Platform.getResourceAsString("bv.text.no_" + namePrefix));
+    return row;
+  }
+
+  /**
+   * Check an handles a scenario where the result set does no contain any data
+   * 
+   * @param table
+   *          the table
+   * @param rows
+   *          the result set
+   * @return true if the data set has no data; false otherwise
+   */
+  public boolean checkAndHandleNoData(TableViewer table, final List<RenderableDataItem> rows) {
+    int len = rows == null ? 0 : rows.size();
+    if (len == 0 || (len == 1 && !rows.get(0).isEnabled())) {
+      Utils.getActionPath(true);
+      hasNoData = true;
+      if (len == 1) {
+        table.addParsedRow(rows.get(0));
+      } else {
+        table.addParsedRow(createNoDataRow(table));
+      }
+      table.finishedParsing();
+      table.finishedLoading();
+      dataLoaded = true;
+      return true;
+    }
+    return false;
+  }
+
   protected void showSpreesheet(iContainer fv) {
     WindowViewer w = Platform.getWindowViewer();
     /**
@@ -641,6 +751,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       sp.setAutoOrient(false);
       sp.setSplitProportions(0.5f);
       try {
+        //remove viewer if it is not the chart viewer
         iViewer v = sp.getViewer(1);
         if (v == null || !v.getName().equals(namePrefix + "Charts")) {
           iTarget t = sp.getRegion(1);
@@ -648,7 +759,6 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
           if (v != null) {
             v.dispose();
           }
-          w.activateViewer(namePrefix + "_charts.rml", t.getName());
         }
       } catch (Exception ex) {
         w.handleException(ex);
@@ -793,38 +903,49 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
   public void onChartsPanelLoaded(String eventName, iWidget widget, EventObject event) {
     chartsLoaded = true;
-    StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("chartPaneStack");
+    StackPaneViewer sp;
+    if (widget instanceof StackPaneViewer) {
+      sp = (StackPaneViewer) widget;
+    } else {
+      sp = (StackPaneViewer) widget.getFormViewer().getWidget("chartPaneStack");
+    }
     if (sp != null) {
       transitionAnimation = sp.getTransitionAnimator();
       sp.setTransitionAnimator((iTransitionAnimator) null);
     }
-    TableViewer table;
-    if (currentView == ResultsView.SPREADSHEET) {
-      table = spreadsheetTable;
-      if (table == null) {
-        table = (TableViewer) Platform.getWindowViewer().getViewer("spreadsheetTable");
-      }
-    } else {
-      table = dataTable;
-    }
-    if (table != null) {
-      aGroupableButton b = (aGroupableButton) table.getFormViewer().getWidget("charts");
-      if (b != null && !b.isSelected() && isOnNonChartingView()) {
-        b.setSelected(true);
-        currentView = ResultsView.CHARTS;
-      }
-    }
-    if (table != null) {
-      if (table.hasSelection()) {
-        showChartForSelectedItem(table);
+    if (!Utils.isCardStack()) {
+      TableViewer table;
+      if (currentView == ResultsView.SPREADSHEET) {
+        table = spreadsheetTable;
+        if (table == null) {
+          table = (TableViewer) Platform.getWindowViewer().getViewer("spreadsheetTable");
+        }
       } else {
-        String key = keyPath == null ? null : keyPath.shift();
-        if (key != null) {
-          handlePathKey(table, key, table == dataTable ? 1 : 0, chartsLoaded || !UIScreen.isLargeScreen());
-        } else {
-          selectFirstChartableItem(table, true);
+        table = dataTable;
+      }
+      if (table != null) {
+        aGroupableButton b = (aGroupableButton) table.getFormViewer().getWidget("charts");
+        if (b != null && !b.isSelected() && isOnNonChartingView()) {
+          b.setSelected(true);
+          currentView = ResultsView.CHARTS;
         }
       }
+      if (table != null) {
+        if (table.hasSelection()) {
+          showChartForSelectedItem(table);
+        } else {
+          String key = keyPath == null ? null : keyPath.shift();
+          if (key != null) {
+            handlePathKey(table, key, table == dataTable ? 1 : 0, chartsLoaded || !UIScreen.isLargeScreen());
+          } else {
+            selectFirstChartableItem(table, true);
+          }
+        }
+      }
+    } else {
+      currentView = ResultsView.CHARTS;
+      selectFirstChartableItem(dataTable, false);
+      showChartForSelectedItem(dataTable);
     }
   }
 
@@ -895,11 +1016,11 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
   protected boolean isOnNonChartingView() {
     switch (currentView) {
-      case TRENDS:
-      case DOCUMENT:
-        return true;
-      default:
+      case SPREADSHEET:
+      case CHARTS:
         return false;
+      default:
+        return true;
     }
   }
 
@@ -978,14 +1099,16 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
    * Called to reselect the default view button when the standard table is shown
    * in a UI without split pane
    * 
-   * @param eventName
-   * @param widget
-   * @param event
    */
   public void reselectDefaultView(String eventName, iWidget widget, EventObject event) {
-    iWidget cw = widget.getFormViewer().getWidget(spreadsheetTable == null ? "charts" : "spreadsheet");
+    ToolBarViewer tb = (ToolBarViewer) dataTable.getParent().getWidget("tableToolbar");
+    iWidget cw = tb == null ? null : tb.getWidget(spreadsheetTable == null ? "charts" : "spreadsheet");
     if (cw != null && !cw.isSelected()) {
       cw.setSelected(true);
+      try {
+        currentView = ResultsView.valueOf(cw.getName().toUpperCase(Locale.US));
+      } catch (Exception ignore) {
+      }
     }
     spreadsheetTable = null;
   }
@@ -1033,25 +1156,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     if (table == null) {
       table = dataTable;
     }
-
-    int n = table.getSelectedIndex();
-    int len = table.size();
-    int pos = -1;
-    if (next) {
-      for (int i = n + 1; i < len; i++) {
-        if (isChartable(table.get(i))) {
-          pos = i;
-          break;
-        }
-      }
-    } else {
-      for (int i = n - 1; i > -1; i--) {
-        if (isChartable(table.get(i))) {
-          pos = i;
-          break;
-        }
-      }
-    }
+    int pos = chartableItemsManager.getNextOrPreviousItem(table, next, table == dataTable, table == dataTable ? NAME_POSITION : 0);
     StackPaneViewer sp = (StackPaneViewer) w.getViewer("chartPaneStack");
     if (pos == -1) {
       Utils.showPullBackAnimation(sp.getActiveViewer(), horizontal, next ? false : true);
@@ -1063,7 +1168,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   }
 
   protected boolean isChartable(RenderableDataItem row) {
-    if (row == null) {
+    if (chartableItemsManager == null || row == null) {
       return false;
     }
     if (currentView == ResultsView.SPREADSHEET) {
@@ -1073,25 +1178,11 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       }
       return true;
     }
-    if (chartableItems == null) {
-      chartableItems = new HashMap<String, Boolean>();
-    }
     String key = (String) row.get(NAME_POSITION).getLinkedData();
     if (key == null) {
       return false;
     }
-    Boolean b = chartableItems.get(key);
-    if (b != null) {
-      return b.booleanValue();
-    }
-    String s = row.get(VALUE_POSITION).toString().trim();
-    char c = s.length() == 0 ? 0 : s.charAt(0);
-    if (c == '-' && s.length() > 1) {
-      c = s.charAt(1);
-    }
-    boolean chartable = Character.isDigit(c);
-    chartableItems.put(key, chartable);
-    return chartable;
+    return chartableItemsManager.isChartable(key);
   }
 
   protected void handlePathKey(TableViewer table, String key, int column, boolean fireAction) {
@@ -1134,6 +1225,9 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     if (spreadsheetTable != null && spreadsheetTable.getParent() == null) {
       spreadsheetTable.dispose();
     }
+    if (chartableItemsManager != null) {
+      chartableItemsManager.reset();
+    }
     dataTable = null;
     hasNoData = false;
     dataLoaded = false;
@@ -1142,4 +1236,254 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     chartsLoaded = false;
   }
 
+  protected int getNextOrPreviousChartableItem(TableViewer table, List<String> keys, boolean next) {
+    int pos = -1;
+    do {
+      int index = table.getSelectedIndex();
+      if (index == -1)
+        break;
+      RenderableDataItem row = table.get(index);
+      String key = (String) row.get(NAME_POSITION).getLinkedData();
+      if (key == null)
+        break;
+      int n = keys.indexOf(key);
+      if (n == -1)
+        break;
+      n += next ? 1 : -1;
+      if (n < 0 || n >= keys.size())
+        break;
+      key = keys.get(n);
+      int len = table.size();
+      while (true) {
+        index += next ? 1 : -1;
+        if (index < 0 || index >= len) {
+          break;
+        }
+        row = table.get(index);
+        if (key.equals(row.get(NAME_POSITION).getLinkedData())) {
+          if (next) {
+            return index;
+          }
+          pos = index;
+        }
+      }
+    } while (false);
+
+    return pos;
+  }
+
+  /**
+   * Manages the set of chartable items for the list
+   * 
+   * @author Don DeCoteau
+   *
+   */
+  static class ChartableItemsManager {
+    /** set of chartable keys for the type of result */
+    HashSet<String> chartableSet  = new HashSet<String>();
+    /** list of chartable keys for the current result values */
+    List<String>    chartableKeys = new ArrayList<String>();
+
+    public ChartableItemsManager() {
+    }
+
+    /**
+     * Resets the managed
+     */
+    public void reset() {
+      chartableKeys.clear();
+      chartableSet.clear();
+    }
+
+    public String createCardStackTitle(String key) {
+      int n = chartableKeys.indexOf(key);
+      if (n == -1) {
+        return "";
+      }
+      return Platform.getWindowViewer().getString("bv.format.chart_of", n + 1, chartableKeys.size());
+    }
+
+    /**
+     * Gets the next of previous chartable item
+     * 
+     * @param table
+     *          the table that is being charted
+     * @param next
+     *          true for the next item; false for the previous item
+     * @param unique
+     *          true if you only want to traverse unique keys; false to traverse
+     *          all entries
+     * @param keyColumn
+     *          the column containing the items key
+     * @return the nest of previous index or -1 if you are at the beginning or
+     *         end
+     */
+    public int getNextOrPreviousItem(TableViewer table, boolean next, boolean unique, int keyColumn) {
+      if (!unique) {
+        return getNextOrPreviousItemEx(table, next, keyColumn);
+      }
+      int pos = -1;
+      List<String> keys = chartableKeys;
+      String key;
+      RenderableDataItem row;
+      do {
+        int index = table.getSelectedIndex();
+        if (index != -1) {
+          row = table.get(index);
+          key = (String) row.get(keyColumn).getLinkedData();
+          if (key == null)
+            break;
+          int n = keys.indexOf(key);
+          if (n == -1)
+            break;
+          n += next ? 1 : -1;
+          if (n < 0 || n >= keys.size())
+            break;
+          key = keys.get(n);
+        } else {
+          if (keys.isEmpty()) {
+            break;
+          }
+          key = keys.get(0);
+        }
+        int len = table.size();
+        while (true) {
+          index += next ? 1 : -1;
+          if (index < 0 || index >= len) {
+            break;
+          }
+          row = table.get(index);
+          if (key.equals(row.get(keyColumn).getLinkedData())) {
+            if (next) {
+              return index;
+            }
+            pos = index;
+          }
+        }
+      } while (false);
+
+      return pos;
+    }
+
+    /**
+     * Creates a list of keys ordered based on the order of the items in the
+     * table
+     * 
+     * @param table
+     *          the table
+     * @param keyColumn
+     *          the column that contains the keys
+     */
+    public void createList(TableViewer table, int keyColumn) {
+      int len = table.size();
+      List<String> list = chartableKeys;
+      HashSet<String> set = new HashSet<String>(chartableSet.size());
+
+      list.clear();
+      for (int i = 0; i < len; i++) {
+        RenderableDataItem row = table.get(i);
+        String key = (String) row.getItem(keyColumn).getLinkedData();
+        if (key == null) {
+          continue;
+        }
+        if (chartableSet.contains(key) && set.add(key)) {
+          list.add(key);
+        }
+      }
+    }
+
+    private int getNextOrPreviousItemEx(TableViewer table, boolean next, int keyColumn) {
+      HashSet<String> set = chartableSet;
+      do {
+        int index = table.getSelectedIndex();
+        int len = table.size();
+        while (true) {
+          index += next ? 1 : -1;
+          if (index < 0 || index >= len) {
+            break;
+          }
+          RenderableDataItem row = table.get(index);
+          String key = (String) row.get(keyColumn).getLinkedData();
+          if (key != null && set.contains(key)) {
+            return index;
+          }
+        }
+      } while (false);
+
+      return -1;
+    }
+
+    /**
+     * Checks a row to see if it is chartable
+     * 
+     * @param key
+     *          the key for the value
+     * @param value
+     *          the value to check
+     */
+    public boolean isChartable(String key) {
+      return chartableSet.contains(key);
+    }
+
+    /**
+     * Checks a row to see if it is chartable. If it is the key is added to the
+     * checkable list of keys
+     * 
+     * @param key
+     *          the key for the value
+     * @param value
+     *          the value to check
+     */
+    public boolean check(String key, String value) {
+      if (key == null) {
+        return false;
+      }
+      if (!chartableSet.contains(key)) {
+        char c = value.length() == 0 ? 0 : value.charAt(0);
+        if (c == '-' && value.length() > 1) {
+          c = value.charAt(1);
+        }
+        if (Character.isDigit(c)) {
+          chartableSet.add(key);
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    }
+  }
+
+  /**
+   * Handles a card stack drill down action
+   */
+  protected class ChartsActionListener implements iActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      StackPane cfg = new StackPane();
+      cfg.actAsFormViewer.setValue(true);
+      cfg.name.setValue("chartPaneStack");
+      cfg.local.setValue(false);
+      cfg.transitionAnimator.setValue("SlideAnimation");
+      WindowViewer w = Platform.getWindowViewer();
+      StackPaneViewer sp = (StackPaneViewer) w.createViewer(w, cfg);
+      sp.setEventHandler(iConstants.EVENT_LOAD, "class:" + scriptClassName + "#onChartsPanelLoaded", false);
+      currentView = ResultsView.CHARTS;
+      sp.setTitle(w.getString("bv.text." + namePrefix));
+      Utils.pushWorkspaceViewer(sp, false);
+
+    }
+  }
+
+  /**
+   * Called by sub-classes when the man viewer has been populated
+   */
+  protected void viewerPopulated(iViewer v) {
+    StackPaneViewer sp = Utils.getStackPaneViewer(v);
+    int n = sp.indexOf(v);
+    if (n != -1 && sp.getSelectedIndex() != n) {
+      sp.switchTo(n);
+    }
+  }
 }

@@ -1,0 +1,102 @@
+GroupBox {
+  name: "pin_settings"
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "d,d,4dluY,d:g,d"
+  columns: "d:g"
+  widgets {
+    {
+      PushButton {
+        verticalAlign: full
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        templateName: "bv.pushbutton.back"
+        value: "{resource:bv.text.settings.enter_pin}"
+        textHAlignment: left
+      } [ onAction="class:Settings#onBackButton" ]
+    }
+    {
+      Line {
+        columnSpan: -1
+        bounds {
+          x: "0"
+          y: "1"
+        }
+      }
+    }
+    {
+      GroupBox {
+        verticalAlign: center
+        horizontalAlign: center
+        bounds {
+          x: "0"
+          y: "3"
+        }
+        layout: forms
+        rows: "d,d,d,2dluY,d,4dluY,d,4dluY,d"
+        columns: "d,d,2dluX,d:g,2dluX"
+        widgets {
+          {
+            Label {
+              horizontalAlign: right
+              bounds {
+                x: "1"
+                y: "2"
+              }
+              value: "{resource:bv.text.pin}:"
+            }
+          }
+          {
+            TextField {
+              name: "pin"
+              horizontalAlign: left
+              bounds {
+                x: "3"
+                y: "2"
+              }
+              visibleCharacters: 6
+            }  
+          }
+          {
+            Line {
+              columnSpan: 3
+              bounds {
+                x: "1"
+                y: "4"
+              }
+            }
+          }
+          {
+            PushButton {
+              columnSpan: 3
+              bounds {
+                x: "1"
+                y: "6"
+              }
+              value: "{resource:bv.action.submit}"
+            } [ onAction="class:Settings#onSubmitPin" ]
+          }
+        }
+      }
+    }
+    {
+      Label {
+        name:"message"
+        fgColor: "error"
+        bounds {
+          x: "0"
+          y: "4"
+          height: "2ln"
+        }
+        wordWrap: true
+        contentPadding {
+          left: "2"
+        }
+      }
+    }
+  }
+}

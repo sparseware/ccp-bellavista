@@ -45,20 +45,21 @@ public class ApplicationListener implements iApplicationListener,iConfigurationL
   @Override
   public void applicationInitialized(iPlatformAppContext app) {
     Platform.setTrackOpenConnections(true);
+    Utils.cardStack=UIScreen.isSmallScreen();
     //add ourselves as a listener for configuration change events
     app.addConfigurationListener(this);
   }
 
   @Override
   public void applicationPaused(iPlatformAppContext app) {
-    if(!Utils.isShuttingDown()) {
+    if(!Utils.isCardStack() && !Utils.isShuttingDown()) {
       Utils.applicationPaused();
     }
   }
 
   @Override
   public void applicationResumed(iPlatformAppContext app) {
-    if(!Utils.isShuttingDown()) {
+    if(!Utils.isCardStack() && !Utils.isShuttingDown()) {
       Utils.applicationResumed();
     }
   }
@@ -69,7 +70,7 @@ public class ApplicationListener implements iApplicationListener,iConfigurationL
 
   @Override
   public void onConfigurationWillChange(Object config) {
-    if(!Utils.isShuttingDown() && !UIScreen.isLargeScreen()) {
+    if(!Utils.isCardStack() && !Utils.isShuttingDown() && !UIScreen.isLargeScreen()) {
       Utils.toggleFullScreen(UIScreen.isWiderForConfiguration(config));
     }
   }

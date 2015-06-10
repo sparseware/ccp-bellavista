@@ -1,0 +1,48 @@
+Form {
+  name: "consults"
+  title: "{resource:bv.text.recent_consults}"
+  templateName: "bv.stackpane.card"
+  local: false
+  layout: forms
+  rows: "d,d:g,d"
+  columns: "d:g"
+  widgets {
+    {
+      Table {
+        name: "consultsTable"
+        verticalAlign: full
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        dataURL: "/hub/main/consults/list" [ columnSeparator="^", ldSeparator="|" ]
+        templateName: "bv.table.data"
+        visible: false
+        columns {
+          {
+            title: "{resource:bv.text.date}"
+            valueType: date_time_type
+            valueContext: "|MM/dd/yy"
+            width: "8ch"
+            icon: "resource:bv.icon.document"
+          }
+          {
+            title: "{resource:bv.text.description}"
+            valueContext: "titleCase"
+            wordWrap: true
+          }
+        }
+      } [ onCreated="class:Consults#onTableCreated", onFinishedLoading="class:Consults#onFinishedLoading" ]
+    }
+    {
+      Form {
+        name: "itemsForm"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        templateName: "bv.form.items"
+      }
+    }
+  }
+} [ onCreated="class:Consults#onCreated", onChange="class:CardStack#onChangeEvent", onDispose="class:Consults#onDispose" ]

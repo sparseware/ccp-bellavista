@@ -163,7 +163,13 @@ public class CollectionManager implements Runnable {
   }
 
   public void refreshNow() {
-    Platform.getAppContext().executeBackgroundTask(this);
+    lastUpdate=0;
+    if(Platform.isUIThread()) {
+      run();
+    }
+    else {
+      update();
+    }
   }
 
   @Override
@@ -248,7 +254,7 @@ public class CollectionManager implements Runnable {
     if (action != null) {
       UIAction a = w.getAction(action);
       if (a != null) {
-        a.setEnabled(len > 0);
+        a.setEnabled(len>0);
       }
       if (lc != len && sounds != null) {
         String sound = o.optString("sound", null);

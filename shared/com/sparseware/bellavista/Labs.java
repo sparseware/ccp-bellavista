@@ -59,6 +59,7 @@ import com.appnativa.rare.viewer.TableViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iTarget;
+import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.ComboBoxWidget;
 import com.appnativa.rare.widget.NavigatorWidget;
 import com.appnativa.rare.widget.PushButtonWidget;
@@ -72,7 +73,6 @@ import com.appnativa.util.SimpleDateFormatEx;
 import com.appnativa.util.iFilter;
 import com.appnativa.util.iFilterableList;
 import com.appnativa.util.iStringConverter;
-import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 import com.sparseware.bellavista.Document.DocumentItem;
 
@@ -123,7 +123,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
     bunID = bunValue == null ? null : bunValue.getID();
     creatineID = bunValue == null ? null : creatinineValue.getID();
     JSONObject info = (JSONObject) app.getData("labsInfo");
-    trendPanels = createTrendPanels(info.optJSONArray("trends"));
+    trendPanels = createTrendPanels(info.optJSONArray("trends"), false);
     itemCounts = new LinkedHashMap<String, MutableInteger>();
     itemDatesSet = new LinkedHashSet<Date>();
     dataPageSize = info.optInt("dataPageSize", dataPageSize);
@@ -145,10 +145,10 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
     }
     if (trendPanels != null) {
       trendsLayout = info.getJSONObject("trendsLayout").getObjectMap();
-      TrendPanel.setupLabels(Platform.getWindowViewer());
     }
-    currentView = UIScreen.isLargeScreen() ? ResultsView.TRENDS : ResultsView.CHARTS;
+    currentView = UIScreen.isLargeScreen() || Utils.isCardStack() ? ResultsView.TRENDS : ResultsView.CHARTS;
     chartHandler = new ChartHandler(info.getJSONObject("charts"));
+    chartableItemsManager = new ChartableItemsManager();
     pageIcon = Platform.getResourceAsIcon("bv.icon.document");
     noteIcon = Platform.getResourceAsIcon("bv.icon.note");
 
@@ -298,7 +298,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
         valueItem = row.get(VALUE_POSITION);
         String value = (String) valueItem.getValue();
         if (!isSummary) {
-          if (Utils.isChartable(value)) {
+          if (chartableItemsManager.check(key, value)) {
             itemDatesSet.add(date);
             MutableInteger count = itemCounts.get(key);
             if (count == null) {
@@ -383,6 +383,17 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       cw.update();
     }
     Utils.sortTable(table, SORT_ORDER_POSITION);
+    chartableItemsManager.createList(table, NAME_POSITION);
+    if (Utils.isCardStack()) {
+      if (trendPanels != null && trendPanels.length > 0) {
+        iContainer fv = (iContainer) table.getFormViewer().getWidget("trends");
+        TrendPanel panel = trendPanels[0];
+        panel.removePeers();
+        String text = panel.popuplateForm(fv);
+        CardStackUtils.switchToViewer(table.getParent());
+        updateCardStackTitle(panel.title, text);
+      }
+    }
   }
 
   /**
@@ -436,16 +447,21 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   }
 
   public void onCreated(String eventName, iWidget widget, EventObject event) {
-    ActionPath path = Utils.getActionPath(false);
-    if (path != null && path.peek() != null) {
+    if (Utils.isCardStack()) {
+      CardStackUtils.setViewerAction((iViewer) widget, new ChartsActionListener(), true);
       currentView = ResultsView.CHARTS;
-      if (UIScreen.isLargeScreen()) {
-        SplitPane cfg = (SplitPane) ((DataEvent) event).getData();
-        Region r = (Region) cfg.regions.getEx(1);
-        r.dataURL.setValue("labs_charts.rml");
-      }
     } else {
-      currentView = UIScreen.isLargeScreen() ? ResultsView.TRENDS : ResultsView.CHARTS;
+      ActionPath path = Utils.getActionPath(false);
+      if (path != null && path.peek() != null) {
+        currentView = ResultsView.CHARTS;
+        if (UIScreen.isLargeScreen()) {
+          SplitPane cfg = (SplitPane) ((DataEvent) event).getData();
+          Region r = (Region) cfg.regions.getEx(1);
+          r.dataURL.setValue("labs_charts.rml");
+        }
+      } else {
+        currentView = UIScreen.isLargeScreen() ? ResultsView.TRENDS : ResultsView.CHARTS;
+      }
     }
   }
 
@@ -545,7 +561,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
         row.setLinkedData(null);
       }
       final WindowViewer win = Platform.getWindowViewer();
-      final JSONObject json = (JSONObject) o;
+      final JSONObject json = o;
       ViewerCreator.createConfiguration(table, new ActionLink("/lab_collection_info.rml"), new iFunctionCallback() {
 
         @Override
@@ -603,7 +619,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   }
 
   protected TrendPanel createTrendPanelFromTable(TableViewer table, String title) {
-    TrendPanel p = new TrendPanel(title, title, null);
+    TrendPanel p = new TrendPanel(title, title, null, true);
     List<RenderableDataItem> rows = table.getRows();
     int len = rows.size();
     for (int i = 0; i < len; i++) {
@@ -637,20 +653,6 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
     return p;
   }
 
-  protected TrendPanel[] createTrendPanels(JSONArray trends) {
-    int len = trends == null ? 0 : trends.size();
-    if (len == 0) {
-      return null;
-    }
-    TrendPanel[] a = new TrendPanel[len];
-    for (int i = 0; i < len; i++) {
-      JSONObject o = trends.getJSONObject(i);
-      TrendPanel p = new TrendPanel(o.getString("name"), o.getString("title"), o.getJSONArray("keys"));
-      a[i] = p;
-    }
-    return a;
-  }
-
   @Override
   protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
     originalRows = rows;
@@ -671,16 +673,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       }
     }
 
-    int len = rows.size();
-
-    if ((len == 1) && !rows.get(0).isEnabled()) {
-      hasNoData = true;
-      table.addParsedRow(rows.get(0));
-      table.finishedParsing();
-      table.finishedLoading();
-      itemDates = null;
-      dataLoaded = true;
-      Utils.getActionPath(true);
+    if (checkAndHandleNoData(table, rows)) {
       return;
     }
     Platform.getWindowViewer().showWaitCursor();
@@ -791,17 +784,18 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
 
     final iWidget label = table.getFormViewer().getWidget("labs_description");
     final String value = s;
-    if (label != null) {
-      Platform.runOnUIThread(new Runnable() {
+    Platform.runOnUIThread(new Runnable() {
 
-        @Override
-        public void run() {
+      @Override
+      public void run() {
+        if (label != null) {
           if (!label.isDisposed()) {
             label.setValue(value);
           }
         }
-      });
-    }
+
+      }
+    });
   }
 
   @Override

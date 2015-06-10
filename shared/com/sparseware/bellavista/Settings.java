@@ -22,16 +22,21 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.aWorkerTask;
+import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.iEventHandler;
 import com.appnativa.rare.viewer.StackPaneViewer;
+import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.aListViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iFormViewer;
 import com.appnativa.rare.widget.aListWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.CharScanner;
+import com.appnativa.util.SNumber;
+import com.appnativa.util.StringCache;
 import com.appnativa.util.iPreferences;
 
 /*
@@ -48,7 +53,7 @@ public class Settings implements iEventHandler {
   public Settings() {
     // the runtime will crate this automatically to handle events
     // we will trigger an event call at startup when we configure the
-    // login server combo box and then save the handle so that it is not garbage
+    // login server combo box (or onEvent call )and then save the handle so that it is not garbage
     // collected;
     Utils.settingsHandler = this;
     preferences = new AppPreferences();
@@ -65,17 +70,82 @@ public class Settings implements iEventHandler {
 
   public void onBackButton(String eventName, iWidget widget, EventObject event) {
     StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer();
-    int n = sp.getActiveViewerIndex();
-    if (n > 0) {
-      sp.switchTo(n - 1);
+    sp.switchTo(0);
+  }
+
+  /**
+   * Called when an action is taken on a check box
+   */
+  public void onCheckBoxAction(String eventName, iWidget widget, EventObject event) {
+    preferences.putBoolean(widget.getName(), widget.isSelected());
+  }
+
+  /**
+   * Called to submit a pin for a wearable device
+   */
+  public void onSubmitPin(String eventName, iWidget widget, EventObject event) {
+    try {
+      String pin = widget.getFormViewer().getWidget("pin").getValueAsString();
+      if (pin == null) {
+        pin = "";
+      }
+      final WindowViewer w = Platform.getWindowViewer();
+      final iWidget l = widget.getFormViewer().getWidget("message");
+      if (pin.length() < CardStack.getPinDigitCount() || !SNumber.isNumeric(pin)) {
+        String s = w.getString("bv.format.invalid_pin", StringCache.valueOf(CardStack.getPinDigitCount()));
+        l.setValue(s);
+        w.beep();
+      } else {
+        l.setValue("");
+        if (Utils.isDemo()) {
+          l.setValue(w.getString("bv.text.settings.pin_submitted"));
+        } else {
+          final ActionLink link = w.createActionLink("/hub/account/allow_pin");
+          final HashMap data = new HashMap(2);
+          data.put("pin", pin);
+          aWorkerTask task = new aWorkerTask() {
+
+            @Override
+            public void finish(Object result) {
+              w.hideWaitCursor();
+              if (result instanceof Throwable) {
+                Utils.handleError((Throwable) result);
+              } else {
+                String s = (String) result;
+                if (s != null) {
+                  s = s.trim();
+                }
+                if (s == null || s.length() == 0) {
+                  s = w.getString("bv.text.settings.pin_submitted");
+                }
+                l.setValue(s);
+              }
+            }
+
+            @Override
+            public Object compute() {
+              try {
+                link.sendFormData(w, data);
+                return link.getContentAsString();
+              } catch (Exception e) {
+                return e;
+              }
+            }
+          };
+          w.spawn(task);
+          w.showWaitCursor();
+        }
+      }
+    } catch (Exception e) {
+      Utils.handleError(e);
     }
   }
 
   /**
-   * Called what an action is taken on a check box
+   * Called when the pin field is focused
    */
-  public void onCheckBoxAction(String eventName, iWidget widget, EventObject event) {
-    preferences.putBoolean(widget.getName(), widget.isSelected());
+  public void onPinFocused(String eventName, iWidget widget, EventObject event) {
+    widget.getFormViewer().getWidget("message").setValue("");
   }
 
   /**
@@ -83,10 +153,10 @@ public class Settings implements iEventHandler {
    * and close the window
    */
   public void onClose(String eventName, iWidget widget, EventObject event) {
-    StackPaneViewer sp=(StackPaneViewer) widget.getFormViewer().getWidget("settingsStack");
-    iWidget gb=sp==null ? null : sp.getWidget("serversSettings");
-    if(gb!=null) {
-      onServersUnload(eventName, gb, event); 
+    StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("settingsStack");
+    iWidget gb = sp == null ? null : sp.getWidget("serversSettings");
+    if (gb != null) {
+      onServersUnload(eventName, gb, event);
     }
     preferences.setServers(servers);
     preferences.update();
@@ -118,6 +188,20 @@ public class Settings implements iEventHandler {
     lw.addEx(new RenderableDataItem(s.serverName, s, null));
     lw.refreshItems();
     lw.setSelectedIndex(0);
+  }
+
+  /**
+   * Called to get the default server for the device when the user is not able
+   * to choose a server.
+   * 
+   * @return the server
+   */
+  public Server getDefaultServer() {
+    List<Server> list = preferences.getServers();
+    if (list != null && !list.isEmpty()) {
+      return list.get(0);
+    }
+    return new Server(Platform.getResourceAsString("bv.text.local_demo"), "local", true);
   }
 
   public void onConfigureServers(String eventName, iWidget widget, EventObject event) {
@@ -203,8 +287,8 @@ public class Settings implements iEventHandler {
    * Called when the servers form is unloaded
    */
   public void onServersUnload(String eventName, iWidget widget, EventObject event) {
-    aListViewer lv = (aListViewer) ((iContainer)widget).getWidget("servers");
-    if(lv!=null) {
+    aListViewer lv = (aListViewer) ((iContainer) widget).getWidget("servers");
+    if (lv != null) {
       servers.clear();
       int len = lv.size();
       for (int i = 0; i < len; i++) {

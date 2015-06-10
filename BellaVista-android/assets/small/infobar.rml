@@ -1,0 +1,81 @@
+Form {
+  name: "infobar"
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "f:d,f:d:g"
+  columns: "d:g,d"
+  bounds {
+  	height: "-1" [ min="20dlu"]
+  }
+  widgets {
+    {
+      Label {
+        name: "title"
+        verticalAlign: top
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        value: "{@pt_name_age_sex}"
+      }
+    }
+    {
+      Label {
+        name: "bundleIcon"
+        verticalAlign: top
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "0"
+        }
+      }
+    }
+    {
+      GroupBox {
+        borders {
+          empty [ insets="0,4,4,0" ]
+        }
+        columnSpan: -1
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        layout: forms
+        rows: "d:g"
+        columns: "d:g,d:g"
+        widgets {
+          {
+            Label {
+              name: "subtitleLeft"
+              font {
+                size: "-1"
+                style: italic
+              }
+              fgColor: "dimForeground"
+              bounds {
+                x: "0"
+                y: "0"
+              }
+            }
+          }
+          {
+            Label {
+              name: "subtitleRight"
+              font {
+                size: "-1"
+              }
+              fgColor: "dimForeground"
+              bounds {
+                x: "1"
+                y: "0"
+              }
+              textHAlignment: right
+            }
+          }
+        }
+      }
+    }
+  }
+}

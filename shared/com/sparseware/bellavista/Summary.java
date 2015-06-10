@@ -15,6 +15,7 @@
  */
 package com.sparseware.bellavista;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EventObject;
@@ -27,18 +28,24 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.iDataCollection;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.ui.BorderUtils;
 import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.ScreenUtils;
 import com.appnativa.rare.ui.UIColorHelper;
 import com.appnativa.rare.ui.chart.ChartDataItem;
+import com.appnativa.rare.ui.event.ActionEvent;
+import com.appnativa.rare.ui.event.iActionListener;
 import com.appnativa.rare.util.SubItemComparator;
 import com.appnativa.rare.viewer.ChartViewer;
+import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iFormViewer;
+import com.appnativa.rare.viewer.iViewer;
+import com.appnativa.rare.widget.PushButtonWidget;
 import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.Helper;
@@ -56,12 +63,12 @@ import com.appnativa.util.json.JSONObject;
  * @author Don DeCoteau
  *
  */
-public class SummaryVitalsHandler extends aEventHandler {
+public class Summary extends aEventHandler {
   private static int DATE_COLUMN_POSITION  = 0;
   private static int NAME_COLUMN_POSITION  = 1;
   private static int VALUE_COLUMN_POSITION = 2;
-
-  public SummaryVitalsHandler() {
+  boolean hasRecentLabs;
+  public Summary() {
   }
 
   /**
@@ -149,8 +156,30 @@ public class SummaryVitalsHandler extends aEventHandler {
    * the vitals summary
    */
   public void onCreated(String eventName, iWidget widget, EventObject event) {
+    hasRecentLabs=false;
     ActionLink link = Utils.createLink(widget, "/hub/main/vitals/summary", true);
     parseDataURL((aWidget) widget, link, true);
+  }
+  
+   @Override
+  protected void connecting() {
+     if(Utils.isCardStack()) { //check for summary labs
+       try {
+         WindowViewer w=Platform.getWindowViewer();
+         ActionLink link = Utils.createLink(w, "/hub/main/labs/summary", true);
+         List<RenderableDataItem> list = w.parseDataLink(link, true);
+         hasRecentLabs=list!=null && !list.isEmpty();
+       }
+       catch(final Exception e) {
+         Platform.invokeLater(new Runnable() {
+          
+          @Override
+          public void run() {
+            Utils.handleError(e);
+          }
+        });
+       }
+     }
   }
 
   /**
@@ -197,9 +226,17 @@ public class SummaryVitalsHandler extends aEventHandler {
     }
 
     TableViewer table = (TableViewer) fv.getWidget("vitals_table");
-    iWidget label = fv.getWidget("vitals_description");
-    if (label != null) {
-      label.setValue(s);
+    iWidget label;
+    if(Utils.isCardStack()) {
+      String labs= w.getString(hasRecentLabs ? "bv.text.summary_has_recent_labs" : "bv.text.summary_no_recent_labs");
+      CardStackUtils.setViewerTitle(fv, labs, s);
+      CardStackUtils.updateTitle(fv, false);
+    }
+    else {
+      label= fv.getWidget("vitals_description");
+      if (label != null) {
+        label.setValue(s);
+      }
     }
     Iterator<String> it = vitals.keySet().iterator();
     StringBuilder sb = new StringBuilder();
@@ -245,6 +282,35 @@ public class SummaryVitalsHandler extends aEventHandler {
       table.refreshItems();
     }
   }
+  public void onConfigureCardStack(String eventName, iWidget widget, EventObject event) {
+    iContainer fv = (iContainer)widget;
+    CollectionManager.getInstance().updateUI();
+    PushButtonWidget pb=(PushButtonWidget) fv.getWidget("bv.action.flags");
+    boolean bundle=false;
+    if(pb!=null && !pb.isEnabled()) {
+      pb.setText(Platform.getResourceAsString(pb.isEnabled() ? "bv.text.has_flags": "bv.text.no_flags"));
+      if(pb.isEnabled()) {
+        bundle=true;
+      }
+    }
+    pb=(PushButtonWidget) fv.getWidget("bv.action.alerts");
+    if(pb!=null) {
+      pb.setText(Platform.getResourceAsString(pb.isEnabled() ? "bv.text.has_alerts" :"bv.text.no_alerts"));
+      if(pb.isEnabled()) {
+        bundle=true;
+      }
+    }
+    pb=(PushButtonWidget) fv.getWidget("bv.action.allergies");
+    if(pb!=null) {
+       pb.setText(Platform.getResourceAsString(pb.isEnabled() ? "bv.text.has_allergies": "bv.text.no_known_allergies"));
+       if(pb.isEnabled()) {
+         bundle=true;
+       }
+    }
+    if(bundle) {
+      CardStackUtils.setViewerAction(fv, new SummaryStackActionListener(), true);
+    }
+  }
 
   @Override
   protected void dataParsed(iWidget widget, List<RenderableDataItem> rows, ActionLink link) {
@@ -280,7 +346,7 @@ public class SummaryVitalsHandler extends aEventHandler {
         }
         bpSeries = ChartViewer.createSeries(legend);
         bpSeries.setValueContext("range_bar");
-        boolean gray = Boolean.TRUE.equals(Utils.getPreferences().getBoolean("gray_charts", false));
+        boolean gray = Utils.isCardStack() || Utils.getPreferences().getBoolean("gray_charts", false);
         JSONObject attrs = chartInfo.getJSONObject("bp");
         String color = null;
         String border = null;
@@ -389,7 +455,7 @@ public class SummaryVitalsHandler extends aEventHandler {
 
         series.setValueContext("line");
         series.setCustomProperty("plot.lineThickness", 3);
-        boolean gray = Boolean.TRUE.equals(Utils.getPreferences().getBoolean("gray_charts", false));
+        boolean gray = Utils.isCardStack() || Utils.getPreferences().getBoolean("gray_charts", false);
         String color = null;
         if (attrs != null) {
           if (gray) {
@@ -498,4 +564,44 @@ public class SummaryVitalsHandler extends aEventHandler {
     }
 
   }
-}
+  /**
+   * Handles a card stack drill down action
+   */
+  protected class SummaryStackActionListener implements iActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      ArrayList<iViewer> list=new ArrayList<iViewer>(3);
+      WindowViewer w=Platform.getWindowViewer();
+      iDataCollection dc = CollectionManager.getInstance().getCollection("allergies");
+      if(dc!=null && !dc.isEmpty()) {
+        list.add(CardStackUtils.createItemsViewer(w.getString("bv.text.allergies"), dc.getCollection(w), 0));
+      }
+
+      dc = CollectionManager.getInstance().getCollection("flags");
+      if(dc!=null && !dc.isEmpty()) {
+        list.add(CardStackUtils.createItemsViewer(w.getString("bv.text.flags"), dc.getCollection(w), 0));
+      }
+      dc = CollectionManager.getInstance().getCollection("alerts");
+      if(dc!=null && !dc.isEmpty()) {
+        list.add(CardStackUtils.createItemsViewer(w.getString("bv.text.alerts"), dc.getCollection(w), 0));
+      }
+      
+      if(list.isEmpty()) {
+        w.beep();
+      }
+      else if(list.size()==1) {
+        Utils.pushWorkspaceViewer(list.get(0), false);
+      }
+      else {
+        StackPaneViewer sp=CardStackUtils.createStackPaneViewer();
+        int len=list.size();
+        int card=1;
+        for(iViewer v:list) {
+          sp.addViewer(null, v);
+          CardStackUtils.setViewerSubTitle(v, w.getString("bv.format.card_of", card++, len));
+        }
+        sp.switchTo(0);
+        Utils.pushWorkspaceViewer(sp, false);
+      }
+    }
+  }}

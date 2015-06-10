@@ -1,0 +1,313 @@
+Form {
+  name: "summary"
+  title: "{resource:bv.text.summary}"
+  verticalAlign: full
+  horizontalAlign: full
+  bounds {
+    x: "0"
+    y: "0"
+  }
+  templateName: "bv.stackpane.card"
+  layout: forms
+  rows: "d,d,d,d,d,d,4dluY,d"
+  columns: "d,1dluX,d:g,2dluX,d,2dluX,d,1dluX"
+  widgets {
+    {
+      Label {
+        name: "admit_date"
+        columnSpan: 1
+        bounds {
+          x: "2"
+          y: "4"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_admit_date}"
+      }
+    }
+    {
+      Label {
+        name: "admit_dx"
+        columnSpan: -1
+        bounds {
+          x: "2"
+          y: "5"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_admit_dx}"
+      }
+    }
+    {
+      Label {
+        name: ""
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.mrn}:"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "0"
+          y: "4"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.admit_date}:"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "0"
+          y: "5"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.admit_dx}:"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.wt_ht_bmi}:"
+      }
+    }
+    {
+      Label {
+        columnSpan: 1
+        bounds {
+          x: "2"
+          y: "2"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_wt_ht_bmi}"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "0"
+          y: "3"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.provider}:"
+      }
+    }
+    {
+      Label {
+        name: "provider"
+        columnSpan: 1
+        bounds {
+          x: "2"
+          y: "3"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_provider}"
+      }
+    }
+    {
+      Label {
+        name: "mrn"
+        bounds {
+          x: "2"
+          y: "0"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_mrn}"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.loc}:"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "2"
+          y: "1"
+        }
+        contentPadding {
+          right: "2"
+        }
+        templateName: "bv.label.value"
+        value: "{@pt_location_rmbd}"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "4"
+          y: "0"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.vitals_resp}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Label {
+        name: "resp"
+        bounds {
+          x: "6"
+          y: "0"
+        }
+        templateName: "bv.label.value"
+        value: "---"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "4"
+          y: "1"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.vitals_temp}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Label {
+        name: "temp"
+        bounds {
+          x: "6"
+          y: "1"
+          width: "6ch"
+        }
+        templateName: "bv.label.value"
+        value: "---"
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "4"
+          y: "2"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.vitals_map}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Label {
+        name: "map"
+        bounds {
+          x: "6"
+          y: "2"
+        }
+        templateName: "bv.label.value"
+        value: "---"
+      }
+    }
+    {
+      Label {
+        name: "pulsePrompt"
+        bounds {
+          x: "4"
+          y: "3"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.vitals_pulse}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Label {
+        name: "pulse"
+        bounds {
+          x: "6"
+          y: "3"
+        }
+        templateName: "bv.label.value"
+        value: "---"
+      }
+    }
+    {
+      Label {
+        name: "hrPrompt"
+        bounds {
+          x: "4"
+          y: "4"
+        }
+        templateName: "bv.label.clinicalPrompt"
+        value: "{resource:bv.text.vitals_hr}:"
+        textHAlignment: right
+      }
+    }
+    {
+      Label {
+        name: "hr"
+        bounds {
+          x: "6"
+          y: "4"
+        }
+        templateName: "bv.label.value"
+        value: "---"
+      }
+    }
+    {
+      GroupBox {
+        borders {
+          matte [ insets="1,0,0,0" ]
+        }
+        columnSpan: -1
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "7"
+        }
+        layout: forms
+        rows: "d:g"
+        columns: "d:g,2dluX,d:g,2dluX,d:g"
+        widgets {
+          {
+            PushButton {
+              name: "bv.action.alerts"
+              verticalAlign: top
+              bounds {
+                x: "4"
+                y: "0"
+              }
+              buttonStyle: toolbar
+            }
+          }
+          {
+            PushButton {
+              name: "bv.action.flags"
+              verticalAlign: top
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              buttonStyle: toolbar
+            }
+          }
+          {
+            PushButton {
+              name: "bv.action.allergies"
+              verticalAlign: top
+              fgColor: "allergies"
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              buttonStyle: toolbar
+            }
+          }
+        }
+      } [ ]
+    }
+  }
+} [ onCreated="class:Summary#onCreated", onConfigure="class:Summary#onConfigureCardStack"  ]

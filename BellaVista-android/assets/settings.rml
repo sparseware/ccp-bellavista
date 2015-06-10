@@ -64,6 +64,7 @@ Form {
         viewerURLs {
           "/basic_settings.rml" [ deferred="false" ]
           "/servers_settings.rml" [ deferred="false" ]
+          "/pin_settings.rml" [ deferred="false" ]
         }
       }
     }

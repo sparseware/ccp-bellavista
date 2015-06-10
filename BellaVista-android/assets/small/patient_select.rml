@@ -1,0 +1,23 @@
+StackPane {
+  name: "patientSelectionForm"
+  templateName: "bv.stackpane.card"
+  title:"{resource:bv.text.select_patient}"
+  popupMenu {
+    {
+      name: "bv.action.preferences"
+    }
+    {
+      name: "bv.action.most_recent_patients"
+    }
+    {
+      name: "bv.action.nearby_patients"
+    }
+    {
+      name: "bv.action.scan_barcode"
+    }
+    {
+      name: "bv.action.voice_search"
+    }
+  }
+  selectedIndex: 1
+} [ onCreated="class:PatientSelect#onCreated", onConfigure="class:PatientSelect#onSelectionFormConfigure" ]

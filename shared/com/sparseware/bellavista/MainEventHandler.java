@@ -98,14 +98,37 @@ public class MainEventHandler implements iEventHandler {
     }
   }
 
+  /**
+   * Called to lock the device in landscape mode
+   */
+  public void lockInLandscapeMode(String eventName, iWidget widget, EventObject event) {
+    Platform.getAppContext().lockOrientation(Boolean.TRUE);
+  }
+
+  /**
+   * Called to unlock the device from landscape mode
+   */
+  public void unlockLandscapeMode(String eventName, iWidget widget, EventObject event) {
+    Platform.getAppContext().unlockOrientation();
+  }
+
+  /**
+   * Called to login when using a wearable
+   */
+  public void onCardStackLogin(String eventName, iWidget widget, EventObject event) {
+    iContainer fv = (iContainer) Platform.getWindowViewer().getViewer("logonPanel");
+    String pin = fv.getWidget("pinValue").getValueAsString();
+    Server server = Utils.getDefaultServer();
+    Utils.signIn(widget, pin, pin, server);
+  }
+
   public void onCreatedFlagsPopup(String eventName, iWidget widget, EventObject event) {
     Viewer cfg = (Viewer) ((DataEvent) event).getData();
-    if(UIScreen.isLargeScreen()) {
-      Widget w=cfg.findWidget("bv.action.fullscreen");
+    if (UIScreen.isLargeScreen()) {
+      Widget w = cfg.findWidget("bv.action.fullscreen");
       w.visible.setValue(false);
-    }
-    else {
-      Widget w=cfg.findWidget("okButton");
+    } else {
+      Widget w = cfg.findWidget("okButton");
       w.visible.setValue(false);
     }
   }
@@ -131,6 +154,10 @@ public class MainEventHandler implements iEventHandler {
         }
       });
     }
+  }
+
+  public void popWorkspaceViewer(String eventName, iWidget widget, EventObject event) {
+    Utils.popWorkspaceViewer();
   }
 
   public void goBackInStackPane(String eventName, iWidget widget, EventObject event) {
@@ -197,7 +224,7 @@ public class MainEventHandler implements iEventHandler {
 
   public void requestFocus(String eventName, iWidget widget, EventObject event) {
     String name = ((EventBase) event).getQueryString();
-    if("username".equals(name) && Platform.isTouchDevice()) {
+    if ("username".equals(name) && Platform.isTouchDevice()) {
       return;
     }
     iFormViewer fv = widget.getFormViewer();
@@ -205,7 +232,7 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void onConfigureMainView(String eventName, iWidget widget, EventObject event) {
-    PatientSelect.updateActionBar();
+    Utils.updateActionBar();
   }
 
   public void handleComboBoxMenuBorder(String eventName, iWidget widget, EventObject event) {
@@ -389,10 +416,10 @@ public class MainEventHandler implements iEventHandler {
       }
     }
     CollectionManager.getInstance().updateUI();
-    PushButtonWidget pb=(PushButtonWidget) fv.getWidget("bv.action.flags");
-    if(pb!=null && pb.isEnabled()) {
+    PushButtonWidget pb = (PushButtonWidget) fv.getWidget("bv.action.flags");
+    if (pb != null && pb.isEnabled()) {
       JSONObject info = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
-      if(info.optBoolean("autoShowFlags", false)) {
+      if (info.optBoolean("autoShowFlags", false)) {
         pb.click();
       }
     }

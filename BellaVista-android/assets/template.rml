@@ -155,8 +155,8 @@ TemplateContext {
             width: "28!"
           }
         }
-      } [ onCreated="class:PatientSelect#onPatientsTableCreated", onChange="class:PatientSelect#onPatientsTableChange",
-          onAction="class:PatientSelect#onSelectPatient" ]
+      } [ onCreated="class:PatientSelect#onPatientsTableCreated", onAction="class:PatientSelect#onSelectPatient",
+          onChange="class:PatientSelect#onPatientsTableChange" ]
     }
     {
       Table {
@@ -178,8 +178,8 @@ TemplateContext {
         gridLineColor: "tableGridLineColor"
         headerFgColor: "summaryHeaderForeground"
         headerBgColor: "summaryHeaderBackground"
-        headerBottomSeparatorColor: "darkBorder"
         headerSeparatorColor: "summaryHeaderBackground"
+        headerBottomSeparatorColor: "darkBorder"
         autoSizeRowsToFit: true
         rowHeight: "1.25ln"
       }
@@ -405,7 +405,7 @@ TemplateContext {
             size: "+1"
           }
         }
-        showPopupButton: true [ border="none", bgColor="transparent"]
+        showPopupButton: true [ border="none", bgColor="transparent" ]
         popupPainter {
           borders {
             line [ noTop="true" ]
@@ -445,18 +445,251 @@ TemplateContext {
       SplitPane {
         bgColor: "darkBackground"
         templateName: "bv.monitor.splitpane"
-        splitOrientation: top_to_bottom;
-        splitProportions{
-        	.6 
-        }
+        splitOrientation: top_to_bottom
         showGripper: false
+        splitProportions {
+          .6
+        }
         regions {
-        	{
-        	}
-        	{
-        	}
+          {}
+          {}
         }
       }
+    }
+    {
+      Label {
+        borders {
+          empty [ insets="4,4,4,4" ]
+        }
+        verticalAlign: center
+        horizontalAlign: center
+        font {
+          size: "+7"
+        }
+        templateName: "bv.label.card.item"
+        wordWrap: true
+      }
+    }
+    {
+      Label {
+        borders {
+          empty [ insets="4,4,4,4" ]
+        }
+        templateName: "bv.label.card.bundle"
+        wordWrap: true
+      }
+    }
+    {
+      WidgetPane {
+        templateName: "bv.widgetpane.card"
+      }
+    }
+    {
+      Table {
+        borders {
+          empty [ insets="4,0,0,0" ]
+        }
+        fgColor: "foreground"
+        bgColor: "defaultBackground"
+        //autoSizeColumnsToFit: true
+        enabled: false
+        defaultContextMenu: false
+        templateName: "bv.table.card"
+        selectionMode: none
+        gridLineType: none
+        gridLineColor: "tableGridLineColor"
+        alternatingHighlightType: none
+        extendBackgroundRendering: false
+        autoSizeRowsToFit: true
+        rowHeight: "1ln"
+        showStandardColumnHeader: false
+        columns {
+          {
+            title: "num"
+            iconPosition: right
+            verticalAlign: top
+            horizontalAlign: right
+            renderDetail: text_only
+            width: "3ch!"
+          }
+          {
+            title: "description"
+          }
+        }
+      }
+    }
+    {
+      StackPane {
+        templateName: "bv.stackpane.card"
+        transitionAnimator: "SlideAnimation"
+      } [ onClick="class:CardStack#onTapEvent", onKeyUp="class:CardStack#onKeyUpEvent", onFling="class:CardStack#onFlingEvent",
+          onChange="class:CardStack#onChangeEvent" ]
+    }
+    {
+      GridPane {
+        templateName: "bv.gridpane.items"
+        rows: 2
+        regions {
+          {
+            x: "0"
+            y: "0"
+          }
+          {
+            x: "0"
+            y: "1"
+            verticalFill: preferred
+            viewer {
+              WidgetPane {
+                widget {
+                  Label {
+                    name: "tapLabel"
+                    verticalAlign: full
+                    horizontalAlign: full
+                    fgColor: "clinicalPrompt"
+                    bounds {
+                      x: "0"
+                      y: "2"
+                    }
+                    value: "{resource:bv.text.tap_to_see_details}"
+                    textHAlignment: center
+                    textVAlignment: bottom
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      Form {
+        templateName: "bv.form.items"
+        layout: forms
+        rows: "[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g,[10dlu,d]:g"
+        columns: "[10dlu,d]:g,[10dlu,d]:g"
+        widgets {
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "0"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "1"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "2"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "2"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "3"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "3"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "0"
+                y: "4"
+              }
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              borders {
+                matte [ insets="0,0,1,0" ]
+              }
+              bounds {
+                x: "1"
+                y: "4"
+              }
+              wordWrap: true
+            }
+          }
+        }
+      } [ os="small" ]
     }
   }
 }

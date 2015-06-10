@@ -66,10 +66,11 @@
    * If you have your apps hosted via a web server
    * un-comment this code and specify the correct URL
    * in order use the live assets when launched via XCode
-   */
   if([RAREAPApplication amIBeingDebugged]) {
     arguments = [NSArray arrayWithObject: @"http://192.168.1.50/bv/application.rml"];
   }
+   */
+
   if(!arguments){
     arguments = [NSArray arrayWithObject: @"lib:assets/application.rml"];
   }

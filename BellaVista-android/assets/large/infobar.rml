@@ -280,6 +280,7 @@ Form {
                       Table {
                         dataURL: "collection:alerts"
                         templateName: "bv.table.summary"
+		                selectionMode: none
                         visibleRowCount: 5
                         columns {
                           {
@@ -314,6 +315,7 @@ Form {
                       Table {
                         dataURL: "collection:allergies"
                         templateName: "bv.table.summary"
+		                selectionMode: none
                         visibleRowCount: 5
                         columns {
                           {

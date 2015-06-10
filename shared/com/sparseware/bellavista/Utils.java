@@ -35,6 +35,7 @@ import com.appnativa.rare.CallbackFunctionCallback;
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aFunctionCallback;
 import com.appnativa.rare.aWorkerTask;
+import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.iPlatformAppContext;
 import com.appnativa.rare.exception.ApplicationException;
@@ -43,6 +44,7 @@ import com.appnativa.rare.net.HTTPException;
 import com.appnativa.rare.net.aLinkErrorHandler;
 import com.appnativa.rare.net.iURLConnection;
 import com.appnativa.rare.scripting.Functions;
+import com.appnativa.rare.spot.GridPane;
 import com.appnativa.rare.spot.Viewer;
 import com.appnativa.rare.ui.ActionBar;
 import com.appnativa.rare.ui.FontUtils;
@@ -50,20 +52,24 @@ import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.UIAction;
 import com.appnativa.rare.ui.UICompoundIcon;
 import com.appnativa.rare.ui.UIFont;
+import com.appnativa.rare.ui.UIImageIcon;
 import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.ViewerCreator;
 import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.effects.PullBackAnimation;
 import com.appnativa.rare.ui.effects.ShakeAnimation;
 import com.appnativa.rare.ui.effects.SlideAnimation;
+import com.appnativa.rare.ui.effects.TransitionAnimator;
 import com.appnativa.rare.ui.effects.iAnimator.Direction;
 import com.appnativa.rare.ui.effects.iTransitionAnimator;
 import com.appnativa.rare.util.Grouper;
 import com.appnativa.rare.util.SubItemComparator;
+import com.appnativa.rare.viewer.GridPaneViewer;
 import com.appnativa.rare.viewer.SplitPaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TabPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
+import com.appnativa.rare.viewer.WidgetPaneViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.aContainer;
 import com.appnativa.rare.viewer.iContainer;
@@ -86,16 +92,18 @@ import com.sparseware.bellavista.external.aCommunicationHandler;
 import com.sparseware.bellavista.external.aCommunicationHandler.Status;
 
 public class Utils {
-  public static char                             colSeparator         = '^';
-  public static char                             ldSeparator          = '|';
-  public static char                             riSeparator          = '~';
+  public static char                             colSeparator                   = '^';
+  public static char                             ldSeparator                    = '|';
+  public static char                             riSeparator                    = '~';
+  public static String                           DISPOSABLE_STACKENTRY_PROPERTY = "_BV_DISPOSABLE_";
   static AppPreferences                          preferences;
   static LoginManager                            loginManager;
   static boolean                                 demo;
   static PullBackAnimation                       pullbackAnimation;
   static ShakeAnimation                          shakeAnimation;
   static ActionPath                              actionPath;
-  static IdentityArrayList<iActionPathSupporter> actionPathSupporters = new IdentityArrayList<ActionPath.iActionPathSupporter>(5);
+  static IdentityArrayList<iActionPathSupporter> actionPathSupporters           = new IdentityArrayList<ActionPath.iActionPathSupporter>(
+                                                                                    5);
   static HashMap<Status, iPlatformIcon>          statusIcons;
   static CollectionManager                       collectionManager;
   static JSONObject                              attachmentHandlers;
@@ -103,14 +111,22 @@ public class Utils {
   static ApplicationLock                         applicationLock;
   static aCommunicationHandler                   commHandler;
   static Settings                                settingsHandler;
-  static ArrayList<StackEntry>                   stack                = new ArrayList<StackEntry>(3);
+  static ArrayList<StackEntry>                   stack                          = new ArrayList<StackEntry>(3);
   static UICompoundIcon                          backIcon;
-  static Map                                     dialogOptions        = new HashMap(5);
+  static Map                                     dialogOptions                  = new HashMap(5);
   static Viewer                                  reloginConfig;
+  static GridPane                                genericContainerCfg;
   static boolean                                 ignorePausing;
   static boolean                                 shuttingDown;
   static boolean                                 fullscreenMode;
-  private static UIFont                          boldFont;
+  public static boolean                         cardStack;
+  static UIFont                                  boldFont;
+  static TransitionAnimator                      popAnimation;
+  static iContainer                              titleWidget;
+  private static iPlatformIcon                   actionBarIcon;
+  private static CharSequence                    actionBarTitle;
+  public static boolean                          googleGlass;
+  public static boolean                          reverseFling;
 
   /**
    * This provides generic utilities used throughout the application. It is also
@@ -120,6 +136,52 @@ public class Utils {
    * @author Don DeCoteau
    */
   private Utils() {
+  }
+
+  public static void alert(Object message) {
+    alert(message, false);
+  }
+
+  public static void resetActionBar() {
+    if (actionBarTitle != null) {
+      ActionBar ab = Platform.getWindowViewer().getActionBar();
+      ab.setTitle(actionBarTitle);
+      ab.setTitleIcon(actionBarIcon);
+      if (cardStack) {
+        CardStackUtils.clearTitle();
+      } else {
+        ab.setSecondaryTitle((iWidget) null);
+      }
+    }
+  }
+
+  public static void alert(Object message, boolean exit) {
+    WindowViewer w = Platform.getWindowViewer();
+    if (cardStack) {
+      WidgetPaneViewer v = CardStackUtils.createTextCard(w, message.toString(), new Runnable() {
+
+        @Override
+        public void run() {
+          Utils.popWorkspaceViewer();
+        }
+      });
+      if (exit) {
+        v.setEventHandler(iConstants.EVENT_DISPOSE, "class:Actions#onExit", true);
+      }
+      Utils.pushWorkspaceViewer(v);
+    } else {
+      iFunctionCallback cb = null;
+      if (exit) {
+        cb = new iFunctionCallback() {
+
+          @Override
+          public void finished(boolean canceled, Object returnValue) {
+            exitEx();
+          }
+        };
+      }
+      Platform.getWindowViewer().alert(message, cb);
+    }
   }
 
   /**
@@ -149,6 +211,33 @@ public class Utils {
   public static void addActionPathSupporter(iActionPathSupporter supporter) {
     actionPathSupporters.remove(supporter); //only one instance can be on the stack an any given time
     actionPathSupporters.add(supporter);
+  }
+
+  public static void updateActionBar() {
+    if (!UIScreen.isLargeScreen()) {
+      ActionBar ab = Platform.getWindowViewer().getActionBar();
+      if (actionBarTitle == null) {
+        actionBarTitle = isCardStack() ? "" : ab.getTitleComponent().getText();
+        actionBarIcon = ab.getTitleComponent().getIcon();
+      }
+      ab.setVisible(true);
+      if (Utils.getPatient() != null) {
+        if (isCardStack()) {
+          ab.setTitle("");
+          titleWidget.getWidget("title").reset();
+          ab.setSecondaryTitle(titleWidget);
+        } else {
+          ab.setTitle(Platform.getAppContext().getData("pt_name").toString());
+        }
+        UIImageIcon thumbnail = (UIImageIcon) Platform.getAppContext().getData("pt_thumbnail");
+        ab.setTitleIcon(thumbnail);
+      } else if (isCardStack()) {
+        ab.setTitle("");
+        iViewer v = Platform.getWindowViewer().getTarget(iTarget.TARGET_WORKSPACE).getViewer();
+        CardStackUtils.updateTitle(v, true);
+      }
+
+    }
   }
 
   /**
@@ -187,7 +276,7 @@ public class Utils {
             toggleActions(true);
             handleStatusObject((JSONObject) ((ObjectHolder) returnValue).value);
             applicationLock.restoreViewer();
-            PatientSelect.updateActionBar();
+            updateActionBar();
             applicationLock = null;
           }
         } catch (Exception e) {
@@ -506,6 +595,12 @@ public class Utils {
     if (wasClosing) {
       return;
     }
+
+    if (cardStack) {
+      exitEx();
+      return;
+    }
+
     if (applicationLock != null || getUserID() == null) {
       if (!OrderManager.canExit()) {
         return;
@@ -723,6 +818,10 @@ public class Utils {
     return null;
   }
 
+  public static Server getDefaultServer() {
+    return settingsHandler.getDefaultServer();
+  }
+
   public static StackPaneViewer getStackPaneViewer(iWidget widget) {
     if (widget instanceof StackPaneViewer) {
       return (StackPaneViewer) widget;
@@ -798,6 +897,18 @@ public class Utils {
     fixCategorizedRows(rows, f, appendCounts, false);
 
     return rows;
+  }
+
+  /**
+   * Creates a grid pane viewer for viewing arbitrary content. The
+   * {@code generic_container.rml} markup is used to create the viewer
+   * 
+   * @param parent
+   *          the parent for the viewer
+   * @return the grid pane viewer
+   */
+  public static GridPaneViewer createGenericContainerViewer(iContainer parent) {
+    return (GridPaneViewer) Platform.getWindowViewer().createViewer(parent, genericContainerCfg);
   }
 
   /**
@@ -877,13 +988,7 @@ public class Utils {
           }
         }
         e.printStackTrace();
-        w.alert(e, new iFunctionCallback() {
-
-          @Override
-          public void finished(boolean canceled, Object returnValue) {
-            exitEx();
-          }
-        });
+        alert(e, true);
       }
     });
   }
@@ -949,34 +1054,82 @@ public class Utils {
     lockApplication(timedout ? ApplicationLockType.TIMEOUT : ApplicationLockType.PAUSED, true);
   }
 
+  /**
+   * Removes the current viewer from the workspace and redisplays the viewer
+   * that was previously displayed
+   * 
+   * @return true if there was a viewer to pop; false otherwise
+   */
   public static boolean popWorkspaceViewer() {
     int len = stack.size();
     if (len == 0) {
       return false;
     }
-    WindowViewer w = Platform.getWindowViewer();
-    ActionBar ab = w.getActionBar();
-    iPlatformIcon icon = ab.getTitleComponent().getIcon();
-    if (icon == backIcon) {
-      icon = backIcon.getSecondIcon();
-      backIcon.setSecondIcon(null);
-      ab.setTitleIcon(icon);
-    }
-    iTarget t = w.getTarget(iTarget.TARGET_WORKSPACE);
-    iViewer ov = t.removeViewer();
-    if (ov != null && ov.isAutoDispose()) {
-      ov.dispose();
-    }
     StackEntry e = stack.remove(len - 1);
-    t.setViewer(e.viewer);
-    t = w.getTarget("patient_info");
-    if (t != null) {
-      t.setVisible(!fullscreenMode);
+    if (e.viewer == null) {
+      e.createViewerAndCallpopWorkspaceViewer();
+    } else {
+      WindowViewer w = Platform.getWindowViewer();
+      ActionBar ab = w.getActionBar();
+      iPlatformIcon icon = ab.getTitleComponent().getIcon();
+      if (icon == backIcon) {
+        icon = backIcon.getSecondIcon();
+        backIcon.setSecondIcon(null);
+        ab.setTitleIcon(icon);
+      }
+      iTarget t = w.getTarget(iTarget.TARGET_WORKSPACE);
+      //      if (popAnimation == null) {
+      //        SlideAnimation sa = new SlideAnimation(false);
+      //        sa.setDirection(Direction.BACKWARD);
+      //        popAnimation = new TransitionAnimator(sa, null);
+      //        popAnimation.setAutoDispose(true);
+      //      }
+      //      t.setTransitionAnimator(popAnimation);
+      iViewer ov = t.setViewer(e.viewer);
+      if (isCardStack()) {
+        CardStackUtils.updateTitle(e.viewer, true);
+      }
+      if (ov != null && ov.isAutoDispose()) {
+        ov.dispose();
+      }
+      t = w.getTarget("patient_info");
+      if (t != null) {
+        t.setVisible(!fullscreenMode);
+      }
     }
     return true;
+
   }
 
+  /**
+   * Gets the size of the workspace stack
+   * 
+   * @return the size of the workspace stack
+   */
+  public static int getWorkspaceStackSize() {
+    return stack.size();
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   * 
+   * @param v
+   *          the viewer
+   */
   public static void pushWorkspaceViewer(iViewer v) {
+    pushWorkspaceViewer(v, false);
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   * 
+   * @param v
+   *          the viewer
+   * @param disposible
+   *          true if the specified can be disposed when not being displayed;
+   *          false otherwise
+   */
+  public static void pushWorkspaceViewer(iViewer v, boolean disposible) {
     if (backIcon == null) {
       backIcon = new UICompoundIcon(Platform.getResourceAsIcon("bv.icon.back"), null);
     }
@@ -991,10 +1144,39 @@ public class Utils {
     iViewer ov = t.removeViewer();
     StackEntry e = new StackEntry(ov);
     stack.add(e);
+    if (Utils.isCardStack()) {
+      CardStackUtils.updateTitle(v, false);
+    }
+    if (disposible) {
+      v.setAttribute(DISPOSABLE_STACKENTRY_PROPERTY, true);
+    }
+    t.setTransitionAnimator(null);
+    if (v == null) {
+      v = null;
+    }
     t.setViewer(v);
   }
 
-  public static void pushWorkspaceViewer(final String url) throws MalformedURLException {
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   * 
+   * @param url
+   *          the url to use to create the viewer
+   */
+  public static void pushWorkspaceViewer(String url) throws MalformedURLException {
+    pushWorkspaceViewer(url, false);
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   * 
+   * @param url
+   *          the url to use to create the viewer
+   * @param disposible
+   *          true if the specified can be disposed when not being displayed;
+   *          false otherwise
+   */
+  public static void pushWorkspaceViewer(final String url, final boolean disposable) throws MalformedURLException {
     iFunctionCallback cb = new iFunctionCallback() {
 
       @Override
@@ -1002,7 +1184,7 @@ public class Utils {
         if (returnValue instanceof Throwable) {
           handleError((Throwable) returnValue);
         } else if (!canceled) {
-          pushWorkspaceViewer((iViewer) returnValue);
+          pushWorkspaceViewer((iViewer) returnValue, disposable);
         }
 
       }
@@ -1130,6 +1312,9 @@ public class Utils {
         }
         n = 0;
       }
+    }
+    if (isCardStack()) {
+      CardStackUtils.updateTitle(viewer, true);
     }
     if (disposeOld) { //saves memory
       iFunctionCallback cb = new iFunctionCallback() {
@@ -1459,7 +1644,7 @@ public class Utils {
       if (!Platform.getPlatform().isDesktop()) {
         Platform.setUseFullScreen(true);
       }
-      PatientSelect.resetActionBar();
+      resetActionBar();
       iTarget t = w.getTarget("patient_info");
       if (t != null) { //can be null if we have another viewer loaded in the workspace
         t.setVisible(false);
@@ -1474,7 +1659,7 @@ public class Utils {
       if (t != null) {
         t.setVisible(true);
       }
-      PatientSelect.updateActionBar();
+      updateActionBar();
     }
     fullscreenMode = full;
   }
@@ -1520,7 +1705,7 @@ public class Utils {
       PatientSelect.clearoutPatientCentricInfo();
       loginManager.logout();
     } else {
-      PatientSelect.resetActionBar();
+      resetActionBar();
     }
     iContainer rv = (iContainer) w.createViewer(w, reloginConfig);
     StackPaneViewer panel = (StackPaneViewer) rv.getWidget("reloginPanel");
@@ -1545,15 +1730,19 @@ public class Utils {
     }
   }
 
+  public static boolean isCardStack() {
+    return cardStack;
+  }
+
   /**
    * This class represents and entry for a viewer on the workspace stack.
    * 
    * @author Don DeCoteau
    */
-  public static class StackEntry {
-    iViewer viewer;
-    String  url;
-    boolean disposable;
+  public static class StackEntry implements iFunctionCallback {
+    iViewer    viewer;
+    ActionLink viewerLink;
+    boolean    disposable;
 
     /**
      * Creates a new instance.
@@ -1563,24 +1752,44 @@ public class Utils {
      */
     public StackEntry(iViewer viewer) {
       super();
+      if (Boolean.TRUE.equals(viewer.getAttribute(DISPOSABLE_STACKENTRY_PROPERTY))) {
+        ActionLink l = viewer.getViewerActionLink();
+        if (l != null) {
+          viewerLink = l;
+          viewer.dispose();
+          viewer = null;
+        }
+      }
       this.viewer = viewer;
     }
 
     /**
-     * Creates a new instance. If the view is specified as disposable it means
-     * the the stack manager is allowed to dispose of it when it is not on the
-     * screen and recreate it when needed
-     * 
-     * @param url
-     *          the url for the viewer
-     * @param disposable
-     *          true if the viewer is disposable; false otherwise
+     * The popWorkspaceViewer method call the method when the viewer field for
+     * this entry is null. A null viewer field means that the viewer needs to be
+     * recreated from a link.
      */
-    public StackEntry(String url, boolean disposable) {
-      super();
-      this.url = url;
-      this.disposable = disposable;
+    public void createViewerAndCallpopWorkspaceViewer() {
+      final WindowViewer w = Platform.getWindowViewer();
+      try {
+        w.showWaitCursor();
+        w.createViewer(viewerLink, this);
+      } catch (MalformedURLException e) {
+        w.hideWaitCursor();
+        handleError(e);
+      }
     }
+
+    @Override
+    public void finished(boolean canceled, Object returnValue) {
+      Platform.getWindowViewer().hideWaitCursor();
+      if (returnValue instanceof Throwable) {
+        handleError((Throwable) returnValue);
+      } else if (!canceled) {
+        viewer = ((iViewer) returnValue);
+        popWorkspaceViewer();
+      }
+    }
+
   }
 
   static class AlphaAnimator implements Runnable {
@@ -1773,12 +1982,19 @@ public class Utils {
       Object result = null;
       try {
         ActionLink l;
-        if (url == null) {
-          l = window.createActionLink("/hub/main/account/login/user.json");
+        if (cardStack && !demo) {
+          if (url == null) {
+            l = window.createActionLink("/hub/main/account/pin_login/user.json");
+          } else {
+            l = window.createActionLink(new URL(url, "hub/main/account/pin_login/user.json"));
+          }
         } else {
-          l = window.createActionLink(new URL(url, "hub/main/account/login/user.json"));
+          if (url == null) {
+            l = window.createActionLink("/hub/main/account/login/user.json");
+          } else {
+            l = window.createActionLink(new URL(url, "hub/main/account/login/user.json"));
+          }
         }
-
         String s;
         if (!demo) {
 
@@ -1835,7 +2051,23 @@ public class Utils {
          * create the viewer. We create it after we have set the context so that
          * relogin screen can come from the server (if it was a context server)
          */
-        reloginConfig = (Viewer) window.createConfigurationObject(new ActionLink(window, "/relogin.rml"));
+        reloginConfig = (Viewer) window.createConfigurationObject(new ActionLink(window, "relogin.rml"));
+        
+        /**
+         * Create the generic container configuration to use to create a generic container on the fly
+         */
+        genericContainerCfg = (GridPane) window.createConfigurationObject(new ActionLink(window, "/generic_container.rml"));
+        if (cardStack) {
+          final Viewer cfg = (Viewer) window.createConfigurationObject(new ActionLink(window, "infobar.rml"));
+          Runnable r = new Runnable() {
+
+            @Override
+            public void run() {
+              titleWidget = (iContainer) window.createWidget(cfg);
+            }
+          };
+          Platform.invokeLater(r);
+        }
 
         /**
          * Set a handle to be called when there is an error opening a link
@@ -1909,9 +2141,9 @@ public class Utils {
                                                       // screen
       }
       try {
-        if (isDemo()) {
-          // actionPath = new ActionPath("2", "vitals");
-        }
+//        if (isDemo()) {
+//          actionPath = new ActionPath("2");
+//        }
         if (applicationLock != null) { //we are re-logging in 
           actionPath = applicationLock.actionPath;
           applicationLock = null;
@@ -1926,7 +2158,14 @@ public class Utils {
               Platform.debugLog("Unable to load communication class:" + cls);
             }
           }
-          collectionManager.startPolling();
+          if (!cardStack) {
+            collectionManager.startPolling();
+          }
+
+        }
+        if (UIScreen.isSmallScreen()) {
+          CardStackUtils.setupEnvironment(w);
+
         }
         PatientSelect.changePatient(w, actionPath);
 
@@ -2057,5 +2296,13 @@ public class Utils {
         dataUrl = null;
       }
     }
+  }
+
+  public static boolean isGoogleGlass() {
+    return googleGlass;
+  }
+
+  public static boolean isReverseFling() {
+    return reverseFling;
   }
 }

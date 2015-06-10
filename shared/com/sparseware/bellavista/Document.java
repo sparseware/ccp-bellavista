@@ -76,7 +76,6 @@ public class Document extends aWorkerTask {
   Date                                    documentDate;
   String                                  documentTitle;
   static String                           bodyOutOfBandText;
-  static GridPane                         genericContainerCfg;
   static GridPane                         documentViewerCfg;
 
   public Document(iWidget widget, ActionLink link, String id) {
@@ -136,7 +135,6 @@ public class Document extends aWorkerTask {
   }
 
   static void staticInitialize() throws Exception {
-    genericContainerCfg = (GridPane) Platform.getWindowViewer().createConfigurationObject(new ActionLink("/generic_container.rml"));
     documentViewerCfg = (GridPane) Platform.getWindowViewer().createConfigurationObject(new ActionLink("/document_viewer.rml"));
     JSONObject info = (JSONObject) Platform.getAppContext().getData("notesInfo");
     bodyOutOfBandText = info.optString("bodyOutOfBandText", "");
@@ -745,7 +743,7 @@ public class Document extends aWorkerTask {
           } else {
             w.showWaitCursor();
             StackPaneViewer sp = (StackPaneViewer) Utils.getStackPaneViewer(fv);
-            GridPaneViewer gp = (GridPaneViewer) w.createViewer(sp, genericContainerCfg);
+            GridPaneViewer gp = Utils.createGenericContainerViewer(sp);
             n = sp.addViewer(null, gp);
             sp.switchTo(n);
             handler.createViewer(gp, doc, item, new AttachmentCallback(gp));

@@ -60,6 +60,7 @@ GroupBox {
         }
         dataURL:<< 
          1|bv.text.settings.manage_servers
+         2|bv.text.settings.enter_pin
         >> [ inline="true", ldSeparator="|" ]
         itemDescription {
           iconPosition: right_justified

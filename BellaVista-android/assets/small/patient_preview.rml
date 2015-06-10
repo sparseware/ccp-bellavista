@@ -1,0 +1,115 @@
+Form {
+  horizontalAlign: full
+  bgColor: "defaultGradient"
+  bounds {
+    x: "0"
+    y: "0"
+  }
+  layout: forms
+  rows: "f:d,f:d,f:d,f:d"
+  columns: "4dluX,d,2dluX,d:g,2dluX"
+  widgets {
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "2"
+        }
+        value: "{resource:bv.text.age_sex}:"
+        textHAlignment: trailing
+        textVAlignment: top
+      }
+    }
+    {
+      Label {
+        name: "age_sex"
+        bounds {
+          x: "3"
+          y: "2"
+        }
+        contentPadding {
+          left: "3"
+        }
+        templateName: "bv.label.value"
+        textHAlignment: leading
+      }
+    }
+    {
+      Label {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        value: "{resource:bv.text.admit_date}:"
+        textHAlignment: trailing
+      }
+    }
+    {
+      Label {
+        name: "admit_date"
+        bounds {
+          x: "3"
+          y: "3"
+        }
+        contentPadding {
+          left: "3"
+        }
+        templateName: "bv.label.value"
+      }
+    }
+    {
+      Label {
+        name: "patient"
+        horizontalAlign: full
+        font {
+          style: bold
+        }
+        bounds {
+          x: "3"
+          y: "0"
+        }
+        value: "NO PATIENT"
+        icon: "resource:bv_icon_checkmark"
+        textHAlignment: left
+        textVAlignment: bottom
+        iconPosition: right_justified
+      } [ onAction="class:PatientSelect#onSelectPatient" ]
+    }
+    {
+      Label {
+        verticalAlign: bottom
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "0"
+        }
+        value: "{resource:bv.text.name}:"
+        textHAlignment: trailing
+        textVAlignment: center
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "1"
+          y: "1"
+        }
+        value: "{resource:bv.text.mrn}:"
+        textHAlignment: trailing
+      }
+    }
+    {
+      Label {
+        name: "mrn"
+        bounds {
+          x: "3"
+          y: "1"
+        }
+        templateName: "bv.label.value"
+        textHAlignment: leading
+      }
+    }
+  }
+}

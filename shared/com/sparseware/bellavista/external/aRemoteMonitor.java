@@ -15,22 +15,31 @@
  */
 package com.sparseware.bellavista.external;
 
+import java.util.List;
+
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.scripting.Functions;
+import com.appnativa.rare.spot.RadioButton;
 import com.appnativa.rare.spot.SplitPane;
 import com.appnativa.rare.spot.StackPane;
 import com.appnativa.rare.spot.Viewer;
 import com.appnativa.rare.ui.UIDimension;
 import com.appnativa.rare.ui.event.ActionEvent;
 import com.appnativa.rare.ui.event.iActionListener;
+import com.appnativa.rare.viewer.GridPaneViewer;
 import com.appnativa.rare.viewer.SplitPaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
+import com.appnativa.rare.viewer.ToolBarViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
-import com.appnativa.rare.widget.PushButtonWidget;
+import com.appnativa.rare.viewer.iViewer;
+import com.appnativa.rare.widget.LabelWidget;
+import com.appnativa.rare.widget.RadioButtonWidget;
+import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.json.JSONObject;
+import com.sparseware.bellavista.Utils;
 
 /**
  * This class provides a base implementation for remote monitoring displays.
@@ -238,27 +247,10 @@ public abstract class aRemoteMonitor {
         sp.addViewer("waveforms", wv);
         sp.addViewer("numerics", nv);
         sp.setSelectedIndex(0);
-        PushButtonWidget pb = (PushButtonWidget) wv.getWidget("toggleButton");
-        if (pb != null) {
-          pb.addActionListener(new iActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              sp.switchTo("numerics");
-            }
-          });
-        }
-        pb = (PushButtonWidget) nv.getWidget("toggleButton");
-        if (pb != null) {
-          pb.addActionListener(new iActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              sp.switchTo("waveforms");
-            }
-          });
-        }
-        rv = sp;
+        rv = createGridPaneViewer(sp);
+        stackPaneViewerCrated(sp, patient);
+        Platform.getWindowViewer().getActionBar().setVisible(false);
+       Platform.getAppContext().lockOrientation(true);
       } else {
         SplitPane pane = (SplitPane) w.createConfigurationObject("SplitPane", "bv.monitor.splitpane");
         final SplitPaneViewer sp = (SplitPaneViewer) w.createViewer(parent, pane);
@@ -285,6 +277,17 @@ public abstract class aRemoteMonitor {
   }
 
   /**
+   * Get toolbar buttons for the specified viewer
+   * 
+   * @param viewer
+   *          a viewer that was created by this handler
+   * @return toolbar buttons to use with the viewer or null
+   */
+  public List<iWidget> getToolbarButtons(iViewer viewer) {
+    return null;
+  }
+
+  /**
    * Called when the main viewer has finished being created
    * 
    * @param v
@@ -293,6 +296,18 @@ public abstract class aRemoteMonitor {
    *          the patient
    */
   protected void mainViewerCrated(iContainer v, JSONObject patient) {
+  }
+  
+  /**
+   * Called when a stackpane viewer has been created 
+   * for viewing numerics and waveforms
+   * 
+   * @param sp
+   *          the viewer
+   * @param patient
+   *          the patient
+   */
+  protected void stackPaneViewerCrated(StackPaneViewer sp, JSONObject patient) {
   }
 
   /**
@@ -304,6 +319,58 @@ public abstract class aRemoteMonitor {
    *          true if the viewer is a numerics viewer; false otherwise
    */
   protected void viewerCrated(iContainer v, boolean numerics) {
+
+  }
+
+  protected iContainer createGridPaneViewer(final StackPaneViewer sp) {
+    WindowViewer w = Platform.getWindowViewer();
+    GridPaneViewer gp = Utils.createGenericContainerViewer(w);
+    ToolBarViewer tb = (ToolBarViewer) gp.getWidget("genericToolbar");
+    iWidget b = tb.getWidget("bv.action.fullscreen");
+    if (b != null) {
+      b.setVisible(false);
+    }
+    b = tb.getWidget("backButton");
+    if (b != null) {
+      b.setEventHandler(iConstants.EVENT_ACTION, "class:MainEventHandler#popWorkspaceViewer", false);
+    }
+    final LabelWidget l = (LabelWidget) tb.getWidget("genericLabel");
+    RadioButton cfg = (RadioButton) w.createConfigurationObject("RadioButton", "bv.radiobutton.toolbar");
+    cfg.groupName.setValue("sotera");
+
+    RadioButtonWidget rb = (RadioButtonWidget) tb.createWidget(cfg);
+    rb.setIcon(Platform.getResourceAsIcon("bv.icon.ecg"));
+    rb.addActionListener(new iActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        sp.switchTo("waveforms");
+        if (l != null) {
+          l.setText(sp.getActiveViewer().getTitle());
+        }
+      }
+    });
+    tb.addWidget(rb);
+    rb.setSelected(true);
+
+    rb = (RadioButtonWidget) tb.createWidget(cfg);
+    rb.setIcon(Platform.getResourceAsIcon("bv.icon.vitals_numerics"));
+    rb.addActionListener(new iActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        sp.switchTo("numerics");
+        if (l != null) {
+          l.setText(sp.getActiveViewer().getTitle());
+        }
+      }
+    });
+    tb.addWidget(rb);
+    if (l != null && sp.getActiveViewer() != null) {
+      l.setText(sp.getActiveViewer().getTitle());
+    }
+    gp.setViewer(1, sp);
+    return gp;
 
   }
 

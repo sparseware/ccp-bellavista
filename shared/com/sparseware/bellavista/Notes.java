@@ -56,7 +56,6 @@ import com.sparseware.bellavista.Document.DocumentItemType;
 public class Notes extends aResultsManager implements iValueChecker {
   protected int                             attachmentColumn;
   protected int                             parentColumn;
-  public static int                         STATUS_COLUMN = 8;
   protected String                          infoName      = "notesInfo";
   protected String                          documentPath  = "/hub/main/documents/document/";
   Document                                  loadedDocument;
@@ -258,14 +257,7 @@ public class Notes extends aResultsManager implements iValueChecker {
     dataTable = table;
     table.setWidgetDataLink(link);
 
-    int len = rows.size();
-
-    if ((len == 1) && !rows.get(0).isEnabled()) {
-      hasNoData = true;
-      table.addParsedRow(rows.get(0));
-      table.finishedParsing();
-      table.finishedLoading();
-      dataLoaded = true;
+    if (checkAndHandleNoData(table, rows)) {
       return;
     } else {
       processData(table, rows);

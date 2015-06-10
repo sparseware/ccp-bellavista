@@ -2,6 +2,7 @@ Form {
   layout: forms
   rows: "d,d:g"
   columns: "d:g"
+  name: "vitals"
   widgets {
     {
       TreeTable {
@@ -87,7 +88,7 @@ Form {
               icon: "resource:bv.icon.ecg"
               showText: false
               groupName: "views"
-            } [ onConfigure="class:Vitals#onConfigureRealtimeVitalsButton" ]
+            } [ onConfigure="class:Vitals#onConfigureRealtimeVitalsButton", onAction="class:Vitals#changeView" ]
           }
         }
       }

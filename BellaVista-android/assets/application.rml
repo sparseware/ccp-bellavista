@@ -1,30 +1,39 @@
 Application {
   name: "BellaVista"
-  lookAndFeelPropertiesURL:<< 	Rare.background=Color|#eae8e5
+  lookAndFeelPropertiesURL:<< 	
+    Rare.background=Color|black [os="small"]
+    Rare.background=Color|#eae8e5
+    Rare.foreground=Color|white [os="small"]
     Rare.foreground=Color|#111111
+    Rare.disabledForeground=Color|#999999
+    defaultBackground=Color|black [os="small"]
     defaultBackground=Color|Rare.background
-    Rare.LineBorder.color=Color|defaultBackground-20
+    Rare.LineBorder.color=Color|defaultBackground^20
     foreground=Color|Rare.foreground
     themeBlue=Color|#009cff
     rowHilite=Color|defaultBackground+5
     link=Color|#5195ce
+    dimForeground=Color|#cccccc [os="small"]
     dimForeground=Color|#333333
+    clinicalPrompt=Color|#999999 [os="small"]
     clinicalPrompt=Color|#555555
 	lightBackground=Color|defaultBackground+5
 	mediumBackground=Color|defaultBackground-10
-    darkBackground=Color|defaultBackground-20
-    darkBorder=Color|defaultBackground-50
+    darkBackground=Color|defaultBackground^20
+    darkBorder=Color|defaultBackground^50
     lightBorder=Color|#cccccc
     textHighlight=Color|#929d8d
     trendBackground=Color|white
 	defaultGradient=Color|defaultBackground+10,defaultBackground-10 
 	abnormal=Color|red-10
+	error=Color|red
 	
 	unknown=Color|orange-10
 	allergies=Color|#900000
   	spreadsheetCategoryBackground=Color|defaultBackground+5,defaultBackground-20
   	lineChartColor=Color|#00a7ff
   	barChartColor=Color|"#00a7ff-10, #00a7ff+10 [ direction='horizontal_left' ]"
+  	lineChartColor_g=Color|white [os="small"]
   	lineChartColor_g=Color|#777777
   	barChartColor_g=Color|"#666666, #cccccc [ direction='horizontal_left' ]"
   	popupMenuBackground=Color|defaultBackground^5
@@ -42,9 +51,11 @@ Application {
     summaryHeaderBackground=Color|darkBackground
 	
   	Rare.Chart.foreground=Color|clinicalPrompt
+  	Rare.Chart.plotBackground=Color|"black" [os="small"]
   	Rare.Chart.plotBackground=Color|"white,#dddddd"
+  	Rare.Chart.markerBackground=Color|white@25 [os="small"]
   	Rare.Chart.markerBackground=Color|#b6e3b6@25
-  	Rare.Chart.gridColor=Color|defaultBackground-30
+  	Rare.Chart.gridColor=Color|defaultBackground^30
     Rare.Chart.font=Font|{size:-2} [os="touch"]
 
     Rare.Alert.foregroundColor=Color|dimForeground
@@ -54,15 +65,16 @@ Application {
     Rare.TabPane.tabBorderColor=Color|darkBorder
     Rare.List.dividerLineColor=Color|#c0c0c0
 	Rare.ProgressPopup.background=Color|white@80
+	Rare.Button.minimumHeight=String|1ln [os="small"]
 	Rare.Button.minimumHeight=String|1.75ln
+	Rare.PushButton.borderInsets=Insets|3,3,3,3 [os="not_touch,small"]  
 	Rare.PushButton.borderInsets=Insets|7,7,7,7 [os="touch"]  
-	Rare.PushButton.borderInsets=Insets|3,3,3,3 [os="not_touch"]  
   	Rare.android.EditText.disableImeExtractUI=Boolean|true
   	Rare.icon.menu=Icon|resource:bv.icon.menu
   	Rare.List.rowHeight=String|2ln [os="touch"]
 	Rare.Popup.restrictToWindow=Boolean|true [os=not_touch]
 	  	
-  	TrendPanel.labName=GridCell|{borders: matte [insets="0,0,1,0", color=darkBorder]}
+  	TrendPanel.trendName=GridCell|{borders: matte [insets="0,0,1,0", color=darkBorder]}
 
   	Rare.class.defaultPackage=String|com.sparseware.bellavista
   	    >> [ inline="true" ]
@@ -142,6 +154,26 @@ Application {
       name: "bv.action.fullscreen"
       icon: "resource:bv.icon.fullscreen"
     }[onAction="class:Actions#onFullscreen"]
+    {
+      name: "bv.action.scan_barcode"
+      icon: "resource:bv.icon.barcode"
+      value: "{resource:bv.text.scan_barcode}
+    }[onAction="class:Actions#onFullscreen"]
+    {
+      name: "bv.action.nearby_patients"
+      icon: "resource:bv.icon.antenna"
+      value: "{resource:bv.text.find_nearby_patients}
+    }[onAction="class:PatientSelect#onNearbyPatientsAction"]
+    {
+      name: "bv.action.voice_search"
+      icon: "resource:bv.icon.voice_search"
+      value: "{resource:bv.text.voice_search}"
+    }[onAction="class:PatientSelect#onVoiceSearchAction"]
+    {
+      name: "bv.action.most_recent_patients"
+      icon: "resource:bv.icon.history"
+      value: "{resource:bv.text.most_recent_patients}"
+    }[onAction="class:PatientSelect#onMostRecentAction"]
    }
   >> [ inline="true" ]
   attributesURL: "attributes.json"

@@ -2,6 +2,8 @@ package com.sparseware.bellavista.external;
 
 import java.util.EventObject;
 
+import com.appnativa.rare.Platform;
+import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.iEventHandler;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.json.JSONObject;
@@ -23,6 +25,10 @@ public class RemoteMonitorEventHandler implements iEventHandler,iRemoteMonitorEv
     if (remoteMonitor != null) {
       JSONObject patient = (JSONObject) widget.getAttribute(remoteMonitor.getPatientPropertyName());
       remoteMonitor.stopMonitoring(patient);
+      if(UIScreen.isMediumScreen()) {
+        Platform.getAppContext().unlockOrientation();
+        Platform.getWindowViewer().getActionBar().setVisible(true);
+      }
     }
   }
 

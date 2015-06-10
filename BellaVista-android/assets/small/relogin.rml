@@ -1,0 +1,110 @@
+WidgetPane {
+  bgImageURL: "resource:bv_image" [ renderType="stretched" ]
+  widget {
+    StackPane {
+      name: "reloginPanel"
+      viewers {
+        {
+          Form {
+            borders {
+              line [ cornerArc="10", color="#ffffff@10" ]
+            }
+            verticalAlign: center
+            horizontalAlign: center
+            bgColor: "#ffffff@50,#aaaaaa@50"
+            local: false
+            layout: forms
+            rows: "4dluY,d,4dluY,f:[30dlu,d],4dluY,[50dlu,d],4dluY,d,4dluY,d,14dluY"
+            columns: "4dluX,d,2dluX,d,4dluX"
+            widgets {
+              {
+                Label {
+                  bounds {
+                    x: "1"
+                    y: "7"
+                  }
+                  value: "{resource:bv.text.password}:"
+                  textHAlignment: right
+                }
+              }
+              {
+                PasswordField {
+                  name: "password"
+                  bounds {
+                    x: "3"
+                    y: "7"
+                    width: "15ch"
+                  }
+                } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
+              }
+              {
+                PushButton {
+                  bounds {
+                    x: "3"
+                    y: "9"
+                  }
+                  value: "{resource:bv.text.sign_in}"
+                } [ onAction="class:MainEventHandler#signIn" ]
+              }
+              {
+                Label {
+                  columnSpan: 3
+                  verticalAlign: full
+                  horizontalAlign: full
+                  bounds {
+                    x: "1"
+                    y: "1"
+                    width: "15ch"
+                  }
+                  icon: "resource:bv.launcher"
+                  value: "{resource:bv.text.welcome}"
+                  wordWrap: true
+                }
+              }
+              {
+                Label {
+                  name: "userLabel"
+                  columnSpan: 3
+                  verticalAlign: full
+                  horizontalAlign: full
+                  bounds {
+                    x: "1"
+                    y: "5"
+                  }
+                  value: "{$rformat('bv.format.text.reenter_password',@userDisplayName)}"
+                  wordWrap: true
+                }
+              }
+              {
+                Label {
+                  name: "reasonLabel"
+                  columnSpan: 3
+                  fgColor: "blue"
+                  bounds {
+                    x: "1"
+                    y: "3"
+                  }
+                  value: "{resource:bv.text.client_locked}"
+                  wordWrap: true
+                }
+              }
+            }
+          }
+        }
+        {
+          WidgetPane {
+            verticalAlign: center
+            horizontalAlign: center
+            widget {
+              Label {
+                verticalAlign: center
+                horizontalAlign: center
+                icon: "resource:bv.icon.lock_big"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

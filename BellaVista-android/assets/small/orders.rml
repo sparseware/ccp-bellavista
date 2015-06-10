@@ -1,0 +1,58 @@
+Form {
+  name: "orders"
+  title: "{resource:bv.text.active_medications}"
+  templateName: "bv.stackpane.card"
+  local: false
+  layout: forms
+  rows: "d,d:g,d"
+  columns: "d:g"
+  widgets {
+    {
+      TreeTable {
+        name: "ordersTable"
+        verticalAlign: full
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        visible: false
+        dataURL: "/hub/main/orders/medications/active" [ columnSeparator="^", ldSeparator="|" ]
+        columns {
+          {
+            title: " "
+            renderDetail: icon_only
+          }
+          {
+            title: "{resource:bv.text.order}"
+          }
+        }
+      } [ onCreated="class:Orders#onTableCreated", onFinishedLoading="class:Orders#onFinishedLoading" ]
+    }
+    {
+      Form {
+        name: "itemsForm"
+        templateName: "bv.form.items"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+      }
+    }
+    {
+      Label {
+        name: "tapLabel"
+        verticalAlign: full
+        horizontalAlign: full
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        fgColor: "clinicalPrompt"
+        textHAlignment: center
+        textVAlignment: bottom
+        value: "{resource:bv.text.tap_to_see_details}"
+      }
+    }
+  }
+} [ onKeyUp="class:CardStack#onKeyUpEvent", onClick="class:CardStack#onTapEvent", onFling="class:CardStack#onFlingEvent",
+    onChange="class:CardStack#onChangeEvent", onDispose="class:Orders#onDispose" ]

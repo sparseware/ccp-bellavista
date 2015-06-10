@@ -1,0 +1,40 @@
+Form {
+  name: "labsOverview"
+  local: false
+  layout: forms
+  rows: "d:g"
+  columns: "d:g"
+  widgets {
+    {
+      Table {
+        name: "trendsTable"
+        bgColor: "black"
+        fgColor: "white"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        local: false
+        autoResizeMode: none
+        selectionMode: invisible
+        columnSelectionAllowed: true
+        gridLineType: none
+        autoSizeRowsToFit: true
+        rowHeight: "3.75ln"
+        showStandardColumnHeader: false
+        columns {
+          {
+            title: ""
+            valueType: date_time_type
+            valueContext: "|MM/dd/yy'@'HH:mm"
+            rendererClass: "FormsLayoutRenderer" [ options="rows=\"d,d,d,d:g\",columns=\"2dluX,d,2dluX,d,2dluX,d:g\"" ]
+          }
+          {
+            title: ""
+            rendererClass: "FormsLayoutRenderer" [ options="rows=\"d,d,d,d:g\",columns=\"2dluX,d,2dluX,d,2dluX,d:g\"" ]
+          }
+        }
+      } [ onCreated="class:Labs#onTrendsTableCreated", onConfigure="class:Labs#onTrendsTableConfigure" ]
+    }
+  }
+}

@@ -1,0 +1,41 @@
+TabPane {
+  name: "applicationTabs"
+  borders {
+    none
+  }
+  local: false
+  selectedIndex: 0
+  transitionAnimator: "SlideAnimation" 
+  tabs {
+    {
+      name: "summary"
+      dataURL: "summary.rml"
+      title: "{resource:bv.text.summary}"
+      icon: "resource:bv.icon.summary"
+    }
+    {
+      name: "vitals"
+      dataURL: "vitals.rml"
+      title: "{resource:bv.text.vitals}"
+      icon: "resource:bv.icon.vitals"
+    }
+    {
+      name: "labs"
+      dataURL: "labs.rml"
+      title: "{resource:bv.text.labs}"
+      icon: "resource:bv.icon.labs"
+    }
+    {
+      name: "orders"
+      dataURL: "orders.rml"
+      title: "{resource:bv.text.orders}"
+      icon: "resource:bv.icon.orders"
+    }
+    {
+      name: "consults"
+      dataURL: "consults.rml"
+      title: "{resource:bv.text.consults}"
+      icon: "resource:bv.icon.consults"
+    }
+  }
+} [ onCreated="class:MainEventHandler#onTabPaneCreated", onConfigure="class:CardStack#onTabPaneConfigured", onChange="class:CardStack#onChangeEvent"]
