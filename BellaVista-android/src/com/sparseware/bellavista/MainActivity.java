@@ -12,6 +12,9 @@ import android.view.WindowManager;
 
 import com.appnativa.rare.ui.UIFont;
 import com.appnativa.rare.ui.UIScreen;
+import com.appnativa.rare.ui.aWidgetListener;
+import com.appnativa.rare.viewer.TabPaneViewer;
+import com.appnativa.rare.viewer.aViewer;
 
 public class MainActivity extends com.appnativa.rare.platform.android.MainActivity {
   GestureDetector gestureDetector;
@@ -43,6 +46,14 @@ public class MainActivity extends com.appnativa.rare.platform.android.MainActivi
       return super.adjustSystemFont(f);
     }
   }
+  @Override
+  protected aWidgetListener findFirstMouseListener(aViewer v, boolean motion) {
+    if(v instanceof TabPaneViewer) {
+      v=(aViewer) ((TabPaneViewer)v).getSelectedTabViewer();
+    }
+    return super.findFirstMouseListener(v, motion);
+  }
+  
   @Override
   protected void setInitialOptions() {
     super.setInitialOptions();

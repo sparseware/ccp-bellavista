@@ -126,7 +126,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   String                             nextHREF;
   int                                searchPageSize;
   CardPatientSelectionActionListener psActionListener;
-  private UIPopupMenu selectionMenu;
+  private UIPopupMenu                selectionMenu;
   static final String                PATIENT_SELECTION_TYPE = "pt_selection_type";
   static final String                PATIENT_SELECT_PAGE    = "pt_select_paage";
   static final String                PATIENT_SELECT         = "pt_select_patient";
@@ -253,7 +253,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         Platform.ignoreException("faled to instantiate barcode reader", e);
       }
     }
-    if(Utils.isCardStack()) {
+    if (Utils.isCardStack()) {
       StackPane cfg = (StackPane) ((DataEvent) event).getData();
       selectionMenu = new UIPopupMenu(Platform.getWindowViewer(), cfg.getPopupMenu());
       cfg.setPopupMenu(null);
@@ -261,11 +261,20 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   /**
+   * Called when the patient selection from is loadex
+   */
+  public void onLoad(String eventName, iWidget widget, EventObject event) {
+    if (Utils.isCardStack()) {
+      Platform.getWindowViewer().getActionBar().setVisible(false);
+    }
+  }
+
+  /**
    * Called when the patient selection view is disposed
    */
   public void onDispose(String eventName, iWidget widget, EventObject event) {
-    if(Utils.isCardStack()) {
-      if(patientsTable != null) {
+    if (Utils.isCardStack()) {
+      if (patientsTable != null) {
         patientsTable.dispose();
       }
     }
@@ -481,7 +490,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
   }
 
-
   /**
    * Called to configure the search form form
    */
@@ -521,7 +529,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void onSearchFormUnloaded(String eventName, final iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
   }
-  
+
   /**
    * Called after the selection form has been configured
    */
@@ -531,15 +539,15 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     iFormViewer fv = widget.getFormViewer();
     patientsTable = (TableViewer) fv.getWidget("patientsTable");
     if (cardStack) {
-      if(patientsTable==null) { //to keep things simple we will create a hidden table so that code that relys on the table can be used
-        Table cfg = (Table)w.createConfigurationObject("Table", "bv.table.patients");
+      if (patientsTable == null) { //to keep things simple we will create a hidden table so that code that relys on the table can be used
+        Table cfg = (Table) w.createConfigurationObject("Table", "bv.table.patients");
         cfg.spot_clearAttributes(); //remove event handlers so that they are not called
         patientsTable = (TableViewer) w.createWidget(cfg);
       }
-      final StackPaneViewer sp=(StackPaneViewer)widget;
-      CardStackUtils.createListItemsViewer(sp, null, null, selectionMenu, null,true, false);
+      final StackPaneViewer sp = (StackPaneViewer) widget;
+      CardStackUtils.createListItemsViewer(sp, null, null, selectionMenu, null, true, false);
       StackPane cfg = (StackPane) ((DataEvent) event).getData();
-      final int n=cfg.selectedIndex.intValue();
+      final int n = cfg.selectedIndex.intValue();
       sp.switchTo(n);
     } else {
       final aGroupableButton pb = (aGroupableButton) fv.getWidget("patient");
@@ -1181,7 +1189,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         list.add(item);
         item.setLinkedData(i);
       }
-      Utils.pushWorkspaceViewer(CardStackUtils.createListItemsOrPageViewer(null, w, list, 3,-1,null,true, false));
+      Utils.pushWorkspaceViewer(CardStackUtils.createListItemsOrPageViewer(null, w, list, 3, -1, null, true, false));
     } else {
       String pn = null;
       iFormViewer fv = table.getFormViewer();
@@ -1297,7 +1305,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     return Platform.getWindowViewer().getViewer("patientSelectionForm") != null;
   }
 
-
   public static void showPatientSelectView(iWidget widget) {
     final WindowViewer w = Platform.getWindowViewer();
     iFunctionCallback cb = new iFunctionCallback() {
@@ -1312,7 +1319,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           Utils.toggleActions(false);
           iViewer v = (iViewer) returnValue;
           w.activateViewer(v, iTarget.TARGET_WORKSPACE);
-          if(Utils.isCardStack()) {
+          if (Utils.isCardStack()) {
             CardStackUtils.updateTitle(v, true);
           }
         }
@@ -1326,8 +1333,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     }
   }
-
-  
 
   /**
    * Called to do the actual work of establishing a relation with a patient.
@@ -1594,9 +1599,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     } else {
       app.putData("pt_age_sex", "/" + sex);
     }
-    
+
     app.putData("pt_name_age_sex", w.getString("bv.format.name_age_gender", name, app.getData("pt_age_sex")));
-    
+
     obj = patient.opt("encounter_date");
     date = null;
     if (obj instanceof String) {

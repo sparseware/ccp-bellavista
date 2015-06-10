@@ -635,33 +635,33 @@ public class CardStackUtils {
    *          false otherwise
    */
   public static void updateTitle(iViewer viewer, boolean force) {
-//    if (viewer instanceof TabPaneViewer) {
-//      viewer = ((TabPaneViewer) viewer).getSelectedTabViewer();
-//    } else if (viewer instanceof StackPaneViewer) {
-//      iViewer v = ((StackPaneViewer) viewer).getActiveViewer();
-//      if (v != null) {
-//        viewer = v;
-//      }
-//    }
-//    iContainer titleWidget = Utils.titleWidget;
-//    LabelWidget iconLabel = (LabelWidget) titleWidget.getWidget("bundleIcon");
-//    LabelWidget textLabel = (LabelWidget) titleWidget.getWidget("subtitleLeft");
-//    String title = viewer.getTitle();
-//    iViewer v = viewer;
-//    while (force && (title == null || title.length() == 0)) {
-//      v = v.getParent();
-//      if (v == null) {
-//        return;
-//      }
-//      title = v.getTitle();
-//    }
-//    if (title != null && title.length() > 0) {
-//      textLabel.setText(title);
-//    }
-//    iconLabel.setIcon(CardStackUtils.isBundle(viewer) ? Platform.getResourceAsIcon("bv.icon.bundle") : null);
-//    textLabel = (LabelWidget) titleWidget.getWidget("subtitleRight");
-//    title = (String) viewer.getAttribute(VIEWER_SUBTITLE_PROPERTY);
-//    textLabel.setText(title == null ? "" : title);
+    if (viewer instanceof TabPaneViewer) {
+      viewer = ((TabPaneViewer) viewer).getSelectedTabViewer();
+    } else if (viewer instanceof StackPaneViewer) {
+      iViewer v = ((StackPaneViewer) viewer).getActiveViewer();
+      if (v != null) {
+        viewer = v;
+      }
+    }
+    iContainer titleWidget = Utils.titleWidget;
+    LabelWidget iconLabel = (LabelWidget) titleWidget.getWidget("bundleIcon");
+    LabelWidget textLabel = (LabelWidget) titleWidget.getWidget("subtitleLeft");
+    String title = viewer.getTitle();
+    iViewer v = viewer;
+    while (force && (title == null || title.length() == 0)) {
+      v = v.getParent();
+      if (v == null) {
+        return;
+      }
+      title = v.getTitle();
+    }
+    if (title != null && title.length() > 0) {
+      textLabel.setText(title);
+    }
+    iconLabel.setIcon(CardStackUtils.isBundle(viewer) ? Platform.getResourceAsIcon("bv.icon.bundle") : null);
+    textLabel = (LabelWidget) titleWidget.getWidget("subtitleRight");
+    title = (String) viewer.getAttribute(VIEWER_SUBTITLE_PROPERTY);
+    textLabel.setText(title == null ? "" : title);
   }
 
   /**

@@ -20,4 +20,4 @@ StackPane {
     }
   }
   selectedIndex: 1
-} [ onCreated="class:PatientSelect#onCreated", onConfigure="class:PatientSelect#onSelectionFormConfigure" ]
+} [ onCreated="class:PatientSelect#onCreated", onConfigure="class:PatientSelect#onSelectionFormConfigure", onLoad="class:PatientSelect#onLoad" ]

@@ -172,18 +172,18 @@ public class CardStack implements iEventHandler, iFunctionCallback {
    * Called by wearables that generate key events for navigation gestures.
    */
   public void onKeyUpEvent(String eventName, iWidget widget, EventObject event) {
-    KeyEvent ke = (KeyEvent) event;
-    long time = ke.getEventTime();
-
-    if ((time - lastKeyTime < keyTimeThreshold) || switching) {
-      return;
-    }
-
-    lastKeyTime = time;
-
-    if (ke.isEscapeKeyPressed()) {
-      go(widget, GO_UP);
-    }
+//    KeyEvent ke = (KeyEvent) event;
+//    long time = ke.getEventTime();
+//
+//    if ((time - lastKeyTime < keyTimeThreshold) || switching) {
+//      return;
+//    }
+//
+//    lastKeyTime = time;
+//
+//    if (ke.isEscapeKeyPressed()) {
+//      go(widget, GO_UP);
+//    }
   }
 
   /**
