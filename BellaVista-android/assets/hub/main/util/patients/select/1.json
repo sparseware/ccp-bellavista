@@ -1,99 +1,102 @@
 {
-  "_rows": [
-    {
-      "id": "1",
-      "name": "DOE, JANE",
-      "dob": "1955-04-27",
-      "gender": "Female",
-      "mrn": "DJ0000001",
-      "photo": "PIC-DJ0000001.jpg",
-      "attending_id": "2",
-      "attending_name": "USER, PHYSICIAN",
-      "encounter_date": "2008-09-09T03:35",
-      "encounter_reason": "AUTO ACCIDENT",
-      "location_id": "12",
-      "location": "MED/SURG",
-      "wt": "110lb",
-      "ht": "65in",
-      "io_in": "1200",
-      "io_out": "1525",
-      "io_date": "2011-11-09T10:00:00.000-08:00",
-      "rm_bed": "101-2",
-      "relationship": "2|USER, PHYSICIAN",
-      "has_monitor": "true",
-      "allergies": {
-        "_columns": ["allergen", "reactions"],
-        "_rows": [
-          {
-            "allergen": {
-              "linkedData": "11",
-              "value": "Strawberries"
-            },
-            "reactions": "Rash"
-          },
-          {
-            "allergen": {
-              "linkedData": "12",
-              "value": "Lactose"
-            },
-            "reactions": "Diarrhea"
-          },
-          {
-            "allergen": {
-              "linkedData": "13",
-              "value": "Aspirin"
-            },
-            "reactions": "Epigastric Distress"
-          },
-          {
-            "allergen": {
-              "linkedData": "14",
-              "value": "Shell Fish"
-            },
-            "reactions": "Anaphylaxis"
-          },
-          {
-            "allergen": {
-              "linkedData": "15",
-              "value": "Penicillin"
-            },
-            "reactions": "Anaphylaxis"
-          }
-        ]
-      },
-      "alerts": {
-        "_columns": ["alert", "due_date"],
-        "_rows": [
-          {
-            "alert": {
-              "linkedData": "1",
-              "value": "Cervical Cancer Screen/Pap Smear"
-            },
-            "due_date": "DUE NOW"
-          },
-          {
-            "alert": {
-              "linkedData": "2",
-              "value": "Depression Screening"
-            },
-            "due_date": "DUE NOW"
-          },
-          {
-            "alert": {
-              "linkedData": "3",
-              "value": "Nutrition Education"
-            },
-            "due_date": "DUE NOW"
-          },
-          {
-            "alert": {
-              "linkedData": "4",
-              "value": "Tobacco Screening"
-            },
-            "due_date": "DUE NOW"
-          }
-        ]
-      }
-    }
-  ]
+	"_rows":[
+		{
+			"id":"1",
+			"name":"DOE, JANE",
+			"dob":"1955-04-27",
+			"gender":"Female",
+			"mrn":"DJ0000001",
+			"photo":"PIC-DJ0000001.jpg",
+			"attending": {
+				"linkedData":"2",
+				"value":"USER, PHYSICIAN"
+			},
+			"encounter_date":"2008-09-09T03:35",
+			"encounter_reason":"AUTO ACCIDENT",
+			"location": {
+				"linkedData":"12",
+				"value":"MED/SURG"
+			},
+			"wt":"110lb",
+			"ht":"65in",
+			"io_in":"1200",
+			"io_out":"1525",
+			"io_date":"2011-11-09T10:00:00.000-08:00",
+			"rm_bed":"101-2",
+			"relationship":"1|Attending Physician",
+			"has_monitor":"true",
+			"allergies":{
+				"_columns":[
+					"allergen",
+					"reactions"
+				],
+				"_rows":[
+					{
+						"allergen":{
+							"linkedData":"11",
+							"value":"Strawberries"
+						},
+						"reactions":"Rash"
+					},
+					{
+						"allergen":{
+							"linkedData":"12",
+							"value":"Lactose"
+						},
+						"reactions":"Diarrhea"
+					},
+					{
+						"allergen":{
+							"linkedData":"13",
+							"value":"Aspirin"
+						},
+						"reactions":"Epigastric Distress"
+					},
+					{
+						"allergen":{
+							"linkedData":"15",
+							"value":"Penicillin"
+						},
+						"reactions":"Anaphylaxis"
+					}
+				]
+			},
+			"alerts":{
+				"_columns":[
+					"alert",
+					"due_date"
+				],
+				"_rows":[
+					{
+						"alert":{
+							"linkedData":"1",
+							"value":"Cervical Cancer Screen/Pap Smear"
+						},
+						"due_date":"DUE NOW"
+					},
+					{
+						"alert":{
+							"linkedData":"2",
+							"value":"Depression Screening"
+						},
+						"due_date":"DUE NOW"
+					},
+					{
+						"alert":{
+							"linkedData":"3",
+							"value":"Nutrition Education"
+						},
+						"due_date":"DUE NOW"
+					},
+					{
+						"alert":{
+							"linkedData":"4",
+							"value":"Tobacco Screening"
+						},
+						"due_date":"DUE NOW"
+					}
+				]
+			}
+		}
+	]
 }

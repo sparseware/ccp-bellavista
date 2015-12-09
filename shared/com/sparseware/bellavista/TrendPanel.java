@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.text.SimpleDateFormat;
@@ -52,21 +53,20 @@ import com.appnativa.util.json.JSONObject;
 
 /**
  * This class manages the trending
- * 
+ *
  * @author Don DeCoteau
  */
 public class TrendPanel {
-  static Map<String, Map<String, String>> trendMap    = new LinkedHashMap<String, Map<String, String>>(4);
+  static Map<String, Map<String, String>> trendMap = new LinkedHashMap<String, Map<String, String>>(4);
   String                                  name;
   String                                  title;
   Map<String, String>                     keyMap;
   Map<String, Trend>                      trends;
-  Map<String,String> peers;
+  Map<String, String>                     peers;
   boolean                                 reverseChronologicalOrder;
   static RenderableDataItem               dateLabel   = new RenderableDataItem();
   static RenderableDataItem               valueLabel  = new RenderableDataItem();
   static RenderableDataItem               trendLabel  = new RenderableDataItem();
-  static RenderableDataItem               headerLabel = new RenderableDataItem();
   static UIFont                           nameFont;
   static UIFont                           timePeriodFont;
   static int                              timePeriodFontHeight;
@@ -74,7 +74,7 @@ public class TrendPanel {
   /**
    * Creates a new panel to hold trends for labs values corresponding to the
    * specified list of result keys
-   * 
+   *
    * @param name
    *          the name of the panel
    * @param title
@@ -86,26 +86,34 @@ public class TrendPanel {
    *          otherwise
    */
   public TrendPanel(String name, String title, JSONArray keys, boolean reverseChronologicalOrder) {
-    this.title = title;
-    this.name = name;
+    this.title                     = title;
+    this.name                      = name;
     this.reverseChronologicalOrder = reverseChronologicalOrder;
+
     if (keys != null) {
       keyMap = trendMap.get(title);
+
       if (keyMap == null) {
-        int len = keys.size();
+        int                 len = keys.size();
         Map<String, String> map = new LinkedHashMap<String, String>(len);
+
         for (int i = 0; i < len; i++) {
-          JSONObject o = keys.getJSONObject(i);
-          String key=o.getString("key");
+          JSONObject o   = keys.getJSONObject(i);
+          String     key = o.getString("key");
+
           map.put(key, o.getString("name"));
-          String peer=o.optString("peer",null);
-          if(peer!=null) {
-            if(peers==null) {
-              peers=new HashMap<String,String>(2);
+
+          String peer = o.optString("peer", null);
+
+          if (peer != null) {
+            if (peers == null) {
+              peers = new HashMap<String, String>(2);
             }
-            peers.put(key,peer);
+
+            peers.put(key, peer);
           }
         }
+
         keyMap = map;
         trendMap.put(title, map);
       }
@@ -116,7 +124,7 @@ public class TrendPanel {
    * Attempts to add a trend to the panel. The keyMap is used to find the name
    * of the result value. The trend will only be added if the key has been
    * mapped
-   * 
+   *
    * @param key
    *          the key that uniquely identifies the type of result
    * @param date
@@ -127,17 +135,22 @@ public class TrendPanel {
    */
   public boolean addTrend(String key, Date date, RenderableDataItem valueItem) {
     String name = keyMap.get(key);
+
     if (name == null) {
       return false;
     }
+
     if (trends == null) {
       trends = new LinkedHashMap<String, Trend>();
     }
+
     Trend t = trends.get(key);
+
     if (t == null) {
       t = new Trend(name, reverseChronologicalOrder);
       trends.put(key, t);
     }
+
     t.add(date, valueItem.toString(), valueItem.getForeground());
 
     return true;
@@ -145,7 +158,7 @@ public class TrendPanel {
 
   /**
    * Adds a trend to the panel
-   * 
+   *
    * @param key
    *          the key that uniquely identifies the type of result
    * @param date
@@ -154,18 +167,21 @@ public class TrendPanel {
    *          the name of the trend value
    * @param valueItem
    *          the trend value
-   * 
+   *
    * @return
    */
   public boolean addTrend(String key, Date date, String name, RenderableDataItem valueItem) {
     if (trends == null) {
       trends = new LinkedHashMap<String, Trend>();
     }
+
     Trend t = trends.get(key);
+
     if (t == null) {
       t = new Trend(name, reverseChronologicalOrder);
       trends.put(key, t);
     }
+
     t.add(date, valueItem.toString(), valueItem.getForeground());
 
     return true;
@@ -182,13 +198,16 @@ public class TrendPanel {
    * that exists
    */
   public void removePeers() {
-    if (peers != null && trends!=null) {
+    if ((peers != null) && (trends != null)) {
       Iterator<Entry<String, String>> it = peers.entrySet().iterator();
+
       while(it.hasNext()) {
-        Entry<String, String> e = it.next();
-        String key=e.getKey();
-        if(trends.containsKey(key)) {
-          String peer=e.getValue();
+        Entry<String, String> e   = it.next();
+        String                key = e.getKey();
+
+        if (trends.containsKey(key)) {
+          String peer = e.getValue();
+
           trends.remove(peer);
           trendMap.remove(peer);
         }
@@ -198,7 +217,7 @@ public class TrendPanel {
 
   /**
    * Populates a table with trends
-   * 
+   *
    * @param table
    *          the table to populate
    * @param layout
@@ -206,103 +225,124 @@ public class TrendPanel {
    */
   public void popuplateTable(TableViewer table, Map<String, String> layout) {
     WindowViewer w = Platform.getWindowViewer();
-    if(timePeriodFont==null) {
+
+    if (timePeriodFont == null) {
       TrendPanel.setupLabels(w);
     }
-    int colCount = table.getColumnCount();
-    LabelWidget label = LabelWidget.create(table.getFormViewer(),
-        (Label) w.createConfigurationObject("Label", "bv.label.trendPanelHeader"));
+
+    int         colCount = table.getColumnCount();
+    LabelWidget label    = LabelWidget.create(table.getFormViewer(),
+                             (Label) w.createConfigurationObject("Label", "bv.label.trendPanelHeader"));
+
     label.setValue(title);
 
     RenderableDataItem header = table.createRow(colCount, true);
+
     header.setHeight(label.getPreferredSize().intHeight());
+
     RenderableDataItem item = header.get(0);
     RenderableDataItem col;
+
     item.setRenderingComponent(label.getContainerComponent());
     item.setColumnSpan(colCount);
     table.addEx(header);
+
     boolean singleColumn = table.getColumnCount() == 1;
-    if (trends == null || trends.isEmpty()) {
+
+    if ((trends == null) || trends.isEmpty()) {
       header = table.createRow(colCount, true);
-      col = header.get(0);
+      col    = header.get(0);
       col.setColumnSpan(colCount);
       item = new RenderableDataItem(w.getString("bv.text.no_lab_trends"));
       item.setEnabled(false);
       item.setHorizontalAlignment(HorizontalAlign.CENTER);
       col.setCustomProperty(layout.get("name"), item);
       table.addEx(header);
+
       return;
     }
-    int count = (int) Math.floor((trends.size() + 1) / colCount);
-    List<RenderableDataItem> list = new ArrayList<RenderableDataItem>(count);
+
+    int                      count = (int) Math.floor((trends.size() + 1) / colCount);
+    List<RenderableDataItem> list  = new ArrayList<RenderableDataItem>(count);
+
     for (int i = 0; i < count; i++) {
       list.add(table.createRow(colCount, true));
     }
 
     Iterator<String> it;
+
     if (keyMap == null) {
       it = trends.keySet().iterator();
     } else {
       it = keyMap.keySet().iterator();
     }
-    RenderableDataItem row = null;
-    int n = 0;
-    int i = 0;
-    PaintBucket pb = Platform.getUIDefaults().getPaintBucket("TrendPanel.trendName");
-    iPlatformComponentPainter cp = pb == null ? null : pb.getCachedComponentPainter();
-    UIFont font = nameFont;
+
+    RenderableDataItem        row  = null;
+    int                       n    = 0;
+    int                       i    = 0;
+    PaintBucket               pb   = Platform.getUIDefaults().getPaintBucket("TrendPanel.trendName");
+    iPlatformComponentPainter cp   = (pb == null)
+                                     ? null
+                                     : pb.getCachedComponentPainter();
+    UIFont                    font = nameFont;
     ;
-    if (pb != null && pb.getFont() != null) {
+
+    if ((pb != null) && (pb.getFont() != null)) {
       font = pb.getFont();
     }
+
     Object ctx = table.getColumn(0).getValueContext();
-    while (it.hasNext()) {
+
+    while(it.hasNext()) {
       Trend t = trends.get(it.next());
+
       if (t == null) {
         continue;
       }
+
       if (n == 0) {
         row = list.get(i++);
       }
+
       col = row.get(n);
       row.setLinkedData(t);
       item = new RenderableDataItem(t.name);
-
       item.setFont(font);
       item.setComponentPainter(cp);
       col.setCustomProperty(layout.get("name"), item);
       item = new RenderableDataItem(t.value);
+
       if (t.colors[3] != null) {
         item.setForeground(t.colors[3]);
       }
+
       col.setCustomProperty(layout.get("valueValue"), item);
       item = new RenderableDataItem(t.date, RenderableDataItem.TYPE_DATETIME, null);
       item.setValueContext(ctx);
       col.setCustomProperty(layout.get("dateValue"), item);
-
       item = new RenderableDataItem("", null, t);
       col.setCustomProperty(layout.get("trendIcon"), item);
-
       col.setCustomProperty(layout.get("date"), dateLabel);
       col.setCustomProperty(layout.get("value"), valueLabel);
+
       if (!singleColumn) {
         n = 1 - n;
       }
-
     }
+
     for (i = 0; i < count; i++) {
       row = list.get(i);
+
       if (row.getLinkedData() != null) {
         row.setLinkedData(null);
         table.addEx(row);
       }
     }
-
   }
 
   /**
    * Populates a form with trends
-   * 
+   *
    * @param fv
    *          the form to populate
    * @return a string representing the date range of the values added to the
@@ -310,40 +350,55 @@ public class TrendPanel {
    */
   public String popuplateForm(iContainer fv) {
     WindowViewer w = Platform.getWindowViewer();
-    if(timePeriodFont==null) {
+
+    if (timePeriodFont == null) {
       TrendPanel.setupLabels(w);
     }
-    int count = Math.min(trends == null ? 0 : trends.size(), fv.getWidgetCount());
+
+    int count = Math.min((trends == null)
+                         ? 0
+                         : trends.size(), fv.getWidgetCount());
+
     if (count == 0) {
       return null;
     }
-    String format = w.getString("bv.format.trend");
-    Date beg = null;
-    Date end = null;
-    boolean html = format.startsWith("<html>");
+
+    String           format = w.getString("bv.format.trend");
+    Date             beg    = null;
+    Date             end    = null;
+    boolean          html   = format.startsWith("<html>");
     Iterator<String> it;
+
     if (keyMap == null) {
       it = trends.keySet().iterator();
     } else {
       it = keyMap.keySet().iterator();
     }
 
-    StringBuilder sb = html ? new StringBuilder() : null;
-    String fg;
-    String dfg = ColorUtils.getForeground().toHexString();
-    String pfg = html ? ColorUtils.getColor("clinicalPrompt").toHexString() : null;
-    SimpleDateFormat df = new SimpleDateFormat(w.getString("bv.format.time.small_trend_date"));
-    int i=0;
-    while(i<count) {
+    StringBuilder    sb = html
+                          ? new StringBuilder()
+                          : null;
+    String           fg;
+    String           dfg = ColorUtils.getForeground().toHexString();
+    String           pfg = html
+                           ? ColorUtils.getColor("clinicalPrompt").toHexString()
+                           : null;
+    SimpleDateFormat df  = new SimpleDateFormat(w.getString("bv.format.time.small_trend_date"));
+    int              i   = 0;
+
+    while(i < count) {
       Trend t = trends.get(it.next());
-      if(t==null) {
+
+      if (t == null) {
         continue;
       }
+
       if (t.colors[3] != null) {
         fg = t.colors[3].toHexString();
       } else {
         fg = dfg;
       }
+
       if (beg == null) {
         beg = t.startDate;
         end = t.date;
@@ -352,26 +407,32 @@ public class TrendPanel {
         if (t.date.after(end)) {
           end = t.date;
         }
+
         if (t.startDate.before(beg)) {
           beg = t.startDate;
         }
       }
 
       String date = df.format(t.date);
+
       if (html) {
         sb.setLength(0);
         sb.append("<font color=\"").append(pfg).append("\">");
         sb.append(date).append("</font>");
         date = sb.toString();
       }
-      if(html && t.valueNeedsHTMLEncoding()) {
-        t.value=Functions.escapeHTML(t.value, true, false);
+
+      if (html && t.valueNeedsHTMLEncoding()) {
+        t.value = Functions.escapeHTML(t.value, true, false);
       }
-      String text = Functions.format(format, t.name, fg, t.value, date);
+
+      String      text  = Functions.format(format, t.name, fg, t.value, date);
       LabelWidget label = (LabelWidget) fv.getWidget(i++);
+
       label.setValue(text);
       label.setIcon(t);
     }
+
     String s = w.getString("bv.format.time.general_short");
 
     df = new SimpleDateFormat(s);
@@ -388,7 +449,7 @@ public class TrendPanel {
   /**
    * Sets up reuse-able items that will be used to label values on the trend
    * panel
-   * 
+   *
    * @param w
    */
   public static void setupLabels(WindowViewer w) {
@@ -398,14 +459,18 @@ public class TrendPanel {
     dateLabel.setHorizontalAlignment(HorizontalAlign.RIGHT);
     valueLabel.setHorizontalAlignment(HorizontalAlign.RIGHT);
     trendLabel.setHorizontalAlignment(HorizontalAlign.RIGHT);
-    nameFont = FontUtils.getDefaultFont().deriveBold();
-    timePeriodFont = FontUtils.getDefaultFont().deriveFontSize(FontUtils.getDefaultFont().getSize() - 4);
+    nameFont             = FontUtils.getDefaultFont().deriveBold();
+    timePeriodFont       = FontUtils.getDefaultFont().deriveFontSize(FontUtils.getDefaultFont().getSize() - 4);
     timePeriodFontHeight = (int) FontUtils.getFontHeight(timePeriodFont, false) - ScreenUtils.PLATFORM_PIXELS_4;
+
     UIColor color = ColorUtils.getColor("clinicalPrompt");
+
     dateLabel.setForeground(color);
     trendLabel.setForeground(color);
     valueLabel.setForeground(color);
+
     UIFont font = FontUtils.getDefaultFont();
+
     font = font.deriveFontSize(font.getSize() - 1);
     dateLabel.setFont(font);
     valueLabel.setFont(font);
@@ -414,14 +479,14 @@ public class TrendPanel {
 
   /**
    * This class paints the trend graph
-   * 
+   *
    * @author Don DeCoteau
    *
    */
   public static class Trend extends aPlatformIcon {
-    float[]         numbers        = new float[4];
-    UIColor[]       colors         = new UIColor[4];
-    int             index          = 4;
+    float[]         numbers = new float[4];
+    UIColor[]       colors  = new UIColor[4];
+    int             index   = 4;
     String          name;
     Date            date;
     Date            startDate;
@@ -432,24 +497,26 @@ public class TrendPanel {
     String          timePeroid;
     private float   timePeriodWidth;
     boolean         reverseChronologicalOrder;
-    String peer;
+    String          peer;
 
     /**
      * Creates a new trend
-     * 
+     *
      * @param name
      *          the name of the trend
      */
     public Trend(String name, boolean reverseChronologicalOrder) {
-      this.name = name;
+      this.name                      = name;
       this.reverseChronologicalOrder = reverseChronologicalOrder;
     }
+
     void setPeer(String peer) {
-      this.peer=peer;
+      this.peer = peer;
     }
+
     /**
      * Adds a value to the trend
-     * 
+     *
      * @param date
      *          the date for the value
      * @param value
@@ -461,16 +528,18 @@ public class TrendPanel {
       if (index > 0) {
         if (this.date == null) {
           this.startDate = date;
-          this.date = date;
-          this.value = value;
+          this.date      = date;
+          this.value     = value;
         }
+
         if (reverseChronologicalOrder) {
           this.startDate = date;
         } else {
           this.date = date;
         }
+
         numbers[--index] = new SNumber(value, false).floatValue();
-        colors[index] = color;
+        colors[index]    = color;
       }
     }
 
@@ -478,13 +547,15 @@ public class TrendPanel {
      * Calculates the y position to start painting the trend line at
      */
     void calculateStartingYPositionm() {
-      int total = getIconHeight() - (segmentLength * 2);
-      int max = total;
-      int y = total;
-      int min = total;
-      float lv = Float.NaN;
+      int   total = getIconHeight() - (segmentLength * 2);
+      int   max   = total;
+      int   y     = total;
+      int   min   = total;
+      float lv    = Float.NaN;
+
       for (int i = 0; i < 4; i++) {
         float num = numbers[i];
+
         if (Float.isNaN(lv)) {
           if (!SNumber.isEqual(lv, num)) {
             if (num > lv) {
@@ -493,12 +564,16 @@ public class TrendPanel {
               y += segmentLength;
             }
           }
+
           min = Math.min(y, min);
           max = Math.max(y, max);
         }
+
         lv = num;
       }
+
       int height = max - min;
+
       startingY = max - height - ScreenUtils.PLATFORM_PIXELS_4;
     }
 
@@ -509,7 +584,9 @@ public class TrendPanel {
 
     @Override
     public int getIconHeight() {
-      return (segmentLength * 6) + (drawTimePeriod ? timePeriodFontHeight : 0);
+      return (segmentLength * 6) + (drawTimePeriod
+                                    ? timePeriodFontHeight
+                                    : 0);
     }
 
     @Override
@@ -519,6 +596,7 @@ public class TrendPanel {
           calculateTimeperiod();
         }
       }
+
       return (int) Math.max(segmentLength * 6, timePeriodWidth + ScreenUtils.PLATFORM_PIXELS_4);
     }
 
@@ -527,41 +605,59 @@ public class TrendPanel {
       if (startingY == -1) {
         calculateStartingYPositionm();
       }
+
       int iw = getIconWidth();
       int ih = getIconHeight();
-      y += (height - ih) / 2;
-      width = iw;
+
+      y      += (height - ih) / 2;
+      width  = iw;
       height = ih;
+
       float d1 = ScreenUtils.PLATFORM_PIXELS_1;
       float d2 = ScreenUtils.PLATFORM_PIXELS_2;
+
       //  y += ScreenUtils.PLATFORM_PIXELS_4;
       height -= ScreenUtils.PLATFORM_PIXELS_4;
-      float sy = startingY + y;
-      float ny = sy;
-      float sx = x + ScreenUtils.PLATFORM_PIXELS_4;
-      float lv = Float.NaN;
+
+      float   sy = startingY + y;
+      float   ny = sy;
+      float   sx = x + ScreenUtils.PLATFORM_PIXELS_4;
+      float   lv = Float.NaN;
       UIColor oc = g.getColor();
-      float sw = g.getStrokeWidth();
+      float   sw = g.getStrokeWidth();
+
       g.setStrokeWidth(d1);
+
       boolean cardStack = Utils.isCardStack();
+
       if (!cardStack) {
         g.setPaint(ColorUtils.getColor("trendBackground"));
         g.fillRect(x, y, width, height);
       }
+
       g.setColor(ColorUtils.getControlShadow());
       g.drawRect(x, y, width, height);
+
       if (drawTimePeriod) {
         if (timePeroid == null) {
           calculateTimeperiod();
         }
+
         g.setFont(timePeriodFont);
-        g.drawString(timePeroid, x + ((width - timePeriodWidth) / 2), y + ScreenUtils.PLATFORM_PIXELS_2, timePeriodFontHeight);
+        g.drawString(timePeroid, x + ((width - timePeriodWidth) / 2), y + ScreenUtils.PLATFORM_PIXELS_2,
+                     timePeriodFontHeight);
       }
+
       g.setStrokeWidth(d2);
-      sy += (drawTimePeriod ? timePeriodFontHeight : 0);
+      sy += (drawTimePeriod
+             ? timePeriodFontHeight
+             : 0);
+
       UIColor c;
+
       for (int i = 0; i < 4; i++) {
         float num = numbers[i];
+
         if (!Float.isNaN(lv)) {
           if (!SNumber.isEqual(lv, num)) {
             if (num > lv) {
@@ -570,28 +666,32 @@ public class TrendPanel {
               ny = sy + segmentLength;
             }
           }
-
         }
 
         c = colors[i];
-        g.setColor(c == null ? UIColor.GRAY : c);
-
+        g.setColor((c == null)
+                   ? UIColor.GRAY
+                   : c);
         lv = num;
         g.drawLine(sx, sy, sx + segmentLength, ny);
-        g.setColor(cardStack ? UIColor.WHITE : UIColor.BLACK);
+        g.setColor(cardStack
+                   ? UIColor.WHITE
+                   : UIColor.BLACK);
         g.drawRoundRect(sx - d1, sy - d1, d2, d2, d2, d2);
-
         sy = ny;
         sx += segmentLength;
       }
-      g.setColor(cardStack ? UIColor.WHITE : UIColor.BLACK);
+
+      g.setColor(cardStack
+                 ? UIColor.WHITE
+                 : UIColor.BLACK);
       g.drawRoundRect(sx, sy - d1, d2, d2, d2, d2);
       g.setColor(oc);
       g.setStrokeWidth(sw);
     }
 
     boolean valueNeedsHTMLEncoding() {
-      return value.indexOf('>') != -1 || value.indexOf('<') != -1;
+      return (value.indexOf('>') != -1) || (value.indexOf('<') != -1);
     }
 
     /**
@@ -599,11 +699,14 @@ public class TrendPanel {
      */
     void calculateTimeperiod() {
       int days = Math.abs(Helper.daysBetween(startDate, date));
+
       if (days < 1) {
         days = 1;
       }
+
       SNumber num = new SNumber();
-      String suf;
+      String  suf;
+
       if (days > 365) {
         num.setValue((float) (days / 365));
         num.setScale(1);
@@ -617,16 +720,19 @@ public class TrendPanel {
         num.setScale(1);
         suf = "day";
       }
+
       StringBuilder sb = new StringBuilder();
+
       sb.append(suf);
+
       if (num.gt(1)) {
         sb.append("s");
       }
+
       suf = Platform.getResourceAsString("bv.text.time_trend." + sb.toString());
       sb.setLength(0);
-
       sb.append(num).append(suf);
-      timePeroid = sb.toString();
+      timePeroid      = sb.toString();
       timePeriodWidth = UIFontHelper.stringWidth(timePeriodFont, timePeroid);
     }
 
@@ -638,5 +744,4 @@ public class TrendPanel {
       this.drawTimePeriod = drawTimePeriod;
     }
   }
-
 }

@@ -1,8 +1,8 @@
 GroupBox {
+  name: "serversSettings"
   verticalAlign: full
   horizontalAlign: full
   layout: forms
-  name: "serversSettings"
   rows: "f:d,f:d,d,4dluY,14dluY,d,4dluY,f:d"
   columns: "d:g"
   widgets {
@@ -63,6 +63,12 @@ GroupBox {
         }
         actAsFormViewer: false
         widgets {
+          {
+            PushButton {
+              visible: false
+              icon: "resource:bv_icon_add_server"
+            } [ onAction="class:Settings#onServersAddRemoteAction" ]
+          }
           {
             PushButton {
               icon: "resource:bv.icon.plus"
@@ -130,6 +136,7 @@ GroupBox {
                 x: "3"
                 y: "1"
               }
+              enabled: false
               visibleCharacters: 10
             }
           }
@@ -140,6 +147,7 @@ GroupBox {
                 x: "3"
                 y: "3"
               }
+              enabled: false
             }
           }
           {
@@ -168,4 +176,4 @@ GroupBox {
       }
     }
   }
-} [ onUnload="class:Settings#onServersUnload"]
+} [ onUnload="class:Settings#onServersUnload" ]

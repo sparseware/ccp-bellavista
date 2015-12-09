@@ -32,6 +32,7 @@ Form {
     }
     {
       GroupBox {
+        name: "gender"
         bounds {
           x: "3"
           y: "5"
@@ -74,6 +75,7 @@ Form {
     }
     {
       Label {
+        name: "genderLabel"
         horizontalAlign: right
         bounds {
           x: "1"

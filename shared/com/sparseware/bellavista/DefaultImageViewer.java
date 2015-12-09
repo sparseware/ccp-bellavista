@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.EventObject;
@@ -39,46 +40,49 @@ public class DefaultImageViewer extends aAttachmentHandler implements iChangeLis
   public static int THUMBNAIL_URL_POSITION = 2;
   public static int IMAGE_URL_POSITION     = 3;
 
-  public DefaultImageViewer() {
-  }
+  public DefaultImageViewer() {}
 
   @Override
   public void createViewer(final iContainer parent, final Document document, final DocumentItem attachment,
-      final iFunctionCallback cb) {
-    final WindowViewer w = Platform.getWindowViewer();
-    aWorkerTask task = new aWorkerTask() {
-
+                           final iFunctionCallback cb) {
+    final WindowViewer w    = Platform.getWindowViewer();
+    aWorkerTask        task = new aWorkerTask() {
       @Override
       public void finish(Object result) {
         if (result instanceof Throwable) {
           cb.finished(true, result);
+
           return;
         }
-        ObjectHolder oh = (ObjectHolder) result;
-        iContainer v = (iContainer) w.createViewer(parent.getFormViewer(), (Viewer) oh.type);
+
+        ObjectHolder   oh     = (ObjectHolder) result;
+        iContainer     v      = (iContainer) w.createViewer(parent.getFormViewer(), (Viewer) oh.type);
         CarouselViewer slides = (CarouselViewer) v.getWidget("thumbNails");
+
         slides.addAll((List<RenderableDataItem>) oh.value);
         slides.addChangeListener(DefaultImageViewer.this);
         cb.finished(false, new ObjectHolder(DefaultImageViewer.this, attachment, v));
       }
-
       @Override
       public Object compute() {
         try {
-          String id = document.getID();
-          ActionLink link = Utils.createLink(w, "/hub/main/imaging/thumbnails/" + id, false);
+          String                   id   = document.getID();
+          ActionLink               link = Utils.createLink(w, "/hub/main/imaging/thumbnails/" + id, false);
           List<RenderableDataItem> list = w.parseDataLink(link, true);
+
           for (RenderableDataItem item : list) {
             item.setValue(item.get(THUMBNAIL_URL_POSITION).getValue());
-
           }
+
           Viewer cfg = (Viewer) w.createConfigurationObject(w.createActionLink("/image_viewer.rml"));
+
           return new ObjectHolder(cfg, list);
-        } catch (Exception e) {
+        } catch(Exception e) {
           return e;
         }
       }
     };
+
     Platform.getAppContext().executeWorkerTask(task);
   }
 
@@ -88,22 +92,28 @@ public class DefaultImageViewer extends aAttachmentHandler implements iChangeLis
   }
 
   @Override
-  public void dispose() {
-  }
+  public void dispose() {}
 
   @Override
   public void stateChanged(EventObject e) {
-    CarouselViewer slides = (CarouselViewer) Platform.getWidgetForComponent(e.getSource());
-    ImagePaneViewer iv = (ImagePaneViewer) slides.getFormViewer().getWidget("imageViewer");
-    RenderableDataItem item = (RenderableDataItem) slides.getSelection();
-    iv.clearContents();
+    CarouselViewer     slides = (CarouselViewer) Platform.getWidgetForComponent(e.getSource());
+    ImagePaneViewer    iv     = (ImagePaneViewer) slides.getFormViewer().getWidget("imageViewer");
+    RenderableDataItem item   = (RenderableDataItem) slides.getSelection();
+
+
     if (item != null) {
       String src = (String) item.get(IMAGE_URL_POSITION).getValue();
+
       if ((src == null) || (src.length() == 0) || (iv == null) || src.equals(iv.getLinkedData())) {
         return;
       }
+
+      iv.clearContents();
       iv.setLinkedData(src);
       iv.handleActionLink(new ActionLink(src), true);
+    }
+    else {
+      iv.clearContents();
     }
   }
 }

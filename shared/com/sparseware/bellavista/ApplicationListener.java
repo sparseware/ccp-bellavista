@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import com.appnativa.rare.Platform;
@@ -24,14 +25,12 @@ import com.appnativa.rare.ui.listener.iApplicationListener;
 /**
  * This class listens for and handles application
  * level events.
- * 
+ *
  * @author Don DeCoteau
  *
  */
-public class ApplicationListener implements iApplicationListener,iConfigurationListener{
-
-  public ApplicationListener() {
-  }
+public class ApplicationListener implements iApplicationListener, iConfigurationListener {
+  public ApplicationListener() {}
 
   @Override
   public boolean allowClosing(iPlatformAppContext app) {
@@ -39,40 +38,38 @@ public class ApplicationListener implements iApplicationListener,iConfigurationL
   }
 
   @Override
-  public void applicationClosing(iPlatformAppContext app) {
-  }
+  public void applicationClosing(iPlatformAppContext app) {}
 
   @Override
   public void applicationInitialized(iPlatformAppContext app) {
     Platform.setTrackOpenConnections(true);
-    Utils.cardStack=UIScreen.isSmallScreen();
+    Utils.applicationInitialized();
     //add ourselves as a listener for configuration change events
     app.addConfigurationListener(this);
   }
 
   @Override
   public void applicationPaused(iPlatformAppContext app) {
-    if(!Utils.isCardStack() && !Utils.isShuttingDown()) {
+    if (!Utils.isCardStack() &&!Utils.isShuttingDown()) {
       Utils.applicationPaused();
     }
   }
 
   @Override
   public void applicationResumed(iPlatformAppContext app) {
-    if(!Utils.isCardStack() && !Utils.isShuttingDown()) {
+    if (!Utils.isCardStack() &&!Utils.isShuttingDown()) {
       Utils.applicationResumed();
     }
   }
 
   @Override
-  public void onConfigurationChanged(Object config) {
-  }
+  public void onConfigurationChanged(Object config) {}
 
   @Override
   public void onConfigurationWillChange(Object config) {
-    if(!Utils.isCardStack() && !Utils.isShuttingDown() && !UIScreen.isLargeScreen()) {
+    if (!Utils.isCardStack() &&!Utils.isShuttingDown() &&!UIScreen.isLargeScreen()) {
+      
       Utils.toggleFullScreen(UIScreen.isWiderForConfiguration(config));
     }
   }
-
 }

@@ -98,7 +98,7 @@ Form {
                   name: "orders"
                 }
                 {
-                  name: "consults"
+                  name: "procedures"
                 }
                 {
                   name: "notes"
@@ -203,7 +203,7 @@ Form {
                     rows: "d,2dlu"
                     columns: "d:g,2dluX,d:g,d"
                     columnGrouping {
-                      "1,3"
+                      "0,2"
                     }
                     widgets {
                       {
@@ -297,7 +297,7 @@ Form {
           }
           {
             PushButton {
-              name: "smallBarcodeButton"
+              name: "bv.action.scan_barcode"
               icon: "resource:bv.icon.barcode"
               buttonStyle: toolbar
             } [ onAction="class:PatientSelect#onBarcodeButtonAction" ]

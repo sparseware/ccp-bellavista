@@ -1,11 +1,21 @@
 ToolBar {
   name: "infobar"
-  local: false
   borders {
     empty [ insets="2,0,0,2" ]
   }
-  bgColor: "defaultBackground-10"
+  bgColor: "mediumBackground"
+  local: false
   widgets {
+    {
+      PushButton {
+        name: "bv.action.orders_cart"
+        bounds {
+          x: "2"
+          y: "0"
+        }
+        buttonStyle: toolbar
+      }
+    }
     {
       PushButton {
         name: "careteam"
@@ -15,10 +25,10 @@ ToolBar {
         }
         icon: "resource:bv_icon_careteam"
         textHAlignment: left
-        buttonStyle: toolbar
         actionType: popup_widget
+        buttonStyle: toolbar
         popupWidget {
-        } [ url="/careteam.rml", scrollable=true]
+        } [ url="/careteam.rml", scrollable="true" ]
         useSharedBorderForPopup: true [ color="darkBorder" ]
       }
     }
@@ -34,13 +44,13 @@ ToolBar {
         buttonStyle: toolbar
         popupWidget {
           Table {
-            dataURL: "collection:alerts"
-            templateName: "bv.table.summary"
+            name: "alertsTable"
+            templateName: "bv.table.popup_summary"
             selectionMode: none
             visibleRowCount: 5
             columns {
               {
-                title: "{resource:bv.text.clinical_event}"
+                title: "{resource:bv.text.alert}"
                 width: "15ch"
                 wordWrap: true
               }
@@ -52,9 +62,9 @@ ToolBar {
               }
             }
           }
-        }[ scrollable=true ]
-        useSharedBorderForPopup: true [ color="darkBorder" ]
-      }
+        } [ scrollable="true" ]
+        useSharedBorderForPopup: true [ color="mediumBorder" ]
+      } [ onWillExpand="class:Alerts#onUpdateTable" ]
     }
     {
       PushButton {
@@ -64,7 +74,7 @@ ToolBar {
           y: "0"
         }
         buttonStyle: toolbar
-      } 
+      }
     }
     {
       Bean {
@@ -73,12 +83,12 @@ ToolBar {
     }
     {
       PushButton {
-        value: "{resource:bv.text.problems}"
         templateName: "bv.pushbutton.popup_hyperlink"
+        value: "{resource:bv.text.problems}"
         popupWidget {
           Table {
             dataURL: "collection:problems"
-            templateName: "bv.table.summary"
+            templateName: "bv.table.popup_summary"
             selectionMode: none
             visibleRowCount: 5
             columns {
@@ -88,18 +98,19 @@ ToolBar {
               }
             }
           }
-        }[ scrollable=true ]
+        } [ scrollable="true" ]
+        useSharedBorderForPopup: true [ color="mediumBorder" ]
       }
     }
     {
       PushButton {
         name: "bv.action.allergies"
-        fgColor: "allergies"
         templateName: "bv.pushbutton.popup_hyperlink"
+        fgColor: "allergies"
         popupWidget {
           Table {
             dataURL: "collection:allergies"
-            templateName: "bv.table.summary"
+            templateName: "bv.table.popup_summary"
             selectionMode: none
             visibleRowCount: 5
             columns {
@@ -114,8 +125,9 @@ ToolBar {
               }
             }
           }
-        }
+        } [ scrollable="true" ]
+        useSharedBorderForPopup: true [ color="mediumBorder" ]
       }
     }
   }
-}[ onConfigure="class:MainEventHandler#onConfigureInfoBar"]
+} [ onConfigure="class:MainEventHandler#onConfigureInfoBar" ]

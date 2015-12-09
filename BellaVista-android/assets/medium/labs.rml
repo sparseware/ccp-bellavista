@@ -13,7 +13,8 @@ Form {
         }
         dataURL: "/hub/main/labs/list" [ columnSeparator="^", ldSeparator="|" ]
         templateName: "bv.table.data"
-      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onTableAction", onFinishedLoading="class:Labs#onFinishedLoading" ]
+      } [ onCreated="class:Labs#onTableCreated", onFinishedLoading="class:Labs#onFinishedLoading",
+          onAction="class:Labs#onTableAction" ]
     }
     {
       ToolBar {
@@ -47,15 +48,6 @@ Form {
             }
           }
           {
-            PushButton {
-              name: "orderLabs"
-              enabled: false
-              value: "{resource:bv.text.order_labs}"
-              icon: "resource:bv.icon.new_orders"
-              buttonStyle: toolbar
-            }
-          }
-          {
             Label {
               name: "tableLabel"
               verticalAlign: auto
@@ -75,8 +67,8 @@ Form {
               value: "{resource:bv.text.charts}"
               icon: "resource:bv.icon.table"
               showText: false
-              selected: true
               groupName: "views"
+              selected: true
             } [ onAction="class:Labs#changeView" ]
           }
           {
@@ -103,4 +95,4 @@ Form {
       }
     }
   }
-} [ onDispose="class:Labs#onDispose", onLoad="class:Labs#reselectDefaultView"]
+} [ onLoad="class:Labs#reselectDefaultView", onDispose="class:Labs#onDispose" ]

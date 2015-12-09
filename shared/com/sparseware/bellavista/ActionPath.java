@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.appnativa.rare.scripting.Functions;
 import com.appnativa.util.CharScanner;
 import com.appnativa.util.Helper;
 
@@ -27,15 +27,14 @@ import com.appnativa.util.Helper;
  * programmatically move through through application. When fully implemented all
  * primary screens in the application will have a unique path and will be able
  * to be navigated to programmatically via its action path
- * 
+ *
  * @author Don DeCoteau
  *
  */
 public class ActionPath extends ArrayList<String> {
   protected Object linkedData;
 
-  public ActionPath() {
-  }
+  public ActionPath() {}
 
   public ActionPath(int pathCount) {
     super(pathCount);
@@ -54,10 +53,12 @@ public class ActionPath extends ArrayList<String> {
   }
 
   public void addPath(String... path) {
-    int len = path == null ? 0 : path.length;
+    int len = (path == null)
+              ? 0
+              : path.length;
+
     if (len == 1) {
-      int n = Functions.length(path[0], "/");
-      if (n > 1) {
+      if (path[0].indexOf("/") != -1) {
         CharScanner.getTokens(path[0], '/', false, this);
       } else {
         add(path[0]);
@@ -71,22 +72,32 @@ public class ActionPath extends ArrayList<String> {
 
   public ActionPath copy() {
     ActionPath p = new ActionPath(this);
+
     return p;
   }
 
   public String peek() {
     int len = size();
-    return len == 0 ? null : get(len - 1);
+
+    return (len == 0)
+           ? null
+           : get(len - 1);
   }
 
   public String shiftPeek() {
     int len = size();
-    return len == 0 ? null : get(0);
+
+    return (len == 0)
+           ? null
+           : get(0);
   }
 
   public String pop() {
     int len = size();
-    return len == 0 ? null : remove(len - 1);
+
+    return (len == 0)
+           ? null
+           : remove(len - 1);
   }
 
   public void push(String path) {
@@ -95,11 +106,16 @@ public class ActionPath extends ArrayList<String> {
 
   public String see() {
     int len = size();
-    return len == 0 ? null : get(0);
+
+    return (len == 0)
+           ? null
+           : get(0);
   }
 
   public String shift() {
-    return isEmpty() ? null : remove(0);
+    return isEmpty()
+           ? null
+           : remove(0);
   }
 
   @Override
@@ -111,38 +127,40 @@ public class ActionPath extends ArrayList<String> {
     add(0, path);
   }
 
-  Object getLinkedData() {
+  public Object getLinkedData() {
     return linkedData;
   }
 
-  void setLinkedData(Object linkedData) {
+  public void setLinkedData(Object linkedData) {
     this.linkedData = linkedData;
   }
 
   public static ActionPath fromString(String path) {
-    int len = Functions.length(path, "/");
-    ActionPath p = new ActionPath(len);
+    ActionPath p = new ActionPath(3);
+
     CharScanner.getTokens(path, '/', false, p);
+
     return p;
   }
 
   /**
    * An interface for UI handlers that support action paths
-   * 
+   *
    * @author Don DeCoteau
    *
    */
   interface iActionPathSupporter {
+
     /**
      * Gets the a path for the information currently displayed by the handler.
-     * 
+     *
      * @return a path for the information currently displayed information
      */
     ActionPath getDisplayedActionPath();
 
     /**
      * Called on an active handler to handle the specified path.
-     * 
+     *
      * @param path
      *          a path that is relative to the handler
      */

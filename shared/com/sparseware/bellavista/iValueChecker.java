@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import com.appnativa.rare.ui.RenderableDataItem;
@@ -20,14 +21,15 @@ import com.appnativa.rare.ui.RenderableDataItem;
 /**
  * Interface for checking an individual rows's value when a list of rows is
  * being processed by a function
- * 
+ *
  * @author Don DeCoteau
  *
  */
 public interface iValueChecker {
+
   /**
    * Called to check a row
-   * 
+   *
    * @param row
    *          the row to be checked
    * @param index

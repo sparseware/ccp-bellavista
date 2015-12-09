@@ -1,0 +1,77 @@
+Form {
+  layout: forms
+  rows: "d,d:g"
+  columns: "d:g"
+  widgets {
+    {
+      Table {
+        name: "proceduresTable"
+        verticalAlign: full
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        dataURL: "/hub/main/procedures/list" [ columnSeparator="^", ldSeparator="|" ]
+        templateName: "bv.table.data"
+        columns {
+          {
+            title: "{resource:bv.text.date}"
+            valueType: date_time_type
+            valueContext: "|MM/dd/yy"
+            width: "8ch"
+            icon: "resource:bv.icon.document"
+          }
+          {
+            title: "{resource:bv.text.description}"
+            valueContext: "titleCase"
+            wordWrap: true
+          }
+        }
+      } [ onCreated="class:Procedures#onTableCreated", onAction="class:Procedures#onTableAction" ]
+    }
+    {
+      ToolBar {
+        name: "tableToolbar"
+        borders {
+          empty [ insets="2,2,2,2" ]
+        }
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            ComboBox {
+              name: "filters"
+              enabled: false
+              horizontalAlign: full
+              templateName: "bv.combobox.filter"
+            } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder",
+                onConfigure="class:Procedures#onFiltersConfigure" ]
+          }
+          {
+            Bean {
+              name: "Rare.bean.expander"
+            }
+          }
+          {
+            Bean {
+              name: "Rare.bean.separator"
+            }
+          }
+          {
+            PushButton {
+              name: "tools"
+              enabled: false
+              templateName: "bv.pushbutton.menu"
+              value: "{resource:bv.text.tools}"
+              icon: "resource:bv_icon_tools"
+              actionType: popup_menu
+            }
+          }
+        }
+      }
+    }
+  }
+} [ onDispose="class:Procedures#onDispose" ]

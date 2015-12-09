@@ -11,7 +11,10 @@ MainWindow {
     bgColor: "defaultBackground+5,defaultBackground-10"
     popupMenu {
       {
-        name: "bv.action.changePatient"
+        name: "bv.action.change_patient"
+      }
+      {
+        name: "bv.action.new_orders"
       }
       {
         name: "bv.action.preferences"
@@ -60,7 +63,9 @@ MainWindow {
                   y: "5"
                 }
                 visibleCharacters: 16
-              } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
+                allowDefaultSuggestions: false
+                keyboardType: default_type [ autoCorrect=false, autoCapatilize="none", spellCheck=false]
+              } [ onAction="class:MainEventHandler#onLoginFormEnter",onChange="class:MainEventHandler#onConfigureMainView"]
             }
             {
               Label {
@@ -125,8 +130,8 @@ MainWindow {
               }
             }
           }
-        }[ onShown="class:MainEventHandler#requestFocus?username"]
+        }[ onShown="class:MainEventHandler#requestFocusIfKeyboardPresent?username"]
       }
     }
   }
-}
+} [ onWillClose="class:Actions#onExit" ]

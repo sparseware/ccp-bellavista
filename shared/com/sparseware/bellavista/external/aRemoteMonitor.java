@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista.external;
 
 import java.util.List;
@@ -43,28 +44,29 @@ import com.sparseware.bellavista.Utils;
 
 /**
  * This class provides a base implementation for remote monitoring displays.
- * 
+ *
  * @author Don DeCoteau
  *
  */
 public abstract class aRemoteMonitor {
-  /**
-   * the name of the button that will toggle between the numerics and waveforms
-   * views"
-   */
-  protected String           toggleButtonName      = "toggleButton";
 
   /**
    * the name of the button that will toggle between the numerics and waveforms
    * views"
    */
-  protected String           eventHandlerClassName = RemoteMonitorEventHandler.class.getName();
+  protected String toggleButtonName = "toggleButton";
+
+  /**
+   * the name of the button that will toggle between the numerics and waveforms
+   * views"
+   */
+  protected String eventHandlerClassName = RemoteMonitorEventHandler.class.getName();
 
   /**
    * the name of the property to use to associate the patient object with a
    * viewer"
    */
-  protected String           patientPropertyName   = "_RM_PATIENT_";
+  protected String patientPropertyName = "_RM_PATIENT_";
 
   /**
    * A handle to the event handler; we keep it so that were are always using the
@@ -75,13 +77,12 @@ public abstract class aRemoteMonitor {
   /**
    * Creates a new instance
    */
-  protected aRemoteMonitor() {
-  }
+  protected aRemoteMonitor() {}
 
   /**
    * Checks whether the patient can be monitored (i.e. they have a monitoring
    * device).
-   * 
+   *
    * @param patient
    *          the patient
    * @return true if they can be monitored; false otherwise
@@ -91,7 +92,7 @@ public abstract class aRemoteMonitor {
   /**
    * Requests a viewer be created for displaying numeric vitals information for
    * the specified patient
-   * 
+   *
    * @param patient
    *          the patient
    * @param parent
@@ -101,13 +102,12 @@ public abstract class aRemoteMonitor {
    */
   public void createNumericsViewer(final JSONObject patient, final iContainer parent, iFunctionCallback cb) {
     createViewer(patient, parent, true, cb);
-
   }
 
   /**
    * Requests a viewer be created for displaying monitoring information for the
    * specified patient
-   * 
+   *
    * @param patient
    *          the patient
    * @param parent
@@ -117,12 +117,13 @@ public abstract class aRemoteMonitor {
    * @param cb
    *          the callback to be called when the viewer is created or on failure
    */
-  public abstract void createViewer(JSONObject patient, iContainer parent, UIDimension targetSize, iFunctionCallback cb);
+  public abstract void createViewer(JSONObject patient, iContainer parent, UIDimension targetSize,
+                                    iFunctionCallback cb);
 
   /**
    * Requests a viewer be created for displaying waveforms information for the
    * specified patient
-   * 
+   *
    * @param patient
    *          the patient
    * @param parent
@@ -132,7 +133,6 @@ public abstract class aRemoteMonitor {
    */
   public void createWaveformsViewer(final JSONObject patient, final iContainer parent, iFunctionCallback cb) {
     createViewer(patient, parent, false, cb);
-
   }
 
   /**
@@ -146,7 +146,7 @@ public abstract class aRemoteMonitor {
   /**
    * Gets the name of the property to use to associate the patient object with a
    * viewer
-   * 
+   *
    * @return the name
    */
   public String getPatientPropertyName() {
@@ -155,7 +155,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Notifies the monitor that it should stop sending updates temporarily
-   * 
+   *
    * @param patient
    *          the patient or null for all patients
    */
@@ -163,7 +163,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Notifies the monitor that it should restart sending updates.
-   * 
+   *
    * @param patient
    *          the patient the patient or null for all patients that were paused
    */
@@ -171,7 +171,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Notifies the monitor that it should start sending updates.
-   * 
+   *
    * @param patient
    *          the patient
    */
@@ -179,7 +179,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Notifies the monitor that it should stop sending updates.
-   * 
+   *
    * @param patient
    *          the patient or null for all patients
    */
@@ -187,7 +187,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Returns whether or not the monitor supports numerics
-   * 
+   *
    * @return true numerics are supported; false otherwise
    */
   public boolean supportsNumerics() {
@@ -196,7 +196,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Returns whether or not the monitor supports waveforms
-   * 
+   *
    * @return true waveforms are supported; false otherwise
    */
   public boolean supportsWaveforms() {
@@ -205,7 +205,7 @@ public abstract class aRemoteMonitor {
 
   /**
    * Called to create either a numerics or waveforms viewer
-   * 
+   *
    * @param patient
    *          the patient the viewer is for
    * @param parent
@@ -215,13 +215,12 @@ public abstract class aRemoteMonitor {
    * @param cb
    *          the call to be notified when the viewer is created
    */
-  protected void createViewer(final JSONObject patient, final iContainer parent, final boolean numerics, final iFunctionCallback cb) {
-
-  }
+  protected void createViewer(final JSONObject patient, final iContainer parent, final boolean numerics,
+                              final iFunctionCallback cb) {}
 
   /**
    * Called on the UI thread to finish the creation of a viewer
-   * 
+   *
    * @param patient
    * @param parent
    *          the parent for the
@@ -233,52 +232,68 @@ public abstract class aRemoteMonitor {
    *          true if the viewers should be stacked; false to split
    * @return the created viewer
    */
-  protected iContainer finishCreatingViewer(JSONObject patient, iContainer parent, Viewer wcfg, Viewer ncfg, boolean stacked) {
-    WindowViewer w = Platform.getWindowViewer();
-    iContainer nv = (iContainer) (ncfg == null ? null : parent.createWidget(ncfg));
-    iContainer wv = (iContainer) (wcfg == null ? null : parent.createWidget(wcfg));
-    iContainer rv = null;
-    if (wv == null || nv == null) {
-      rv = wv == null ? nv : wv;
+  protected iContainer finishCreatingViewer(JSONObject patient, iContainer parent, Viewer wcfg, Viewer ncfg,
+          boolean stacked) {
+    WindowViewer w  = Platform.getWindowViewer();
+    iContainer   nv = (iContainer) ((ncfg == null)
+                                    ? null
+                                    : parent.createWidget(ncfg));
+    iContainer   wv = (iContainer) ((wcfg == null)
+                                    ? null
+                                    : parent.createWidget(wcfg));
+    iContainer   rv = null;
+
+    if ((wv == null) || (nv == null)) {
+      rv = (wv == null)
+           ? nv
+           : wv;
       viewerCrated(rv, rv == nv);
     } else {
       if (stacked) {
         final StackPaneViewer sp = (StackPaneViewer) w.createViewer(parent, new StackPane());
+
         sp.addViewer("waveforms", wv);
         sp.addViewer("numerics", nv);
         sp.setSelectedIndex(0);
         rv = createGridPaneViewer(sp);
         stackPaneViewerCrated(sp, patient);
         Platform.getWindowViewer().getActionBar().setVisible(false);
-       Platform.getAppContext().lockOrientation(true);
+        Platform.getAppContext().lockOrientation(true);
       } else {
-        SplitPane pane = (SplitPane) w.createConfigurationObject("SplitPane", "bv.monitor.splitpane");
-        final SplitPaneViewer sp = (SplitPaneViewer) w.createViewer(parent, pane);
+        SplitPane             pane = (SplitPane) w.createConfigurationObject("SplitPane", "bv.monitor.splitpane");
+        final SplitPaneViewer sp   = (SplitPaneViewer) w.createViewer(parent, pane);
+
         sp.setViewer(0, wv);
         sp.setViewer(1, nv);
         rv = sp;
       }
+
       viewerCrated(nv, true);
       viewerCrated(wv, false);
     }
+
     String cls = eventHandlerClassName;
-    if (eventHandler == null && cls != null) {
+
+    if ((eventHandler == null) && (cls != null)) {
       eventHandler = (iRemoteMonitorEventHandler) Functions.getEventHandler(cls);
       eventHandler.setMonitor(this);
     }
+
     if (eventHandler != null) {
       rv.setEventHandler(iConstants.EVENT_DISPOSE, "class:" + cls + "#onDispose", true);
       rv.setEventHandler(iConstants.EVENT_SHOWN, "class:" + cls + "#onShown", true);
       rv.setEventHandler(iConstants.EVENT_HIDDEN, "class:" + cls + "#onHidden", true);
     }
+
     rv.setAttribute(patientPropertyName, patient);
     mainViewerCrated(rv, patient);
+
     return rv;
   }
 
   /**
    * Get toolbar buttons for the specified viewer
-   * 
+   *
    * @param viewer
    *          a viewer that was created by this handler
    * @return toolbar buttons to use with the viewer or null
@@ -289,62 +304,64 @@ public abstract class aRemoteMonitor {
 
   /**
    * Called when the main viewer has finished being created
-   * 
+   *
    * @param v
    *          the viewer
    * @param patient
    *          the patient
    */
-  protected void mainViewerCrated(iContainer v, JSONObject patient) {
-  }
-  
+  protected void mainViewerCrated(iContainer v, JSONObject patient) {}
+
   /**
-   * Called when a stackpane viewer has been created 
+   * Called when a stackpane viewer has been created
    * for viewing numerics and waveforms
-   * 
+   *
    * @param sp
    *          the viewer
    * @param patient
    *          the patient
    */
-  protected void stackPaneViewerCrated(StackPaneViewer sp, JSONObject patient) {
-  }
+  protected void stackPaneViewerCrated(StackPaneViewer sp, JSONObject patient) {}
 
   /**
    * Called when a viewer has finished being created
-   * 
+   *
    * @param v
    *          the viewer
    * @param numerics
    *          true if the viewer is a numerics viewer; false otherwise
    */
-  protected void viewerCrated(iContainer v, boolean numerics) {
-
-  }
+  protected void viewerCrated(iContainer v, boolean numerics) {}
 
   protected iContainer createGridPaneViewer(final StackPaneViewer sp) {
-    WindowViewer w = Platform.getWindowViewer();
+    WindowViewer   w  = Platform.getWindowViewer();
     GridPaneViewer gp = Utils.createGenericContainerViewer(w);
-    ToolBarViewer tb = (ToolBarViewer) gp.getWidget("genericToolbar");
-    iWidget b = tb.getWidget("bv.action.fullscreen");
+    ToolBarViewer  tb = (ToolBarViewer) gp.getWidget("genericToolbar");
+    iWidget        b  = tb.getWidget("bv.action.fullscreen");
+
     if (b != null) {
       b.setVisible(false);
     }
+
     b = tb.getWidget("backButton");
+
     if (b != null) {
       b.setEventHandler(iConstants.EVENT_ACTION, "class:MainEventHandler#popWorkspaceViewer", false);
     }
-    final LabelWidget l = (LabelWidget) tb.getWidget("genericLabel");
-    RadioButton cfg = (RadioButton) w.createConfigurationObject("RadioButton", "bv.radiobutton.toolbar");
+
+    final LabelWidget l   = (LabelWidget) tb.getWidget("genericLabel");
+    RadioButton       cfg = (RadioButton) w.createConfigurationObject("RadioButton", "bv.radiobutton.toolbar");
+
     cfg.groupName.setValue("sotera");
 
     RadioButtonWidget rb = (RadioButtonWidget) tb.createWidget(cfg);
+
     rb.setIcon(Platform.getResourceAsIcon("bv.icon.ecg"));
     rb.addActionListener(new iActionListener() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
         sp.switchTo("waveforms");
+
         if (l != null) {
           l.setText(sp.getActiveViewer().getTitle());
         }
@@ -352,30 +369,30 @@ public abstract class aRemoteMonitor {
     });
     tb.addWidget(rb);
     rb.setSelected(true);
-
     rb = (RadioButtonWidget) tb.createWidget(cfg);
     rb.setIcon(Platform.getResourceAsIcon("bv.icon.vitals_numerics"));
     rb.addActionListener(new iActionListener() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
         sp.switchTo("numerics");
+
         if (l != null) {
           l.setText(sp.getActiveViewer().getTitle());
         }
       }
     });
     tb.addWidget(rb);
-    if (l != null && sp.getActiveViewer() != null) {
+
+    if ((l != null) && (sp.getActiveViewer() != null)) {
       l.setText(sp.getActiveViewer().getTitle());
     }
-    gp.setViewer(1, sp);
-    return gp;
 
+    gp.setViewer(1, sp);
+
+    return gp;
   }
 
   public static interface iRemoteMonitorEventHandler {
     void setMonitor(aRemoteMonitor monitor);
   }
-
 }

@@ -17,24 +17,28 @@ GridPane {
     {
       x: "0"
       y: "1"
+      name: "tabsTarget"
       verticalFill: maximum
       viewer {
         TabPane {
           name: "applicationTabs"
           local: false
-          borders {
-            none
-          }
           font {
             size: "-2"
           }
           tabStyle: box
-          tabPainter {
-            bgColor: "darkBackground-30,darkBackground+15"
-          }
+		  tabPainter {
+		    bgColor: "darkBackground"
+		  }
+		  selectedTabPainter{
+		    bgColor: "darkBackground,darkBackground+15"
+		    borders {
+		    	lowered
+		    }
+		  }
           tabAreaPainter {
             borders {
-              none
+		       matte [ insets="0, 0, 0, 0", color="darkBorder" ]
             }
           }
           selectedIndex: 0
@@ -68,10 +72,10 @@ GridPane {
               reloadOnActivation: true
             }
             {
-              name: "consults"
-              dataURL: "consults.rml"
-              title: "{resource:bv.text.consults}"
-              icon: "resource:bv.icon.consults"
+              name: "procedures"
+              dataURL: "procedures.rml"
+              title: "{resource:bv.text.procedures}"
+              icon: "resource:bv.icon.procedures"
               reloadOnActivation: true
             }
             {

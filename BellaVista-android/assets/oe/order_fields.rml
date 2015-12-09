@@ -1,0 +1,112 @@
+GroupBox {
+  name: "orderFields"
+  verticalAlign: full
+  horizontalAlign: full
+  layout: forms
+  rows: "d,d,d:g,2dluY,d,2dluY"
+  columns: "d:g"
+  widgets {
+    {
+      Table {
+        name: "fieldsTable"
+        borders {
+          matte [ insets="1,0,1,0" ]
+        }
+        verticalAlign: full
+        bgColor: "defaultBackground"
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        singleClickActionEnabled: true
+        gridLineColor: "white"
+        alternatingHighlightColor: "rowHilite"
+        alternatingHighlightType: column
+        showStandardColumnHeader: false
+        autoSizeRowsToFit: true
+        columns {
+          {
+            width: "25ch"
+            wordWrap: true
+            contentPadding-left: 14
+          }
+          {
+            width: "15ch"
+            wordWrap: true
+          }
+        }
+      } [ onAction="class:oe.OrderEntry#onFieldsTableAction" ]
+    }
+    {
+      CheckBox {
+      	name: "showRequiredOnly"
+        horizontalAlign: right
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        value: "{resource:bv.oe.text.show_required_only}"
+        iconPosition: right
+      } [ onAction="class:oe.OrderEntry#onShowRequiredOnlyAction" ]
+    }
+    {
+      GroupBox {
+        name: "buttonPanel"
+        horizontalAlign: right
+        bounds {
+          x: "0"
+          y: "4"
+        }
+        layout: forms
+        rows: "f:d:g"
+        columns: "d,2dluX,d,2dluX"
+        columnGrouping {
+          "0,2"
+        }
+        widgets {
+          {
+            PushButton {
+              name: "noButton"
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              templateName: "bv.button"
+              verticalAlign: full
+              horizontalAlign: full
+              value: "Button"
+            }
+          }
+          {
+            PushButton {
+              name: "yesButton"
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              templateName: "bv.button"
+              verticalAlign: full
+              horizontalAlign: full
+              value: "Button"
+            }
+          }
+        }
+      }
+    }
+    {
+      Label {
+        name: "orderedItem"
+        font {
+          style: bold
+        }
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        templateName: "bv.oe.field_label_prompt"
+        value: "Label"
+        wordWrap: true
+      }
+    }
+  }
+} [ onConfigure="class:oe.OrderEntry#onOrderFieldsConfigure", onShown="class:oe.OrderEntry#onOrderFieldsShown" ]

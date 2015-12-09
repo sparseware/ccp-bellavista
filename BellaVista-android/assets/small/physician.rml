@@ -32,10 +32,10 @@ TabPane {
       icon: "resource:bv.icon.orders"
     }
     {
-      name: "consults"
-      dataURL: "consults.rml"
-      title: "{resource:bv.text.consults}"
-      icon: "resource:bv.icon.consults"
+      name: "procedures"
+      dataURL: "procedures.rml"
+      title: "{resource:bv.text.procedures}"
+      icon: "resource:bv.icon.procedures"
     }
   }
 } [ onCreated="class:MainEventHandler#onTabPaneCreated", onConfigure="class:CardStack#onTabPaneConfigured", onChange="class:CardStack#onChangeEvent"]

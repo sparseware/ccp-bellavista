@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 /**
@@ -21,11 +22,5 @@ package com.sparseware.bellavista;
  *
  */
 public enum ResultsView {
-  CHARTS,
-  DOCUMENT,
-  SPREADSHEET,
-  TRENDS,
-  CUSTOM_1,
-  CUSTOM_2,
-  CUSTOM_3,
+  CHARTS, DOCUMENT, SPREADSHEET, TRENDS, CUSTOM_1, CUSTOM_2, CUSTOM_3,
 }

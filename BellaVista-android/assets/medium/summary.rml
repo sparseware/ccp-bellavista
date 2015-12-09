@@ -249,17 +249,16 @@ GridPane {
                       Label {
                         name: "labs_description"
                         borders {
-                          matte [ color1="#999999", insets="1,0,,0" ]
-                          matte [ color1="darkBorder", insets="0,0,1,0" ]
+                          matte [ color="mediumBorder", insets="0,0,1,0" ]
                         }
                         columnSpan: -1
                         verticalAlign: full
                         horizontalAlign: full
                         font {
                           size: "-2"
+                          style: bold
                         }
                         fgColor: "summaryHeaderForeground"
-                        bgColor: "defaultBackground-10"
                         bounds {
                           x: "0"
                           y: "0"
@@ -420,16 +419,16 @@ GridPane {
                               Label {
                                 name: "vitals_description"
                                 borders {
-                                  matte [ insets="1,0,1,0" ]
+                                  matte [ insets="0,0,1,0", color="mediumBorder" ]
                                 }
                                 columnSpan: -1
                                 verticalAlign: full
                                 horizontalAlign: full
                                 font {
                                   size: "-2"
+                                  style: bold
                                 }
 		                        fgColor: "summaryHeaderForeground"
-		                        bgColor: "defaultBackground-10"
                                 bounds {
                                   x: "0"
                                   y: "0"
@@ -500,16 +499,16 @@ GridPane {
                             {
                               Label {
                                 borders {
-                                  matte [ insets="1,0,1,0" ]
+                                  matte [ insets="0,0,1,0", color="mediumBorder" ]
                                 }
                                 columnSpan: -1
                                 verticalAlign: full
                                 horizontalAlign: full
                                 font {
                                   size: "-2"
+                                  style: bold
                                 }
 		                        fgColor: "summaryHeaderForeground"
-		                        bgColor: "defaultBackground-10"
                                 bounds {
                                   x: "0"
                                   y: "0"

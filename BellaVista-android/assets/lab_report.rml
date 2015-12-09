@@ -40,7 +40,7 @@ GridPane {
             {
               PushButton {
                 templateName: "bv.pushbutton.fullscreen"
-              } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+              }
             }
           }
         }

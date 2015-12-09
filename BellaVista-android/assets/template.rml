@@ -1,21 +1,45 @@
 TemplateContext {
   widgets {
     {
-      Label {
+      PasswordField {
+        verticalAlign: center
+        templateName: "bv.passwordfield.signature"
+        visibleCharacters: 16
+      } [ onShown="class:MainEventHandler#requestFocus" ]
+    }
+    {
+      PushButton {
+        borders {
+          shadow
+          empty [ insets="4,4,4,4" ]
+        }
         horizontalAlign: full
         font {
           size: "+2"
         }
-        bgColor: "defaultGradient"
-        templateName: "bv.label.dialogTitle"
+        bgColor: "defaultBackground@80"
+        bounds {
+          height: "-1" [ min="2ln" ]
+        }
+        templateName: "Rare.Notifier.button"
         textHAlignment: center
         wordWrap: true
-      } [ onShown="class:MainEventHandler#onMakeWindowDragger" ]
+      }
     }
     {
       Label {
         verticalAlign: bottom
         templateName: "bv.label.value"
+      }
+    }
+    {
+      Label {
+        borders {
+          matte [ insets="0,0,1,0" ]
+        }
+        horizontalAlign: full
+        fgColor: "red"
+        templateName: "Rare.Alert.statusLabel"
       }
     }
     {
@@ -31,12 +55,16 @@ TemplateContext {
     {
       Label {
         borders {
-          matte [ insets="0,0,1,0", color="lightBorder" ]
+         // matte [ insets="0,0,1,0", color="#999999" ]
           empty [ insets="4,0,4,0" ]
         }
-        bgColor: "tableHeaderBackground+15, tableHeaderBackground" [ magnitude="66" ]
+        fgColor: "summaryHeaderForeground"
+        bgColor: "lightBackground"
         bounds {
           height: "-1" [ min="1.5ln" ]
+        }
+        font {
+         underlined: true
         }
         templateName: "bv.label.trendPanelHeader"
         textHAlignment: center
@@ -45,16 +73,46 @@ TemplateContext {
     {
       Label {
         borders {
-          matte [ insets="0,0,4,0", color=",darkBorder" ]
-          empty [ insets="4,0,4,0" ]
+          matte [ insets="0,0,2,0", color="link" ]
+          empty [ insets="4,4,4,8" ]
         }
         templateName: "Rare.Alert.title"
       }
     }
     {
       PushButton {
-        fgColor: "link"
+        borders {
+          empty [ insets="4,4,4,4" ]
+          line [ cornerArc="6", color="transparent" ]
+        }
         templateName: "Rare.Alert.button"
+        buttonStyle: hyperlink_always_underline
+      }
+    }
+    {
+      PushButton {
+        borders {
+          line [ cornerArc="6", color="transparent" ]
+          empty [ insets="4,4,4,4" ]
+        }
+        templateName: "bv.button"
+        bgColor: "defaultBackground-10"
+        pressedPainter {
+          bgColor: "defaultBackground-20"
+        }
+        buttonStyle: hyperlink_always_underline
+      }
+    }
+    {
+      PushButton {
+        borders {
+          empty [ insets="4,4,4,4" ]
+          line [ cornerArc="6", color="transparent" ]
+        }
+        templateName: "bv.button.alert"
+        pressedPainter {
+          bgColor: "defaultBackground-20"
+        }
         buttonStyle: hyperlink_always_underline
       }
     }
@@ -89,7 +147,6 @@ TemplateContext {
         alternatingHighlightColor: "rowHilite"
         alternatingHighlightType: row
         autoSizeRowsToFit: true
-        rowHeight: "1.75ln"
         columns {
           {
             title: " "
@@ -140,6 +197,7 @@ TemplateContext {
         autoSizeRowsToFit: true
         rowHeight: "2ln"
         showStandardColumnHeader: false
+        singleClickActionEnabled: false
         columns {
           {
             title: "Photo"
@@ -174,12 +232,39 @@ TemplateContext {
         templateName: "bv.table.summary"
         columnSortingAllowed: false
         singleClickActionEnabled: true
-        gridLineType: none
-        gridLineColor: "tableGridLineColor"
+        gridLineType: horizontal_lines
+        gridLineColor: "white"
         headerFgColor: "summaryHeaderForeground"
-        headerBgColor: "summaryHeaderBackground"
-        headerSeparatorColor: "summaryHeaderBackground"
-        headerBottomSeparatorColor: "darkBorder"
+        headerBgColor: "summaryBackground"
+        headerSeparatorColor: "transparent"
+        headerBottomSeparatorColor: "darkBackground"
+        autoSizeRowsToFit: true
+        boldColumnHeaders: true
+        rowHeight: "1.25ln"
+      }
+    }
+    {
+      Table {
+        borders {
+          none
+        }
+        verticalAlign: full
+        horizontalAlign: full
+        font {
+          size: "+1"
+        }
+        fgColor: "summaryForeground"
+        bgColor: "white"
+        defaultContextMenu: false
+        templateName: "bv.table.popup_summary"
+        columnSortingAllowed: false
+        singleClickActionEnabled: true
+        gridLineType: horizontal_lines
+        gridLineColor: "defaultBackground"
+        headerFgColor: "summaryHeaderForeground"
+        headerBgColor: "white"
+        headerSeparatorColor: "transparent"
+        headerBottomSeparatorColor: "darkBackground"
         autoSizeRowsToFit: true
         rowHeight: "1.25ln"
       }
@@ -206,7 +291,6 @@ TemplateContext {
         alternatingHighlightColor: "rowHilite"
         alternatingHighlightType: row
         autoSizeRowsToFit: true
-        rowHeight: "2ln"
       }
     }
     {
@@ -285,7 +369,7 @@ TemplateContext {
         verticalAlign: full
         templateName: "bv.pushbutton.fullscreen"
         buttonStyle: toolbar
-      } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+      } [ onConfigure="class:Actions#onConfigureFullscreenButton", onShown="class:Actions#onShownFullscreenButton" ]
     }
     {
       PushButton {
@@ -312,6 +396,7 @@ TemplateContext {
     {
       Table {
         name: "spreadsheetTable"
+        defaultContextMenu: false
         templateName: "bv.table.spreadsheet"
         local: false
         autoResizeMode: none
@@ -330,7 +415,7 @@ TemplateContext {
             gridCell {
               bgColor: "defaultBackground^10"
             }
-            headerWordWrap: false
+            headerWordWrap: true
             headerHorizontalAlign: center
             headerVerticalAlign: center
           }
@@ -356,6 +441,7 @@ TemplateContext {
               bgColor: "defaultBackground^10"
             }
             headerHorizontalAlign: center
+            headerWordWrap: true
           }
         }
       }
@@ -364,24 +450,30 @@ TemplateContext {
       ListBox {
         fgColor: "foreground"
         bgColor: "defaultBackground-5"
+        defaultContextMenu: false
         templateName: "Rare.MenuBar.actionBarMenu"
         showDividerLine: true [ showLastLine="false" ]
-        rowHeight: "2ln"
       }
     }
     {
       ListBox {
         fgColor: "foreground"
         bgColor: "defaultBackground+5"
+        defaultContextMenu: false
         templateName: "Rare.PushButton.menu"
         showDividerLine: true [ showLastLine="false" ]
-        rowHeight: "2ln"
       }
     }
     {
       ListBox {
         fgColor: "tableForeground"
         bgColor: "rowHilite"
+        contentPadding {
+          top: "2"
+          right: "4"
+          bottom: "2"
+          left: "4"
+        }
         defaultContextMenu: false
         templateName: "bv.listbox"
         alternatingHighlightColor: "tableBackground"
@@ -389,7 +481,34 @@ TemplateContext {
         showDividerLine: true [ showLastLine="false" ]
         dividerLineColor: "tableGridLineColor"
         singleClickActionEnabled: true
-        rowHeight: "2ln"
+      }
+    }
+    {
+      ListBox {
+        borders {
+          matte [ insets="0,0,1,0" ]
+        }
+        fgColor: "tableForeground"
+        bgColor: "tableBackground"
+        bounds {
+          x: "0"
+          y: "0"
+          width: "-1" [ min="10ch" ]
+        }
+        contentPadding {
+          top: "2"
+          right: "8"
+          bottom: "2"
+          left: "8"
+        }
+        defaultContextMenu: false
+        templateName: "bv.listbox.pick_list"
+        handleFirstFocusSelection: false
+        visibleRowCount: 7
+        alternatingHighlightColor: "rowHilite"
+        autoSizeRowsToFit: true
+        showDividerLine: true
+        singleClickActionEnabled: true
       }
     }
     {
@@ -408,10 +527,9 @@ TemplateContext {
         showPopupButton: true [ border="none", bgColor="transparent" ]
         popupPainter {
           borders {
-            line [ noTop="true" ]
+            line [ noTop="true", color="Rare.ComboBox.borderColor" ]
           }
         }
-        rowHeight: "1.75ln"
       } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder" ]
     }
     {
@@ -491,7 +609,6 @@ TemplateContext {
         }
         fgColor: "foreground"
         bgColor: "defaultBackground"
-        //autoSizeColumnsToFit: true
         enabled: false
         defaultContextMenu: false
         templateName: "bv.table.card"
@@ -690,6 +807,257 @@ TemplateContext {
           }
         }
       } [ os="small" ]
+    }
+    {
+      Form {
+        templateName: "bv.oe.form"
+        layout: forms
+        rows: "4dluY,p,p,2dluY,d,4dluY,d:g,4dluY,p"
+        columns: "4dluX,d:g,4dluX"
+        widgets {
+          {
+            Label {
+              name: "order"
+              font {
+                style: bold
+              }
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              value: "Label"
+              wordWrap: true
+            }
+          }
+          {
+            Label {
+              name: "directions"
+              fgColor: "clinicalPrompt"
+              bounds {
+                x: "1"
+                y: "2"
+              }
+              value: "Label"
+              wordWrap: true
+            }
+          }
+          {
+            Form {
+              name: "formFields"
+              bounds {
+                x: "1"
+                y: "6"
+              }
+              layout: forms
+              rows: "d"
+              columns: "d:g"
+            }
+          }
+          {
+            Line {
+              bounds {
+                x: "1"
+                y: "4"
+              }
+            }
+          }
+          {
+            Label {
+              name: "messageBox"
+              font {
+                size: "-1"
+              }
+              borders {
+              	empty [ insets="0,4,0,4"]
+              	matte [insets="0,0,1,0"]
+              }
+              bounds {
+                x: "1"
+                y: "8"
+                height: "2ln"
+              }
+              wordWrap: true
+            }
+          }
+        }
+      }
+    }
+    {
+      Form {
+        borders {
+          empty [ insets="4,0,0,0" ]
+        }
+        templateName: "bv.oe.group_field"
+        layout: forms
+        rows: "d"
+        columns: "d:g"
+      }
+    }
+    {
+      Label {
+        borders {
+          empty [ insets="4,0,0,4" ]
+        }
+        fgColor: "oeClinicalPrompt"
+        templateName: "bv.oe.field_label_prompt"
+      }
+    }
+    {
+      ListBox {
+        fgColor: "white"
+        bgColor: "grayBackground"
+        defaultContextMenu: false
+        templateName: "Rare.MenuBar.actionBarMenu"
+        showDividerLine: true [ showLastLine="false" ]
+        dividerLineColor: "#999999"
+      }
+    }
+    {
+      Form {
+        verticalAlign: full
+        horizontalAlign: full
+        templateName: "bv.oe.date_time_field"
+        layout: forms
+        rows: "2dlu,d,2dlu,d,2dlu,f:d"
+        columns: "2dlu,6dlu,c:d,8dlu,d,6dlu,4dlu,d,2dlu"
+        submitValue: viewer_value
+        widgets {
+          {
+            PushButton {
+              name: "now"
+              bounds {
+                x: "2"
+                y: "3"
+                width: "6ch"
+              }
+              value: "{resource:bv.text.now}"
+            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+          }
+          {
+            PushButton {
+              name: "clear"
+              bounds {
+                x: "4"
+                y: "3"
+                width: "6ch"
+              }
+              value: "{resource:bv.text.clear}"
+            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+          }
+          {
+            DateChooser {
+              name: "dateChooser"
+              borders {
+                line [ cornerArc="8", color="darkBorder" ]
+              }
+              bgColor: "buttonBackground"
+              bounds {
+                x: "7"
+                y: "1"
+              }
+              displayType: button
+              showPopupButton: true [ pressedPainter="selectionColor" ]
+              showTime: true
+            } [ onChange="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+          }
+          {
+            TextField {
+              name: "valueField"
+              columnSpan: 5
+              bounds {
+                x: "1"
+                y: "1"
+                width: "10ch"
+              }
+              customProperties: "android:layout=''"
+            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+          }
+          {
+            Label {
+              columnSpan: -1
+              bounds {
+                x: "1"
+                y: "5"
+              }
+              value: "{resource:bv.oe.text.date_time_help}"
+              textVAlignment: top
+              wordWrap: true
+            }
+          }
+        }
+      }
+    }
+    {
+      CheckBox {
+        verticalAlign: top
+        horizontalAlign: left
+        templateName: "bv.oe.boolean_field.checkbox"
+      }
+    }
+    {
+      TextField {
+        verticalAlign: top
+        horizontalAlign: full
+        templateName: "bv.oe.integer_field"
+        errorMessage: "" [ displayWidget="messageBox" ]
+        inputValidator: "#"
+        keyboardType: number_punctuation_type
+      }
+    }
+    {
+      TextField {
+        verticalAlign: top
+        horizontalAlign: full
+        templateName: "bv.oe.decimal_field"
+        errorMessage: "" [ displayWidget="messageBox" ]
+        inputValidator: "#.##"
+        keyboardType: decimal_punctuation_type
+      }
+    }
+    {
+      ComboBox {
+        verticalAlign: top
+        horizontalAlign: full
+        templateName: "bv.oe.boolean_field.combobox"
+      }
+    }
+    {
+      ComboBox {
+        verticalAlign: top
+        horizontalAlign: full
+        templateName: "bv.oe.list_field.combobox"
+      } [ onFinishedLoading="class:oe.OrderEntry#onListFieldFinishedLoading" ]
+    }
+    {
+      ListBox {
+        verticalAlign: full
+        horizontalAlign: full
+        contentPadding {
+          top: "2"
+          right: "4"
+          bottom: "2"
+          left: "14"
+        }
+        defaultContextMenu: false
+        templateName: "bv.oe.list_field.listbox"
+        handleFirstFocusSelection: false
+        alternatingHighlightColor: "rowHilite"
+        singleClickActionEnabled: true
+      } [ onFinishedLoading="class:oe.OrderEntry#onListFieldFinishedLoading" ]
+    }
+    {
+      TextField {
+        verticalAlign: top
+        horizontalAlign: full
+        templateName: "bv.oe.text_field"
+      }
+    }
+    {
+      TextArea {
+        verticalAlign: full
+        horizontalAlign: full
+        templateName: "bv.oe.textarea_field"
+      }
     }
   }
 }

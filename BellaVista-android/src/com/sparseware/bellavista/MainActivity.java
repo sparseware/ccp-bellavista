@@ -4,7 +4,6 @@
 
 package com.sparseware.bellavista;
 
-import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.View;
 import android.view.Window;
@@ -18,11 +17,6 @@ import com.appnativa.rare.viewer.aViewer;
 
 public class MainActivity extends com.appnativa.rare.platform.android.MainActivity {
   GestureDetector gestureDetector;
-
-  @Override
-  public void onCreate(Bundle icicle) {
-    super.onCreate(icicle);
-  }
 
   @Override
   public void setUseFullScreen(boolean use) {
@@ -54,6 +48,7 @@ public class MainActivity extends com.appnativa.rare.platform.android.MainActivi
     return super.findFirstMouseListener(v, motion);
   }
   
+  
   @Override
   protected void setInitialOptions() {
     super.setInitialOptions();
@@ -75,7 +70,8 @@ public class MainActivity extends com.appnativa.rare.platform.android.MainActivi
      * specify the correct URL in order use the live assets when running in the
      * emulator
      */
-    if (isRunningOnEmulator()) {
+    if (isRunningOnEmulator() || isUsingDebuggingBridge()) {
+
       System.setProperty("Rare.applicationURL", "http://192.168.1.50/apps/BellaVista/BellaVista-android/assets/application.rml");
     }
   }

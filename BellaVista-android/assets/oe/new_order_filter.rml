@@ -1,0 +1,68 @@
+Form {
+  title: "{resource:bv.oe.text.orders_filter}"
+  layout: forms
+  rows: "4dluY,d,2dluY,d,d,4dluY,d,d,4dluY"
+  columns: "2dluX,d:g,2dluX"
+  widgets {
+    {
+      ListBox {
+        name: "route"
+        bgColor: "transparent"
+        bounds {
+          x: "1"
+          y: "7"
+          width: "-1" [min "20ch"]
+        }
+        handleFirstFocusSelection: false
+        visibleRowCount: 8
+        showDividerLine: true
+        singleClickActionEnabled: true
+      }
+    }
+    {
+      Label {
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        templateName: "bv.oe.field_label_prompt"
+        value: "{resource:bv.oe.text.order_type}:"
+      }
+    }
+    {
+      Label {
+        borders {
+          matte [ insets="0,0,1,0" ]
+          empty [ insets="4,0,0,4" ]
+        }
+        bounds {
+          x: "1"
+          y: "6"
+        }
+        templateName: "bv.oe.field_label_prompt"
+        value: "{resource:bv.oe.text.route}:"
+      }
+    }
+    {
+      ComboBox {
+        name: "type"
+        horizontalAlign: left
+        bounds {
+          x: "1"
+          y: "4"
+        }
+      } [ onAction="class:oe.Ordering#onFilterTypeAction" ]
+    }
+    {
+      CheckBox {
+        name: "startsWith"
+        horizontalAlign: left
+        bounds {
+          x: "1"
+          y: "1"
+        }
+        value: "{resource:bv.oe.text.do_starts_with_search}"
+      }
+    }
+  }
+}

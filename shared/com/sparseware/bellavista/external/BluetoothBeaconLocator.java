@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista.external;
 
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * The class provides generic support for bluetooth beacons patients and
  * locations locator service.
- * 
+ *
  * @author Don DeCoteau
  *
  */
@@ -34,6 +35,7 @@ public class BluetoothBeaconLocator extends aBeaconLocator {
   }
 
   @Override
+
   /**
    * Creates the beacon support object
    */
@@ -45,5 +47,4 @@ public class BluetoothBeaconLocator extends aBeaconLocator {
   protected Pattern createIDPattern() {
     return Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", Pattern.CASE_INSENSITIVE);
   }
-
 }

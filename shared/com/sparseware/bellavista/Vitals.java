@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import com.appnativa.rare.viewer.ChartViewer;
 import com.appnativa.rare.viewer.SplitPaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
+import com.appnativa.rare.viewer.ToolBarViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iTarget;
@@ -59,39 +61,48 @@ import com.sparseware.bellavista.external.aRemoteMonitor;
  * This provides a core set of functionality for managing results for display
  * The data is assumed to be returned is reverse chronological order (newest
  * values first). The middle-ware should enforce this constraint.
- * 
+ *
  * @author Don DeCoteau
  */
 public class Vitals extends aResultsManager implements iValueChecker {
   static boolean        checkedForMonitoringSupport;
   static Class          monitoringClass;
   static aRemoteMonitor monitorInstance;
+  boolean               showUnits;
+  boolean               updateWeightHeight;
+  StringBuilder         temp = new StringBuilder();
 
   public Vitals() {
     super("vitals", "Vitals");
-    iPlatformAppContext app = Platform.getAppContext();
-    JSONObject info = (JSONObject) app.getData("vitalsInfo");
-    itemCounts = new LinkedHashMap<String, MutableInteger>();
-    itemDatesSet = new LinkedHashSet<Date>();
-    dataPageSize = info.optInt("dataPageSize", dataPageSize);
-    spreadSheetPageSize = info.optInt("spreadSheetPageSize", spreadSheetPageSize);
-    chartHandler = new ChartHandler(info.getJSONObject("charts"));
-    chartableItemsManager=new ChartableItemsManager();
+
+    iPlatformAppContext app  = Platform.getAppContext();
+    JSONObject          info = (JSONObject) app.getData("vitalsInfo");
+
+    itemCounts            = new LinkedHashMap<String, MutableInteger>();
+    itemDatesSet          = new LinkedHashSet<Date>();
+    dataPageSize          = info.optInt("dataPageSize", dataPageSize);
+    spreadSheetPageSize   = info.optInt("spreadSheetPageSize", spreadSheetPageSize);
+    showUnits             = info.optBoolean("showUnits", false);
+    chartHandler          = new ChartHandler(info.getJSONObject("charts"));
+    chartableItemsManager = new ChartableItemsManager();
+
     if (info.optBoolean("hasReferenceRange", false)) {
       RANGE_POSITION = 4;
     }
-    if(Utils.isCardStack()) {
-      trendPanels = createTrendPanels(info.optJSONArray("trends"),true);
+
+    if (Utils.isCardStack()) {
+      trendPanels = createTrendPanels(info.optJSONArray("trends"), true);
     }
 
     if (!checkedForMonitoringSupport) {
-      checkedForMonitoringSupport=true;
+      checkedForMonitoringSupport = true;
+
       String cls = info.optString("monitoringClass", null);
-      if (cls != null && cls.length() > 0) {
+
+      if ((cls != null) && (cls.length() > 0)) {
         try {
           monitoringClass = Platform.loadClass(cls);
-        } catch (Exception ignore) {
-        }
+        } catch(Exception ignore) {}
       }
     }
   }
@@ -103,32 +114,38 @@ public class Vitals extends aResultsManager implements iValueChecker {
 
   public void onSummaryClick(String eventName, iWidget widget, EventObject event) {
     ActionPath path = new ActionPath("vitals", "combo");
+
     Utils.handleActionPath(path);
   }
 
   public void onConfigureRealtimeVitalsButton(String eventName, iWidget widget, EventObject event) {
-    if (monitoringClass != null && Utils.getPatient().optBoolean("has_monitor", false)) {
+    if ((monitoringClass != null) && Utils.getPatient().optBoolean("has_monitor", false)) {
       widget.setEnabled(true);
     }
   }
-
+ 
   protected void changeViewEx(final iWidget widget, final ResultsView view) {
     if (view != ResultsView.CUSTOM_1) {
       return;
     }
+
     final WindowViewer w = Platform.getWindowViewer();
+
     if (monitorInstance == null) {
       try {
         monitorInstance = (aRemoteMonitor) monitoringClass.newInstance();
-      } catch (Exception e) {
+      } catch(Exception e) {
         monitoringClass = null;
         widget.setEnabled(false);
         w.alert(w.getString("bv.text.failed_to_create_monitor"));
+
         return;
       }
     }
-    final iContainer fv = widget.getFormViewer();
+
+    final iContainer      fv = widget.getFormViewer();
     final SplitPaneViewer sp;
+
     if (fv instanceof SplitPaneViewer) {
       sp = (SplitPaneViewer) fv;
     } else {
@@ -136,13 +153,14 @@ public class Vitals extends aResultsManager implements iValueChecker {
     }
 
     iFunctionCallback cb = new iFunctionCallback() {
-
       @Override
       public void finished(boolean canceled, Object returnValue) {
         w.hideWaitCursor();
+
         if (widget.isDisposed()) {
           return;
         }
+
         if (returnValue instanceof Throwable) {
           Utils.handleError((Throwable) returnValue);
         } else if (returnValue == null) {
@@ -150,11 +168,15 @@ public class Vitals extends aResultsManager implements iValueChecker {
           w.alert(w.getString("bv.text.failed_to_create_monitor"));
         } else {
           currentView = view;
+
           iViewer v = (iViewer) returnValue;
+
           dataTable.clearSelection();
+
           if (chartHandler != null) {
             chartHandler.resetChartPoints();
           }
+
           if (sp == null) {
             v.setEventHandler(iConstants.EVENT_UNLOAD, "class:Vitals#reselectDefaultView", true);
             Utils.pushWorkspaceViewer(v);
@@ -164,29 +186,39 @@ public class Vitals extends aResultsManager implements iValueChecker {
         }
       }
     };
+
     showRegularTableEx(fv);
     w.showWaitCursor();
+
     UIDimension targetSize;
+
     if (sp != null) {
       targetSize = sp.getSize();
     } else {
       targetSize = w.getTarget(iTarget.TARGET_WORKSPACE).getTargetSize();
     }
-    monitorInstance.createViewer(Utils.getPatient(), sp == null ? w : sp, targetSize, cb);
+
+    monitorInstance.createViewer(Utils.getPatient(), (sp == null)
+            ? w
+            : sp, targetSize, cb);
   }
 
   @Override
   public void changeView(String eventName, iWidget widget, EventObject event) {
     String name = ((aGroupableButton) widget).getSelectedButtonName();
+
     if (name == null) {
       name = widget.getName();
     }
-    if (UIScreen.isLargeScreen() && "spreadsheet".equals(name)) { //if going to the spreadsheet go to same result type
+
+    if (UIScreen.isLargeScreen() && "spreadsheet".equals(name)) {    //if going to the spreadsheet go to same result type
       String key = getSelectedChartableKey();
+
       if (key != null) {
         keyPath = new ActionPath(key);
       }
     }
+
     super.changeView(eventName, widget, event);
   }
 
@@ -198,25 +230,33 @@ public class Vitals extends aResultsManager implements iValueChecker {
     try {
       do {
         RenderableDataItem name = row.getItemEx(NAME_POSITION);
-        Date date = (Date) row.get(DATE_POSITION).getValue();
-        if (name == null || date == null) {
+        Date               date = (Date) row.get(DATE_POSITION).getValue();
+
+        if ((name == null) || (date == null)) {
           continue;
         }
+
         String key = (String) name.getLinkedData();
+
         if (key == null) {
           continue;
         }
+
         RenderableDataItem valueItem = row.get(VALUE_POSITION);
-        String value = (String) valueItem.getValue();
-        if (chartableItemsManager.check(key,value)) {
+        String             value     = (String) valueItem.getValue();
+
+        if (chartableItemsManager.check(key, value)) {
           itemDatesSet.add(date);
+
           MutableInteger count = itemCounts.get(key);
+
           if (count == null) {
             count = new MutableInteger(0);
-
             itemCounts.put(key, count);
           }
+
           count.incrementAndGet();
+
           if (trendPanels != null) {
             for (TrendPanel p : trendPanels) {
               if (p.addTrend(key, date, valueItem)) {
@@ -225,10 +265,57 @@ public class Vitals extends aResultsManager implements iValueChecker {
             }
           }
         }
-      } while (false);
-    } catch (Exception e) {
+
+        if (key.equals("wt") || key.equals("ht")) {
+          JSONObject o = (JSONObject) Platform.getAppContext().getData("patient");
+          String     s = o.optString(key);
+
+          if (s.length() == 0) {
+            RenderableDataItem unitItem = row.getItemEx(UNIT_POSITION);
+            String             unit     = (unitItem == null)
+                                          ? ""
+                                          : unitItem.toString();
+
+            if (unit.length() > 0) {
+              o.put(key, valueItem.toString() + unit);
+              updateWeightHeight = true;
+            }
+          }
+        }
+
+        if (showUnits) {
+          RenderableDataItem unitItem = row.getItemEx(UNIT_POSITION);
+          String             unit     = (unitItem == null)
+                                        ? ""
+                                        : unitItem.toString();
+
+          if (unit.length() > 0) {
+            StringBuilder sb = temp;
+
+            sb.setLength(0);
+            sb.append(value);
+
+            int n = value.indexOf('(');
+
+            if (n == -1) {
+              n = value.indexOf('*');
+            }
+
+            if (n == -1) {
+              sb.append(' ').append(unit);
+            } else {
+              sb.insert(n, unit);
+              sb.insert(n + unit.length(), ' ');
+            }
+
+            valueItem.setValue(sb.toString());
+          }
+        }
+      } while(false);
+    } catch(Exception e) {
       Platform.ignoreException(null, e);
     }
+
     return true;
   }
 
@@ -238,24 +325,47 @@ public class Vitals extends aResultsManager implements iValueChecker {
    * categories that was sent with the data
    */
   public void onFinishedLoading(String eventName, iWidget widget, EventObject event) {
-    TableViewer table = (TableViewer) widget;
-    chartableItemsManager.createList(table, NAME_POSITION);
-    if(Utils.isCardStack() && trendPanels!=null && trendPanels.length>0) {
-      iContainer fv = (iContainer) widget.getFormViewer().getWidget("trends");
-      TrendPanel panel = trendPanels[0];
-      panel.removePeers();
-      String text = panel.popuplateForm(fv);
-      CardStackUtils.switchToViewer(table.getParent());
-      updateCardStackTitle(panel.title,text);
+    if (hasNoData) {
+      ToolBarViewer tb = (ToolBarViewer) widget.getParent().getWidget("tableToolbar");
+      iWidget       cw = (tb == null)
+                         ? null
+                         : tb.getWidget("spreadsheet");
+
+      if (cw != null) {
+        cw.setEnabled(false);
+      }
+
+      cw = (tb == null)
+           ? null
+           : tb.getWidget("comboChart");
+
+      if (cw != null) {
+        cw.setEnabled(false);
+      }
+    } else {
+      TableViewer table = (TableViewer) widget;
+
+      chartableItemsManager.createList(table, NAME_POSITION);
+
+      if (Utils.isCardStack() && (trendPanels != null) && (trendPanels.length > 0)) {
+        iContainer fv    = (iContainer) widget.getFormViewer().getWidget("trends");
+        TrendPanel panel = trendPanels[0];
+
+        panel.removePeers();
+
+        String text = panel.popuplateForm(fv);
+
+        CardStackUtils.switchToViewer(table.getParent());
+        updateCardStackTitle(panel.title, text);
+      }
     }
   }
-  
+
   public void onCreated(String eventName, iWidget widget, EventObject event) {
-    if(Utils.isCardStack()) {
-      CardStackUtils.setViewerAction((iViewer) widget, new ChartsActionListener(),true);
+    if (Utils.isCardStack()) {
+      CardStackUtils.setViewerAction((iViewer) widget, new ChartsActionListener(), true);
     }
   }
-  
 
   /**
    * Called via the configure event on the charts panel
@@ -263,36 +373,40 @@ public class Vitals extends aResultsManager implements iValueChecker {
   @Override
   public void onChartsPanelLoaded(String eventName, iWidget widget, EventObject event) {
     super.onChartsPanelLoaded(eventName, widget, event);
-    if (dataLoaded && !dataTable.hasSelection()) {
+
+    if (dataLoaded &&!dataTable.hasSelection()) {
       showComboChart((StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack"));
     }
   }
 
-  public void selectVitals(String eventName, iWidget widget, EventObject event) {
-
-  }
+  public void selectVitals(String eventName, iWidget widget, EventObject event) {}
 
   protected List<RenderableDataItem> createSpreadsheetRows(TableViewer table) {
-    Date[] dates = itemDates;
-    List<RenderableDataItem> list = originalRows;
-    LinkedHashMap<String, MutableInteger> counts = itemCounts;
+    Date[]                                          dates      = itemDates;
+    List<RenderableDataItem>                        list       = originalRows;
+    LinkedHashMap<String, MutableInteger>           counts     = itemCounts;
     LinkedHashMap<String, List<RenderableDataItem>> categories = new LinkedHashMap<String, List<RenderableDataItem>>();
-    HashMap<String, RenderableDataItem> map = new HashMap<String, RenderableDataItem>(counts.size());
-    ArrayList<RenderableDataItem> rows = new ArrayList<RenderableDataItem>(counts.size());
-    int len = list.size();
-    int clen = dates.length;
-    boolean found;
-    RenderableDataItem row, test, orow;
+    HashMap<String, RenderableDataItem>             map        = new HashMap<String, RenderableDataItem>(counts.size());
+    ArrayList<RenderableDataItem>                   rows       = new ArrayList<RenderableDataItem>(counts.size());
+    int                                             len        = list.size();
+    int                                             clen       = dates.length;
+    boolean                                         found;
+    RenderableDataItem                              row, test, orow;
+
     for (int i = 0; i < len; i++) {
       orow = list.get(i);
       test = orow.get(NAME_POSITION);
+
       String s = (String) test.getLinkedData();
-      if (!counts.containsKey(s)) { // only contains chartable items (numeric
-                                    // values)
+
+      if (!counts.containsKey(s)) {    // only contains chartable items (numeric
+        // values)
         continue;
       }
+
       Date date = (Date) orow.get(DATE_POSITION).getValue();
-      s = (String) test.getValue();
+
+      s   = (String) test.getValue();
       row = map.get(s);
 
       if (row == null) {
@@ -302,35 +416,49 @@ public class Vitals extends aResultsManager implements iValueChecker {
         row.setItem(0, test);
         rows.add(row);
       }
+
       long time = date.getTime();
+
       found = false;
+
       for (int col = 0; col < clen; col++) {
         if (dates[col].getTime() == time) {
           found = true;
           row.setItem(col + 1, orow.get(VALUE_POSITION));
         }
       }
+
       if (!found) {
         System.out.println(orow);
       }
     }
+
     SubItemComparator c = new SubItemComparator();
+
     c.setOptions(0, false);
+
     Iterator<Entry<String, List<RenderableDataItem>>> it = categories.entrySet().iterator();
+
     rows.clear();
-    UIColor bg = ColorUtils.getColor("vitalsCategoryBackground");
+
+    UIColor            bg          = ColorUtils.getColor("vitalsCategoryBackground");
     RenderableDataItem emptyCatRow = new RenderableDataItem();
+
     emptyCatRow.setBackground(bg);
-    while (it.hasNext()) {
-      Entry<String, List<RenderableDataItem>> e = it.next();
-      String category = e.getKey();
-      List<RenderableDataItem> clist = e.getValue();
+
+    while(it.hasNext()) {
+      Entry<String, List<RenderableDataItem>> e        = it.next();
+      String                                  category = e.getKey();
+      List<RenderableDataItem>                clist    = e.getValue();
+
       Collections.sort(clist, c);
       row = table.createRow(clen + 3, false);
       row.setSelectable(false);
+
       for (int i = 0; i < clen + 3; i++) {
         row.add(emptyCatRow);
       }
+
       test = new RenderableDataItem(category);
       test.setBackground(bg);
       test.setColumnSpan(-1);
@@ -340,26 +468,49 @@ public class Vitals extends aResultsManager implements iValueChecker {
       rows.add(row);
       rows.addAll(clist);
     }
+
     return rows;
   }
 
   protected void processData(TableViewer table, List<RenderableDataItem> rows) {
+    updateWeightHeight = false;
     Utils.checkRowsAndOptimizeDates(rows, DATE_POSITION, RenderableDataItem.TYPE_DATETIME, this);
+
+    if (updateWeightHeight) {
+      PatientSelect.updateWeightHeightBMI(Platform.getAppContext(),
+              (JSONObject) Platform.getAppContext().getData("patient"));
+
+      iContainer c = (iContainer) Platform.getWindowViewer().getViewer("infobar");
+      iWidget    w = (c == null)
+                     ? null
+                     : c.getWidget("wt_ht_bmi");
+
+      if (w != null) {
+        w.reset();
+      }
+    }
+
     itemDates = itemDatesSet.toArray(new Date[itemDatesSet.size()]);
     Arrays.sort(itemDates);
-    int len = itemDates.length;
-    spreadsheetPosition = Math.max(0, len - spreadSheetPageSize);
-    rows = Utils.groupByDate(table, rows);
 
+    int len = itemDates.length;
+
+    spreadsheetPosition = Math.max(0, len - spreadSheetPageSize);
+    rows                = Utils.groupByDate(table, rows);
     table.handleGroupedCollection(rows, false);
     dataLoaded = true;
+
     ActionPath path = Utils.getActionPath(true);
-    String key = path == null ? null : path.pop();
-    if (key == null && UIScreen.isLargeScreen()) {
+    String     key  = (path == null)
+                      ? null
+                      : path.pop();
+
+    if ((key == null) && UIScreen.isLargeScreen()) {
       key = "combo";
     }
+
     if (key != null) {
-      if (UIScreen.isLargeScreen() && !chartsLoaded) {
+      if (UIScreen.isLargeScreen() &&!chartsLoaded) {
         keyPath = new ActionPath(key);
       } else {
         handlePathKey(table, key, 0, true);
@@ -369,21 +520,27 @@ public class Vitals extends aResultsManager implements iValueChecker {
 
   protected void showComboChart(StackPaneViewer sp) {
     clearSelection();
+
     try {
       if (sp == null) {
         keyPath = new ActionPath("combo");
-        
-        showChartsView(spreadsheetTable==null ? dataTable : spreadsheetTable);
+        showChartsView((spreadsheetTable == null)
+                       ? dataTable
+                       : spreadsheetTable);
       } else {
         ChartDataItem series = ChartViewer.createSeries("Combo");
-        ChartViewer cv = chartHandler.createChart(sp.getFormViewer(), "combo", 1, series);
+        ChartViewer   cv     = chartHandler.createChart(sp.getFormViewer(), "combo", 1, series);
+
         cv.getChartDefinition().setShowLegends(true);
+
         Summary parser = new Summary();
+
         cv.remove(series);
         parser.calculateRangesAndUpdateUI(cv.getFormViewer(), cv, originalRows, false);
         Utils.setViewerInStackPaneViewer(sp, cv, null, true, true, true);
+        chartHandler.updateZoomButtons(sp.getFormViewer());
       }
-    } catch (Exception e) {
+    } catch(Exception e) {
       Utils.handleError(e);
     }
   }
@@ -396,15 +553,19 @@ public class Vitals extends aResultsManager implements iValueChecker {
       super.handlePathKey(table, key, column, fireAction);
     }
   }
-  protected TrendPanel[]                            trendPanels;
+
+  protected TrendPanel[] trendPanels;
 
   @Override
   protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
     originalRows = rows;
+
     final TableViewer table = (TableViewer) widget;
+
     table.setWidgetDataLink(link);
     itemCounts.clear();
     itemDatesSet.clear();
+
     if (trendPanels != null) {
       for (TrendPanel p : trendPanels) {
         p.clear();
@@ -413,13 +574,14 @@ public class Vitals extends aResultsManager implements iValueChecker {
 
     if (checkAndHandleNoData(table, rows)) {
       itemDates = null;
+
       return;
     }
+
     processData(table, rows);
   }
 
   class ChartHandler extends aChartHandler {
-
     public ChartHandler(JSONObject chartsInfo) {
       super("Vitals", chartsInfo, NAME_POSITION, DATE_POSITION, VALUE_POSITION);
     }
@@ -427,6 +589,7 @@ public class Vitals extends aResultsManager implements iValueChecker {
     @Override
     protected void configureChart(iWidget context, Chart cfg, String key, ChartDataItem series) {
       super.configureChart(context, cfg, key, series);
+
       if (key.equals("combo")) {
         cfg.getPlotReference().bgColor.setValue("defaultBackground,defaultBackground-15");
       }

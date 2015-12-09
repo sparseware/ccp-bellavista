@@ -2,7 +2,8 @@ SplitPane {
   regions {
     {
       borders {
-        shadow [ thickness="7" ]
+        drop_shadow
+        line 
       }
       viewer {
         SplitPane {
@@ -10,8 +11,8 @@ SplitPane {
           showGripper: false
           dividerSize: 0
           splitProportions {
-            .3
-            .3
+            .25
+            .35
           }
           regions {
             {
@@ -32,26 +33,23 @@ SplitPane {
                       width: "12ch"
                     }
                   }
-                }
+                }[ onFinishedLoading="class:MainEventHandler#onFinishedLoadingSummaryTable?bv.text.no_known_allergies"]
               }
             }
             {
               viewer {
                 Table {
                   name: "summary_problems"
-                  selectionMode: none
-                  borders {
-                    matte [ insets="1,0,0,0", color="darkBorder" ]
-                  }
                   dataURL: "/hub/main/patient/problems" [ columnSeparator="^", ldSeparator="|" ]
                   templateName: "bv.table.summary"
+                  selectionMode: none
                   columns {
                     {
                       title: "{resource:bv.text.active_problems}"
                       wordWrap: true
                     }
                   }
-                } [ onFinishedLoading="class:MainEventHandler#sortColumnZero" ]
+                } [ onFinishedLoading="class:MainEventHandler#onFinishedLoadingSummaryTable?bv.text.no_problems_found"]
               }
             }
             {
@@ -73,12 +71,14 @@ SplitPane {
                       Label {
                         name: "vitals_description"
                         borders {
-                          matte [ color="#999999", insets="1,0,,0" ]
-                          matte [ color="darkBorder", insets="0,0,1,0" ]
+                          matte [ color="#999999", insets="0,0,1,0" ]
                         }
                         columnSpan: -1
+                        font {
+                          style: bold
+                        }
                         fgColor: "summaryHeaderForeground"
-                        bgColor: "summaryHeaderBackground"
+                        bgColor: "summaryBackground"
                         bounds {
                           x: "0"
                           y: "0"
@@ -222,11 +222,11 @@ SplitPane {
                         name: "summary_vitals_chart"
                         verticalAlign: full
                         horizontalAlign: full
+                        bgColor: "transparent"
                         bounds {
                           x: "1"
                           y: "1"
                         }
-                        bgColor: "transparent"
                         local: false
                         chartType: range_bar
                         showLegends: true
@@ -244,7 +244,7 @@ SplitPane {
                           bgColor: "lightBackground,lightBackground-10"
                           gridLine: none
                         }
-                      } [ onCreated="class:Summary#onCreated", onClick="class:Vitals#onSummaryClick" ]
+                      } [ onClick="class:Vitals#onSummaryClick", onCreated="class:Summary#onCreated" ]
                     }
                   }
                 } [ onClick="class:Vitals#onSummaryClick" ]
@@ -256,7 +256,8 @@ SplitPane {
     }
     {
       borders {
-        shadow [ thickness="7" ]
+        drop_shadow
+        line
       }
       viewer {
         SplitPane {
@@ -264,8 +265,8 @@ SplitPane {
           showGripper: false
           dividerSize: 0
           splitProportions {
-            .3
-            .3
+            .25
+            .35
           }
           regions {
             {
@@ -274,10 +275,10 @@ SplitPane {
                   name: "summary_reminders"
                   dataURL: "/hub/main/patient/alerts" [ columnSeparator="^", ldSeparator="|" ]
                   templateName: "bv.table.summary"
-		          selectionMode: none
+                  selectionMode: none
                   columns {
                     {
-                      title: "{resource:bv.text.clinical_event}"
+                      title: "{resource:bv.text.clinical_event_appointment}"
                       width: "25ch"
                       wordWrap: true
                     }
@@ -288,15 +289,12 @@ SplitPane {
                       width: "11ch"
                     }
                   }
-                }
+                } [ onFinishedLoading="class:MainEventHandler#onFinishedLoadingSummaryTable?bv.text.no_reminders"]
               }
             }
             {
               viewer {
                 Table {
-                  borders {
-                    matte [ color="#999999", insets="1,0,,0" ]
-                  }
                   verticalAlign: full
                   dataURL: "/hub/main/orders/medications/summary" [ columnSeparator="^", ldSeparator="|" ]
                   templateName: "bv.table.summary"
@@ -324,11 +322,14 @@ SplitPane {
                       Label {
                         name: "labs_description"
                         borders {
-                          matte [ color="#999999", insets="1,0,,0" ]
+                          matte [ color="#999999", insets="0,0,1,0" ]
                         }
                         columnSpan: -1
+                        font {
+                          style: bold
+                        }
                         fgColor: "summaryHeaderForeground"
-                        bgColor: "summaryHeaderBackground"
+                        bgColor: "summaryBackground"
                         bounds {
                           x: "0"
                           y: "0"
@@ -345,9 +346,6 @@ SplitPane {
                     {
                       Table {
                         name: "summaryLabs"
-                        borders {
-                          matte [ insets="1,0,0,0", color="darkBorder" ]
-                        }
                         verticalAlign: full
                         bounds {
                           x: "0"
@@ -371,7 +369,7 @@ SplitPane {
                             width: "8ch"
                           }
                         }
-                      } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onSummaryTableAction", onDispose="class:Labs#onSummaryDispose" ]
+                      } [ onCreated="class:Labs#onTableCreated", onDispose="class:Labs#onSummaryDispose", onAction="class:Labs#onSummaryTableAction" ]
                     }
                   }
                 }

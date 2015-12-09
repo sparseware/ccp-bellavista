@@ -3,7 +3,7 @@
  * care team popup
  */
 GridPane {
-  bgColor: "rowHilite"
+  bgColor: "white"
   bounds {
     width: "25ch"
     height: "20ln"
@@ -31,10 +31,12 @@ GridPane {
             {
               viewer {
                 ListBox {
+				  bgColor: "white"
                   name: "physicians"
                   borders {
                     none
                   }
+                  alternatingHighlightColor: "defaultBackground"
                   templateName: "bv.listbox"
                   itemDescription {
                     iconPosition: right_justified
@@ -48,9 +50,11 @@ GridPane {
               viewer {
                 ListBox {
                   name: "others"
+				  bgColor: "white"
                   borders {
                     none
                   }
+                  alternatingHighlightColor: "rowHilite"
                   templateName: "bv.listbox"
                   itemDescription {
                     iconPosition: right_justified

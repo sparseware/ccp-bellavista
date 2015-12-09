@@ -1,512 +1,636 @@
 {
-	"careTeamInfo":{
-		"communicationHandlerClass":"",
-		"commIdPosition":1,
-		"dataTimeout":300
-	},
-	"attachmentHandlers":{
-		"image":"default"
-	},
-	"facilities":[
-		"({resource:bv.text.all_facilities})"
-	],
-	"loginInfo":{
-		"sessionPinSupported":true,
-		"pinSize":4
-	},
-	"cardStackInfo":{
-		"flingVelocityThreshold":500,
-		"keyTimeThreshold":500,
-		"listPagingThreshold":5,
-		"mainCardSelectedIndex":1
-	},
-	"messagingInfo":{
-		"hasTaskSupport":true,
-		"hasMailSupport":true
-	},
-	"collectionsInfo":{
-		"updateInterval":"60",
-		"collections":[
-			{
-				"name":"allergies",
-				"url":"/hub/main/patient/allergies",
-				"action":"bv.action.allergies",
-				"noDataText":"{resource:bv.text.no_known_allergies}",
-				"hasDetail":false,
-				"alertSound":""
-			},
-			{
-				"name":"alerts",
-				"url":"/hub/main/patient/alerts",
-				"action":"bv.action.alerts",
-				"noDataText":"{resource:bv.text.no_alerts_found}",
-				"hasDetail":false,
-				"alertSound":""
-			},
-			{
-				"name":"flags",
-				"url":"/hub/main/patient/flags",
-				"action":"bv.action.flags",
-				"noDataText":"{resource:bv.text.no_flags_found}",
-				"hasDetail":false,
-				"alertSound":""
-			},
-			{
-				"name":"problems",
-				"url":"/hub/main/patient/problems",
-				"noDataText":"{resource:bv.text.no_problems_found}",
-				"hasDetail":false,
-				"autoUpdate":false
-			},
-			{
-				"name":"careteam",
-				"url":"/hub/main/patient/careteam",
-				"alertSound":"",
-				"noDataText":"{resource:bv.text.no_careteam_found}",
-				"autoUpdate":false
-			}
-		]
-	},
-	"patientSelectInfo":{
-		"hasPatientAlerts":true,
-		"hasPatientFlags":true,
-		"autoShowFlags":true,
-		"autoShowDefaultList":true,
-		"searchPageSize":100,
-		"photosThumbnailsURL":"/data/photos/thumbs/%s",
-		"photosURL":"/data/photos/%s",
-		"patientLocatorClass":"BluetoothBeaconLocator",
-		"beaconInfo":{
-			"patientBeacons":[
-				"DB3D6645-E0EB-4E25-8AA6-29515E210496",
-				"0E7D80F7-592A-4EE1-A528-F7F178188371",
-				"B4D90800-9CA3-499A-BA46-474B8D47EDA5"
-			],
-			"locationsSignalColumn":1
-		},
-		"barcodeReaderClass":"",
-		"listCategories":[
-			{
-				"title":"{resource:bv.text.most_recent}",
-				"patientsPath":"most_recent",
-				"type":"patients",
-				"name":"lc_most_recent"
-			},
-			{
-				"title":"{resource:bv.text.my_patients}",
-				"patientsPath":"by_category/provider",
-				"type":"patients",
-				"name":"lc_my_patients"
-			},
-			{
-				"title":"{resource:bv.text.by_team}",
-				"listPath":"teams",
-				"type":"category",
-				"patientsPath":"by_category/team",
-				"name":"lc_teams"
-			},
-			{
-				"title":"{resource:bv.text.by_unit}",
-				"listPath":"units",
-				"type":"category",
-				"patientsPath":"by_category/unit",
-				"name":"lc_units"
-			},
-			{
-				"title":"{resource:bv.text.by_clinic}",
-				"listPath":"clinics",
-				"type":"category",
-				"patientsPath":"by_category/clinic",
-				"name":"lc_clinics"
-			},
-			{
-				"title":"{resource:bv.text.by_speciality}",
-				"listPath":"specialities",
-				"type":"category",
-				"patientsPath":"by_category/speciality",
-				"name":"lc_specialities"
-			}
-		]
-	},
-	"ordersInfo":{
-		"hasClinicalCategories":true,
-		"categorizedMedsTitle":"Medications (Categorized)",
-		"missingClinicalCategoryTitle":"unclassified medications",
-		"missingCategoryTitle":"Misc. Orders",
-		"medsCategoryID":"meds",
-		"ivsCategoryID":"ivs",
-		"includeIVsInCategorizedMeds":true,
-		"directionsHtmlStart":" &rarr; <small><font color='#AAB0AA'>",
-		"directionsHtmlEnd":"</font></small>",
-		"csDirectionsHtmlStart":"<br><br><font color='#AAB0AA'>",
-		"csDirectionsHtmlEnd":"</font>",
-		"directionsStatusColorHtmlStart":" &rarr; <small>",
-		"directionsStatusColorHtmlEnd":"</small>",
-		"csDirectionsStatusColorHtmlStart":"",
-		"csDirectionsStatusColorHtmlEnd":"",
-		"statusColors":{
-			"Pending":"blue",
-			"Incomplete":"blue"
-		}
-	},
-	"notesInfo":{
-		"extra_header_detail":"",
-		"attachmentColumn":5,
-		"parentColumn":6,
-		"bodyOutOfBandText":"__BODY_OUT_OF_BAND__",
-		"filters":[
-			{
-				"text":"Last 100 Signed Notes",
-				"serverSide":true,
-				"filter":""
-			},
-			{
-				"serverSide":true,
-				"text":"My Unsigned Notes",
-				"filter":"unsigned"
-			},
-			{
-				"serverSide":true,
-				"text":"All Unsigned Notes",
-				"filter":"unsigned_all"
-			},
-			{
-				"serverSide":false,
-				"text":"Signed Notes By Date...",
-				"url":"/select_date_range.rml",
-				"title":"Signed Notes By Date"
-			},
-			{
-				"serverSide":false,
-				"text":"Signed Notes By Author...",
-				"url":"/select_use.rml",
-				"title":"Signed Notes By Author"
-			},
-			{
-				"serverSide":false,
-				"text":"Unigned Notes By Author...",
-				"url":"/select_use.rml",
-				"title":"Signed Note By Author"
-			},
-			{
-				"serverSide":false,
-				"text":"Custom View...",
-				"url":"/custom_notes_view.rml"
-			}
-		]
-	},
-	"consultsInfo":{
-		"extra_header_detail":"",
-		"attachmentColumn":5,
-		"parentColumn":6,
-		"statuses":[
-			
-		],
-		"filters":[
-			{
-				"text":"Recent Consults",
-				"serverSide":true,
-				"filter":""
-			},
-			{
-				"serverSide":true,
-				"text":"My Unsigned Notes",
-				"filter":"unsigned"
-			},
-			{
-				"serverSide":true,
-				"text":"All Unsigned Notes",
-				"filter":"unsigned_all"
-			},
-			{
-				"serverSide":false,
-				"text":"Signed Notes By Date...",
-				"url":"/select_date_range.rml",
-				"title":"Signed Notes By Date"
-			},
-			{
-				"serverSide":false,
-				"text":"Consults By Service...",
-				"url":"/select_consult_service.rml",
-				"title":"Signed Notes By Author"
-			},
-			{
-				"serverSide":false,
-				"text":"Unigned Notes By Author...",
-				"url":"/select_use.rml",
-				"title":"Signed Note By Author"
-			},
-			{
-				"serverSide":false,
-				"text":"Custom View...",
-				"url":"/custom_notes_view.rml"
-			}
-		]
-	},
-	"vitalsInfo":{
-		"monitoringClass":"com.sparseware.bellavista.monitoring.SoteraVitalsMonitor",
-		"hasReferenceRange":true,
-		"dataPageSize":3,
-		"spreadSheetPageSize":50,
-		"chartPageSize":7,
-		"chartLabelsThreshold":10,
-		"nextResultSetMenuText":"Go forward %s days",
-		"previousResultSetMenuText":"Go back %s days",
-		"spo2":{
-			"menu_text":"{resource:miaa.text.show_oxygen_orders}",
-			"menu_action":"class:Actions#showOxygenDetail"
-		},
-		"charts":{
-			"shortNamesMap":{
-				"Blood Pressure Non-Invasive":"BP Non-Invasive",
-				"Mean Arterial Pressure Non-Invasive":"MAP Non-Invasive",
-				"Blood Pressure Invasive":"BP Invasive",
-				"Mean Arterial Pressure Invasive":"MAP Invasive"
-			},
-			"bp":{
-				"chartType":"range_bar",
-				"lowerBound":"50",
-				"tickIncrement":"10",
-				"upperBound":"160",
-				"color":"'red,#f26d6d' [direction='horizontal_left']",
-				"color_g":"'#666666, #cccccc' [direction='horizontal_left']",
-				"timeUnit":"none",
-				"border":"line",
-				"border_attributes":"color='#111111', thickness=1"
-			},
-			"temp":{
-				"lowerBound":"95",
-				"tickIncrement":"1",
-				"upperBound":"105",
-				"color":"#eeeeee",
-				"color_g":"#eeeeee"
-			},
-			"map":{
-				"lowerBound":"80",
-				"tickIncrement":"5",
-				"upperBound":"100",
-				"color":"orange",
-				"color_g":"#666666"
-			},
-			"bsa":{
-				"lowerBound":"0",
-				"tickIncrement":".5",
-				"upperBound":"3",
-				"color":"#ff9900",
-				"color_g":"#999999"
-			},
-			"pulse":{
-				"lowerBound":"70",
-				"tickIncrement":"10",
-				"upperBound":"180",
-				"color":"#76f376",
-				"color_g":"#333333"
-			},
-			"hr":{
-				"lowerBound":"40",
-				"tickIncrement":"10",
-				"upperBound":"180",
-				"color":"#76f376",
-				"color_g":"#333333"
-			},
-			"resp":{
-				"lowerBound":"4",
-				"tickIncrement":"2",
-				"upperBound":"20",
-				"color":"#ffff99"
-			},
-			"spo2":{
-				"lowerBound":"80",
-				"tickIncrement":"5",
-				"upperBound":"100",
-				"color":"#00a7ff",
-				"info":"true",
-				"info_menu":"Show Oxygen Orders",
-				"info_code":""
-			},
-			"combo":{
-				"lowerBound":"40",
-				"increment":"5",
-				"vitals":[
-					"bp",
-					"map",
-					"hr",
-					"spo2",
-					"temp"
-				]
-			},
-			"summaryCombo":{
-				"lowerBound":"40",
-				"increment":"5",
-				"vitals":[
-					"bp",
-					"map",
-					"temp",
-					"hr"
-				]
-			}
-		},
-		"trends":[
-			{
-				"name":"vitals",
-				"title":"{resource:bv.text.vitals}",
-				"keys":[
-					{
-						"key":"bp",
-						"name":"Blood Pressure"
-					},
-					{
-						"key":"map",
-						"name":"Mean Arterial Pressure "
-					},
-					{
-						"key":"temp",
-						"name":"Temperature"
-					},
-					{
-						"key":"pulse",
-						"name":"Pulse",
-						
-					},
-					{
-						"key":"hr",
-						"name":"Heart Rate",
-						"peer":"pulse",
-						
-					},
-					{
-						"key":"resp",
-						"name":"Respiratory Rate"
-					},
-					{
-						"key":"spo2",
-						"name":"Oxygen Saturation"
-					}
-				]
-			}
-		]
-	},
-	"labsInfo":{
-		"hasReferenceRange":true,
-		"dataPageSize":14,
-		"spreadSheetPageSize":50,
-		"chartPageSize":7,
-		"chartLabelsThreshold":10,
-		"nextResultSetMenuText":"Go forward 1 week",
-		"previousResultSetMenuText":"Go back 1 week",
-		"noMoreDataMsg":"No additional data available",
-		"documentsInlined":false,
-		"collectionInfoKey":"__CI__",
-		"bun_id":"885641",
-		"creatinine_id":"885662",
-		"criticalValueRegex":"",
-		"sortCategoriesOnLinkedData":true,
-		"trendsLayout":{
-			"comment":"layout positions are 1-relative not (not zero as when working with markup files)",
-			"name":"2,1,5,1",
-			"value":"2,2,1,1",
-			"date":"2,3,1,1",
-			"valueValue":"4,2,1,1",
-			"dateValue":"4,3,1,1",
-			"trendIcon":"6,2,1,3"
-		},
-		"charts":{
-			
-		},
-		"trends":[
-			{
-				"name":"metabolic",
-				"os":"large,medium",
-				"title":"{resource:bv.text.labs_metabolic_trends}",
-				"keys":[
-					{
-						"key":"885641",
-						"name":"BUN"
-					},
-					{
-						"key":"885662",
-						"name":"Creatinine"
-					},
-					{
-						"key":"885807",
-						"name":"Sodium"
-					},
-					{
-						"key":"885644",
-						"name":"Calcium"
-					},
-					{
-						"key":"885781",
-						"name":"Potassium"
-					},
-					{
-						"key":"885651",
-						"name":"Chloride"
-					},
-					{
-						"key":"885657",
-						"name":"CO2"
-					},
-					{
-						"key":"885687",
-						"name":"Glucose Level"
-					}
-				]
-			},
-			{
-				"name":"hematology",
-				"os":"large,medium",
-				"title":"{resource:bv.text.labs_hemotoloty_trends}",
-				"keys":[
-					{
-						"key":"885703",
-						"name":"Hct"
-					},
-					{
-						"key":"885732",
-						"name":"MCV"
-					},
-					{
-						"key":"885707",
-						"name":"Hgb"
-					},
-					{
-						"key":"885777",
-						"name":"Platelet Count"
-					}
-				]
-			},
-			{
-				"name":"cardstack",
-				"os":"small",
-				"title":"{resource:bv.text.labs_metabolic_trends}",
-				"keys":[
-					{
-						"key":"885641",
-						"name":"BUN"
-					},
-					{
-						"key":"885662",
-						"name":"Creatinine"
-					},
-					{
-						"key":"885807",
-						"name":"Sodium"
-					},
-					{
-						"key":"885644",
-						"name":"Calcium"
-					},
-					{
-						"key":"885781",
-						"name":"Potassium"
-					},
-					{
-						"key":"885687",
-						"name":"Glucose Level"
-					}
-				]
-			}
-		]
-	}
+  "careTeamInfo": {
+    "communicationHandlerClass": "",
+    "commIdPosition": 1,
+    "dataTimeout": 300
+  },
+  "tabsInfo": {
+  },
+  "attachmentHandlers": {
+    "image": "default"
+  },
+  "facilities": [
+    "({resource:bv.text.all_facilities})"
+  ],
+  "loginInfo": {
+    "sessionPinSupported": true,
+    "pinSize": 4
+  },
+  "cardStackInfo": {
+    "flingVelocityThreshold": 500,
+    "keyTimeThreshold": 500,
+    "listPagingThreshold": 5,
+    "mainCardSelectedIndex": 1
+  },
+  "messagingInfo": {
+    "hasTaskSupport": true,
+    "hasMailSupport": true
+  },
+  "collectionsInfo": {
+    "updateInterval": "120",
+    "collections": [
+      {
+        "name": "allergies",
+        "url": "/hub/main/patient/allergies",
+        "action": "bv.action.allergies",
+        "noDataText": "{resource:bv.text.no_known_allergies}",
+        "hasDetail": false,
+        "alertSound": ""
+      },
+      {
+        "name": "alerts",
+        "url": "/hub/main/patient/alerts",
+        "action": "bv.action.alerts",
+        "noDataText": "{resource:bv.text.no_alerts_found}",
+        "hasDetail": false,
+        "alertSound": ""
+      },
+      {
+        "name": "flags",
+        "url": "/hub/main/patient/flags",
+        "action": "bv.action.flags",
+        "noDataText": "{resource:bv.text.no_flags_found}",
+        "hasDetail": false,
+        "alertSound": ""
+      },
+      {
+        "name": "problems",
+        "url": "/hub/main/patient/problems",
+        "noDataText": "{resource:bv.text.no_problems_found}",
+        "hasDetail": false,
+        "autoUpdate": false
+      },
+      {
+        "name": "careteam",
+        "url": "/hub/main/patient/careteam",
+        "alertSound": "",
+        "noDataText": "{resource:bv.text.no_careteam_found}",
+        "autoUpdate": false
+      }
+    ]
+  },
+  "patientSelectInfo": {
+    "hasPatientAlerts": true,
+    "hasPatientFlags": true,
+    "autoShowFlags": true,
+    "autoShowDefaultList": true,
+    "alwaysShowSearchFirst": false,
+    "searchPageSize": 100,
+    "photosThumbnailsURL": "/data/photos/thumbs/%s",
+    "photosURL": "/data/photos/%s",
+    "patientLocatorClass": "BluetoothBeaconLocator",
+    "beaconInfo": {
+      "patientBeacons": [
+        "DB3D6645-E0EB-4E25-8AA6-29515E210496",
+        "0E7D80F7-592A-4EE1-A528-F7F178188371",
+        "B4D90800-9CA3-499A-BA46-474B8D47EDA5"
+      ],
+      "locationsSignalColumn": 1
+    },
+    "barcodeReaderClass": "",
+    "listCategories": [
+      {
+        "title": "{resource:bv.text.most_recent}",
+        "patientsPath": "most_recent",
+        "type": "patients",
+        "name": "lc_most_recent"
+      },
+      {
+        "title": "{resource:bv.text.my_patients}",
+        "patientsPath": "by_category/provider",
+        "type": "patients",
+        "name": "lc_my_patients"
+      },
+      {
+        "title": "{resource:bv.text.by_team}",
+        "listPath": "teams",
+        "type": "category",
+        "patientsPath": "by_category/team",
+        "name": "lc_teams"
+      },
+      {
+        "title": "{resource:bv.text.by_unit}",
+        "listPath": "units",
+        "type": "category",
+        "patientsPath": "by_category/unit",
+        "name": "lc_units"
+      },
+      {
+        "title": "{resource:bv.text.by_clinic}",
+        "listPath": "clinics",
+        "type": "category",
+        "patientsPath": "by_category/clinic",
+        "name": "lc_clinics"
+      },
+      {
+        "title": "{resource:bv.text.by_speciality}",
+        "listPath": "specialities",
+        "type": "category",
+        "patientsPath": "by_category/speciality",
+        "name": "lc_specialities"
+      }
+    ]
+  },
+  "ordersInfo": {
+    "hasClinicalCategories": true,
+    "categorizedMedsTitle": "Medications (Cat.)",
+    "missingClinicalCategoryTitle": "unclassified medications",
+    "missingCategoryTitle": "Misc. Orders",
+    "medsCategoryID": "meds",
+    "ivsCategoryID": "ivs",
+    "includeIVsInCategorizedMeds": true,
+    "directionsHtmlStart": " &rarr; <small><font color='#AAB0AA'>",
+    "directionsHtmlEnd": "</font></small>",
+    "csDirectionsHtmlStart": "<br><br><font color='#AAB0AA'>",
+    "csDirectionsHtmlEnd": "</font>",
+    "directionsStatusColorHtmlStart": " &rarr; <small>",
+    "directionsStatusColorHtmlEnd": "</small>",
+    "csDirectionsStatusColorHtmlStart": "",
+    "csDirectionsStatusColorHtmlEnd": "",
+    "statusColors": {
+      "Pending": "orderPendingColor",
+      "Unsigned": "orderPendingColor",
+      "Incomplete": "orderPendingColor",
+      "Hold": "orderHoldColor",
+      "Discontinued": "orderDiscontinuedColor",
+      "Flagged": "orderFlaggedColor"
+    },
+    "holdStatusValue": "Hold",
+    "holdableStatus": [
+      "Pending",
+      "Flagged",
+      "Ordered",
+      "Active"
+    ],
+    "stopableStatus": [
+      "Active",
+      "Pending",
+      "Hold",
+      "Ordered",
+      "Cancelled"
+    ],
+    "hasOrderEntrySupport": true,
+    "hasOrderDictationSupport": false,
+    "hasOrderDiscontinueSupport": true,
+    "hasOrderRewriteSupport": false,
+    "hasOrderFlagSupport": true,
+    "hasOrderHoldSupport": true,
+    "hasOrderSignSupport": true,
+    "hasOrderSentenceSupport": true,
+    "hasOrderDiscontinueFields": false,
+    "hasOrdeItemSpecificDiscontinueFields": false,
+    "hasOrdeItemSpecificHoldFields": false,
+    "hasOrdeItemSpecificFlagFields": false,
+    "hasOrdeContainsSearch": true,
+    "showActionWaitMessage": true,
+    "signatureRequiredForSumbission": true,
+    "showRequiredFieldsOnlyDefault": true,
+    "verifyOrderEntryDelete": false,
+    "verifyOrderEntryCancel" : false,
+    "medicationOrderType" : "meds",
+    "defaultOrderType" : "meds",
+    "proceduresOrderType" : "diagnostic",
+    "labsOrderType" : "labs",
+    "defaultRoute" : "po",
+    "booleanFieldTypeInfo" : {
+      "trueValue": "1",
+      "trueDisplayValue": "{resource:Rare.text.yes}",
+      "falseValue": "0",
+      "falseDisplayValue": "{resource:Rare.text.no}"
+    },
+    "signingInfo": {
+      "okText": "{resource:bv.action.order_sign}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.sign_order}",
+      "fields": [
+        {
+          "id": "signature",
+          "type": "password",
+          "prompt": "{resource:bv.oe.text.signature_prompt}:",
+          "required": true
+        }
+      ]
+    },
+    "discontinueInfo": {
+      "hasItemSpecificFields": false,
+      "okText": "{resource:bv.action.order_discontinue}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.discontinue_order}",
+      "fields": [
+        {
+          "id": "reason",
+          "type": "list",
+          "data_url": "/hub/main/util/lists/codes/reason",
+          "prompt": "{resource:bv.text.reason}",
+          "required": true,
+          "description": "Choose are reason or select 'Other' and enter a custom reason",
+          "toggle": {
+            "type": "popup",
+            "fieldID": "other",
+            "itemLinkedData": "633915"
+          }
+        },
+        {
+          "id": "other",
+          "type": "group",
+          "visible": false,
+          "editable": false,
+          "fields": [
+            {
+              "type": "line"
+            },
+            {
+              "id": "other_reason",
+              "type": "textfield",
+              "prompt": "{resource:bv.text.other_reason}",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    "holdInfo": {
+      "okText": "{resource:bv.action.order_hold}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.holding_order}",
+      "linkedFields": "discontinueInfo"
+    },
+    "unholdInfo": {
+      "okText": "{resource:bv.action.order_unhold}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.unholding_order}",
+      "linkedFields": "discontinueInfo"
+    },
+    "flagInfo": {
+      "okText": "{resource:bv.action.order_flag}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.flagging_order}",
+      "linkedFields": "discontinueInfo"
+    },
+    "unflagInfo": {
+      "okText": "{resource:bv.action.order_unflag}",
+      "cancelText": "{resource:Rare.text.cancel}",
+      "titleText": "{resource:bv.oe.text.unflagging_order}",
+      "linkedFields": "discontinueInfo"
+    }
+  },
+  "notesInfo": {
+    "extra_header_detail": "",
+    "attachmentColumn": 5,
+    "parentColumn": 6,
+    "bodyOutOfBandText": "__BODY_OUT_OF_BAND__",
+    "filters": [
+      {
+        "text": "Last 100 Signed Notes",
+        "serverSide": true,
+        "filter": ""
+      },
+      {
+        "serverSide": true,
+        "text": "My Unsigned Notes",
+        "filter": "unsigned"
+      },
+      {
+        "serverSide": true,
+        "text": "All Unsigned Notes",
+        "filter": "unsigned_all"
+      },
+      {
+        "serverSide": false,
+        "text": "Signed Notes By Date...",
+        "url": "/select_date_range.rml",
+        "title": "Signed Notes By Date"
+      },
+      {
+        "serverSide": false,
+        "text": "Signed Notes By Author...",
+        "url": "/select_use.rml",
+        "title": "Signed Notes By Author"
+      },
+      {
+        "serverSide": false,
+        "text": "Unigned Notes By Author...",
+        "url": "/select_use.rml",
+        "title": "Signed Note By Author"
+      },
+      {
+        "serverSide": false,
+        "text": "Custom View...",
+        "url": "/custom_notes_view.rml"
+      }
+    ],
+    "hasNoteDictationSupport": false
+  },
+  "proceduresInfo": {
+    "extra_header_detail": "",
+    "attachmentColumn": 5,
+    "parentColumn": 6,
+    "statuses": [
+    ],
+    "filters": [
+      {
+        "text": "Recent Procedures",
+        "serverSide": true,
+        "filter": ""
+      },
+      {
+        "serverSide": true,
+        "text": "My Unsigned Notes",
+        "filter": "unsigned"
+      },
+      {
+        "serverSide": true,
+        "text": "All Unsigned Notes",
+        "filter": "unsigned_all"
+      },
+      {
+        "serverSide": false,
+        "text": "Signed Notes By Date...",
+        "url": "/select_date_range.rml",
+        "title": "Signed Notes By Date"
+      },
+      {
+        "serverSide": false,
+        "text": "Procedures By Service...",
+        "url": "/select_procedure_service.rml",
+        "title": "Signed Notes By Author"
+      },
+      {
+        "serverSide": false,
+        "text": "Unigned Notes By Author...",
+        "url": "/select_use.rml",
+        "title": "Signed Note By Author"
+      },
+      {
+        "serverSide": false,
+        "text": "Custom View...",
+        "url": "/custom_notes_view.rml"
+      }
+    ]
+  },
+  "vitalsInfo": {
+    "monitoringClass": "com.sparseware.bellavista.monitoring.SoteraVitalsMonitor",
+    "hasReferenceRange": true,
+    "dataPageSize": 3,
+    "spreadSheetPageSize": 50,
+    "chartPageSize": 7,
+    "chartLabelsThreshold": 10,
+    "nextResultSetMenuText": "Go forward %s days",
+    "previousResultSetMenuText": "Go back %s days",
+    "spo2": {
+      "menu_text": "{resource:miaa.text.show_oxygen_orders}",
+      "menu_action": "class:Actions#showOxygenDetail"
+    },
+    "charts": {
+      "shortNamesMap": {
+        "Blood Pressure Non-Invasive": "BP Non-Invasive",
+        "Mean Arterial Pressure Non-Invasive": "MAP Non-Invasive",
+        "Blood Pressure Invasive": "BP Invasive",
+        "Mean Arterial Pressure Invasive": "MAP Invasive"
+      },
+      "bp": {
+        "chartType": "range_bar",
+        "lowerBound": "50",
+        "tickIncrement": "10",
+        "upperBound": "160",
+        "color": "'red,#f26d6d' [direction='horizontal_left']",
+        "color_g": "'#666666, #cccccc' [direction='horizontal_left']",
+        "timeUnit": "none",
+        "border": "line",
+        "border_attributes": "color='#111111', thickness=1"
+      },
+      "temp": {
+        "lowerBound": "95",
+        "tickIncrement": "1",
+        "upperBound": "105",
+        "color": "#eeeeee",
+        "color_g": "#eeeeee"
+      },
+      "map": {
+        "lowerBound": "80",
+        "tickIncrement": "5",
+        "upperBound": "100",
+        "color": "orange",
+        "color_g": "#666666"
+      },
+      "bsa": {
+        "lowerBound": "0",
+        "tickIncrement": ".5",
+        "upperBound": "3",
+        "color": "#ff9900",
+        "color_g": "#999999"
+      },
+      "pulse": {
+        "lowerBound": "70",
+        "tickIncrement": "10",
+        "upperBound": "180",
+        "color": "#76f376",
+        "color_g": "#333333"
+      },
+      "hr": {
+        "lowerBound": "40",
+        "tickIncrement": "10",
+        "upperBound": "180",
+        "color": "#76f376",
+        "color_g": "#333333"
+      },
+      "resp": {
+        "lowerBound": "4",
+        "tickIncrement": "2",
+        "upperBound": "20",
+        "color": "#ffff99"
+      },
+      "spo2": {
+        "lowerBound": "80",
+        "tickIncrement": "5",
+        "upperBound": "100",
+        "color": "#00a7ff",
+        "info": true,
+        "info_menu": "Show Oxygen Orders",
+        "info_code": ""
+      },
+      "combo": {
+        "lowerBound": "40",
+        "increment": "5",
+        "vitals": [
+          "bp",
+          "map",
+          "hr",
+          "spo2",
+          "temp"
+        ]
+      },
+      "summaryCombo": {
+        "lowerBound": "40",
+        "increment": "5",
+        "vitals": [
+          "bp",
+          "map",
+          "temp",
+          "hr"
+        ]
+      }
+    },
+    "trends": [
+      {
+        "name": "vitals",
+        "title": "{resource:bv.text.vitals}",
+        "keys": [
+          {
+            "key": "bp",
+            "name": "Blood Pressure"
+          },
+          {
+            "key": "map",
+            "name": "Mean Arterial Pressure "
+          },
+          {
+            "key": "temp",
+            "name": "Temperature"
+          },
+          {
+            "key": "pulse",
+            "name": "Pulse"
+
+          },
+          {
+            "key": "hr",
+            "name": "Heart Rate",
+            "peer": "pulse"
+
+          },
+          {
+            "key": "resp",
+            "name": "Respiratory Rate"
+          },
+          {
+            "key": "spo2",
+            "name": "Oxygen Saturation"
+          }
+        ]
+      }
+    ]
+  },
+  "labsInfo": {
+    "hasReferenceRange": true,
+    "dataPageSize": 14,
+    "spreadSheetPageSize": 50,
+    "chartPageSize": 7,
+    "chartLabelsThreshold": 10,
+    "nextResultSetMenuText": "Go forward 1 week",
+    "previousResultSetMenuText": "Go back 1 week",
+    "noMoreDataMsg": "No additional data available",
+    "documentsInlined": false,
+    "collectionInfoKey": "__CI__",
+    "bun_id": "885641",
+    "creatinine_id": "885662",
+    "criticalValueRegex": "",
+    "sortCategoriesOnLinkedData": true,
+    "trendsLayout": {
+      "comment": "layout positions are 1-relative not (not zero as when working with markup files)",
+      "name": "2,1,5,1",
+      "value": "2,2,1,1",
+      "date": "2,3,1,1",
+      "valueValue": "4,2,1,1",
+      "dateValue": "4,3,1,1",
+      "trendIcon": "6,2,1,3"
+    },
+    "charts": {
+    },
+    "trends": [
+      {
+        "name": "metabolic",
+        "os": "large,medium",
+        "title": "{resource:bv.text.labs_metabolic_trends}",
+        "keys": [
+          {
+            "key": "885641",
+            "name": "BUN"
+          },
+          {
+            "key": "885662",
+            "name": "Creatinine"
+          },
+          {
+            "key": "885807",
+            "name": "Sodium"
+          },
+          {
+            "key": "885644",
+            "name": "Calcium"
+          },
+          {
+            "key": "885781",
+            "name": "Potassium"
+          },
+          {
+            "key": "885651",
+            "name": "Chloride"
+          },
+          {
+            "key": "885657",
+            "name": "CO2"
+          },
+          {
+            "key": "885687",
+            "name": "Glucose Level"
+          }
+        ]
+      },
+      {
+        "name": "hematology",
+        "os": "large,medium",
+        "title": "{resource:bv.text.labs_hemotoloty_trends}",
+        "keys": [
+          {
+            "key": "885703",
+            "name": "Hct"
+          },
+          {
+            "key": "885732",
+            "name": "MCV"
+          },
+          {
+            "key": "885707",
+            "name": "Hgb"
+          },
+          {
+            "key": "885777",
+            "name": "Platelet Count"
+          }
+        ]
+      },
+      {
+        "name": "cardstack",
+        "os": "small",
+        "title": "{resource:bv.text.labs_metabolic_trends}",
+        "keys": [
+          {
+            "key": "885641",
+            "name": "BUN"
+          },
+          {
+            "key": "885662",
+            "name": "Creatinine"
+          },
+          {
+            "key": "885807",
+            "name": "Sodium"
+          },
+          {
+            "key": "885644",
+            "name": "Calcium"
+          },
+          {
+            "key": "885781",
+            "name": "Potassium"
+          },
+          {
+            "key": "885687",
+            "name": "Glucose Level"
+          }
+        ]
+      }
+    ]
+  }
 }

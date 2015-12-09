@@ -1,38 +1,45 @@
 {
-  "_rows":[
-  {
-    "id": "5", 
-    "name": "ZDROVAN, NATASIA", 
-    "dob": "1965-03-11", 
-    "gender": "Female", 
-    "mrn": "ZN0000001", 
-    "photo": "PIC-ZN0000001.jpg", 
-    "attending_id": "4", 
-    "attending_name": "SMALL, KAREN", 
-    "encounter_date": "2009-05-12T16:17", 
-    "encounter_reason": "ALCOHOL DEPENDENCE", 
-    "location_id": "11", 
-    "location": "PSYCH", 
-    "rm_bed": "802-2",
-    "host_patient_id": "16", 
-    "host_encounter_id": "5;3090512.161737;H", 
-    "facility_id": "3", 
-    "facility_path": "vista", 
-    "facility_name": "VA San Diego Medical Center", 
-    "facility_shortname": "VA / La Jolla", 
-    "facility_icon": "facility_vista", 
-    "external_data": "labs,meds,notes",
-    "wt": "112lb",
-    "ht": "67in",
-    "io_in": "1200",
-    "io_out": "1525",
-    "io_date": "2011-11-09T10:00:00.000-08:00",
-    "relationship" : "",
-    "has_monitor": "true",
+  "_rows": [
+    {
+      "id": "5",
+      "name": "ZDROVAN, NATASIA",
+      "dob": "1965-03-11",
+      "gender": "Female",
+      "mrn": "ZN0000001",
+      "photo": "PIC-ZN0000001.jpg",
+      "attending": {
+        "linkedData": "4",
+        "value": "SMALL, KAREN"
+      },
+      "encounter_date": "2009-05-12T16:17",
+      "encounter_reason": "ALCOHOL DEPENDENCE",
+      "location": {
+        "linkedData": "11",
+        "value": "PSYCH"
+      },
+      "rm_bed": "802-2",
+      "host_patient_id": "16",
+      "host_encounter_id": "5;3090512.161737;H",
+      "facility_id": "3",
+      "facility_path": "vista",
+      "facility_name": "VA San Diego Medical Center",
+      "facility_shortname": "VA / La Jolla",
+      "facility_icon": "facility_vista",
+      "external_data": "labs,meds,notes",
+      "wt": "112lb",
+      "ht": "67in",
+      "io_in": "1200",
+      "io_out": "1525",
+      "io_date": "2011-11-09T10:00:00.000-08:00",
+      "relationship": "",
+      "has_monitor": "true",
       "allergies": {
       },
       "alerts": {
-        "_columns": ["alert", "due_date"],
+        "_columns": [
+          "alert",
+          "due_date"
+        ],
         "_rows": [
           {
             "alert": {
@@ -57,6 +64,6 @@
           }
         ]
       }
-  }
+    }
   ]
 }

@@ -1,12 +1,12 @@
 Form {
   name: "infobar"
-  local: false
   title: "Patient Information"
   bounds {
     height: "-1" [ min="!" ]
   }
   propertyChangeHandlers: "pendingConfiguration=class:MainEventHandler#onInfobarOrientationWillChange"
   collapsedTitle: "<html><b>Patient:</b> {@pt_name_mrn} - <b>Age/Sex:</b> {@pt_age_sex} - <b>Provider:</b> {@pt_provider}</html>"
+  local: false
   layout: forms
   rows: "d,2dluY"
   columns: "2dluX,d,d:g"
@@ -249,13 +249,23 @@ Form {
               }
               rowSpan: 4
               verticalAlign: top
-              actAsFormViewer: false
-              bgColor: "defaultBackground-10"
+              bgColor: "mediumBackground"
               bounds {
                 x: "12"
                 y: "0"
               }
+              actAsFormViewer: false
               widgets {
+                {
+                  PushButton {
+                    name: "bv.action.orders_cart"
+                    bounds {
+                      x: "2"
+                      y: "0"
+                    }
+                    buttonStyle: toolbar
+                  }
+                }
                 {
                   PushButton {
                     name: "careteam"
@@ -264,7 +274,7 @@ Form {
                     buttonStyle: toolbar
                     popupWidget {
                     } [ url="/careteam.rml", scrollable="true", movable="false" ]
-                    useSharedBorderForPopup: true [ color="darkBorder" ]
+                    useSharedBorderForPopup: true [ color="mediumBorder" ]
                   }
                 }
                 {
@@ -278,13 +288,13 @@ Form {
                     buttonStyle: toolbar
                     popupWidget {
                       Table {
-                        dataURL: "collection:alerts"
-                        templateName: "bv.table.summary"
-		                selectionMode: none
+                        name: "alertsTable"
+                        templateName: "bv.table.popup_summary"
+                        selectionMode: none
                         visibleRowCount: 5
                         columns {
                           {
-                            title: "{resource:bv.text.clinical_event}"
+                            title: "{resource:bv.text.alert}"
                             width: "15ch"
                             wordWrap: true
                           }
@@ -297,8 +307,8 @@ Form {
                         }
                       }
                     } [ scrollable="true" ]
-                    useSharedBorderForPopup: true [ color="darkBorder" ]
-                  }
+                    useSharedBorderForPopup: true [ color="mediumBorder" ]
+                  } [ onWillExpand="class:Alerts#onUpdateTable" ]
                 }
                 {
                   PushButton {
@@ -309,13 +319,13 @@ Form {
                 {
                   PushButton {
                     name: "bv.action.allergies"
-                    fgColor: "allergies"
+			        fgColor: "allergies"
                     templateName: "bv.pushbutton.popup_hyperlink"
                     popupWidget {
                       Table {
                         dataURL: "collection:allergies"
-                        templateName: "bv.table.summary"
-		                selectionMode: none
+                        templateName: "bv.table.popup_summary"
+                        selectionMode: none
                         visibleRowCount: 5
                         columns {
                           {
@@ -330,6 +340,7 @@ Form {
                         }
                       }
                     } [ scrollable="true" ]
+                    useSharedBorderForPopup: true [ color="mediumBorder" ]
                   }
                 }
               }

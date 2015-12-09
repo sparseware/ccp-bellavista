@@ -71,7 +71,7 @@ GridPane {
               PushButton {
                 verticalAlign: full
                 templateName: "bv.pushbutton.fullscreen"
-              } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+              }
             }
           }
         }

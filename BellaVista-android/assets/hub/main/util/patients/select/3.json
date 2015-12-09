@@ -1,33 +1,37 @@
 {
-  "_rows":[
-  {
-    "id": "3", 
-    "name": "JONES, CHRISTOPHER", 
-    "dob": "1950-11-23", 
-    "gender": "Male", 
-    "mrn": "JC0000001", 
-    "photo": "PIC-JC0000001.jpg", 
-    "attending_id": "3", 
-    "attending_name": "CRAFT, ADAM", 
-    "encounter_date": "2009-07-06T09:37", 
-    "encounter_reason": "CHEST PAIN", 
-    "location_id": "10", 
-    "location": "ICU", 
-    "rm_bed": "401-1",
-    "external_data": "labs,meds,notes", 
-    "host_patient_id": "14", 
-    "facility_id": "3", 
-    "facility_path": "vista", 
-    "facility_name": "VA San Diego Medical Center", 
-    "facility_shortname": "VA / La Jolla", 
-    "facility_icon": "facility_va.png",
-    "wt": "210lb",
-    "ht": "69in",
-    "io_in": "1200",
-    "io_out": "1525",
-    "io_date": "2011-11-09T10:00:00.000-08:00",
-    "relationship" : "1|Attending Physician",
-    "has_monitor": "true",
+  "_rows": [
+    {
+      "id": "3",
+      "name": "JONES, CHRISTOPHER",
+      "dob": "1950-11-23",
+      "gender": "Male",
+      "mrn": "JC0000001",
+      "photo": "PIC-JC0000001.jpg",
+      "attending": {
+        "linkedData": "3",
+        "value": "CRAFT, ADAM"
+      },
+      "encounter_date": "2009-07-06T09:37",
+      "encounter_reason": "CHEST PAIN",
+      "location": {
+        "linkedData": "10",
+        "value": "ICU"
+      },
+      "rm_bed": "401-1",
+      "external_data": "labs,meds,notes",
+      "host_patient_id": "14",
+      "facility_id": "3",
+      "facility_path": "vista",
+      "facility_name": "VA San Diego Medical Center",
+      "facility_shortname": "VA / La Jolla",
+      "facility_icon": "facility_va.png",
+      "wt": "210lb",
+      "ht": "69in",
+      "io_in": "1200",
+      "io_out": "1525",
+      "io_date": "2011-11-09T10:00:00.000-08:00",
+      "relationship": "1|Attending Physician",
+      "has_monitor": "true",
       "allergies": {
         "_columns": ["allergen", "reactions"],
         "_rows": [
@@ -94,6 +98,6 @@
           }
         ]
       }
-  }
+    }
   ]
 }

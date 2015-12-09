@@ -24,7 +24,8 @@ SplitPane {
                 }
                 dataURL: "/hub/main/labs/list" [ columnSeparator="^", ldSeparator="|" ]
                 templateName: "bv.table.data"
-              } [ onCreated="class:Labs#onTableCreated", onAction="class:Labs#onTableAction", onFinishedLoading="class:Labs#onFinishedLoading" ]
+              } [ onCreated="class:Labs#onTableCreated", onFinishedLoading="class:Labs#onFinishedLoading",
+                  onAction="class:Labs#onTableAction" ]
             }
             {
               ToolBar {
@@ -54,15 +55,6 @@ SplitPane {
                       value: "{resource:bv.text.filter}"
                       icon: "resource:bv.icon.labs"
                       actionType: popup_menu
-                      buttonStyle: toolbar
-                    }
-                  }
-                  {
-                    PushButton {
-                      name: "orderLabs"
-                      enabled: false
-                      value: "{resource:bv.text.order_labs}"
-                      icon: "resource:bv.icon.new_orders"
                       buttonStyle: toolbar
                     }
                   }

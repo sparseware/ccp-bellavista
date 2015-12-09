@@ -1,0 +1,133 @@
+Form {
+  title: "{resource:bv.oe.text.pending_orders}"
+  bgColor: "summaryBackground"
+  layout: forms
+  rows: "4dluY,d:g,4dluY,d,4dluY,d"
+  columns: "2dluX,d:g,2dluX"
+  widgets {
+    {
+      ListBox {
+        name: "cart"
+        bgColor: "transparent"
+        bounds {
+          x: "1"
+          y: "1"
+          width: "35ch"
+        }
+        defaultContextMenu: false
+        handleFirstFocusSelection: false
+        visibleRowCount: 8
+        autoSizeRowsToFit: true
+        editingMode: deleting [ alwaysCreateToolbar="true", allowSwiping="true" ]
+        showDividerLine: true
+        singleClickActionEnabled: true
+        rowHeight: "2ln"
+      } [ onContextMenu="onAction", onAction="class:oe.Cart#onCartAction" ]
+    }
+    {
+      GroupBox {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        layout: forms
+        rows: "d"
+        columns: "d,2dluX,d,2dluX,d"
+        columnGrouping {
+          "0,2,4"
+        }
+        widgets {
+          {
+            PushButton {
+              name: "signButton"
+              verticalAlign: full
+              horizontalAlign: full
+              fgColor: "orderCompleteColor"
+              bounds {
+                x: "4"
+                y: "0"
+              }
+              templateName: "bv.button"
+              value: "{resource:bv.action.order_sign}"
+            } [ onAction="class:oe.Cart#onSubmit" ]
+          }
+          {
+            PushButton {
+              name: "emptyButton"
+              verticalAlign: full
+              horizontalAlign: full
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              templateName: "bv.button"
+              value: "{resource:bv.oe.text.empty_cart}"
+            } [ onAction="class:oe.Cart#onEmptyCart" ]
+          }
+          {
+            PushButton {
+              verticalAlign: full
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              templateName: "bv.button"
+              value: "{resource:Rare.text.close}"
+            } [ onAction="class:oe.Cart#onClose" ]
+          }
+        }
+      }
+    }
+    {
+      GroupBox {
+        name: "rowActionBar"
+        borders {
+          empty [ insets="2,2,2,2" ]
+        }
+        bounds {
+          x: "1"
+          y: "5"
+          height: "-1" [ min="1.5ln" ]
+        }
+        layout: forms
+        rows: "f:d:g"
+        columns: "d:g,4dluX,d:g"
+        columnGrouping {
+          "0,2"
+        }
+        widgets {
+          {
+            PushButton {
+              name: "signOrder"
+              verticalAlign: full
+              horizontalAlign: full
+              fgColor: "orderCompleteColor"
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              enabled: false
+              templateName: "bv.button"
+              value: "{resource:bv.action.order_sign}"
+            } [ onAction="class:oe.Cart#onSubmitOrder" ]
+          }
+          {
+            PushButton {
+              verticalAlign: full
+              horizontalAlign: full
+              fgColor: "deleteButtonColor"
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              templateName: "bv.button"
+              value: "{resource:bv.action.delete}"
+            } [ onAction="class:oe.Cart#onDeleteOrder" ]
+          }
+        }
+      }
+    }
+  }
+} [ onConfigure="class:oe.Cart#onConfigure" onDispose="class:oe.Cart#onDispose" ]

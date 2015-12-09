@@ -1,35 +1,44 @@
 Application {
   name: "BellaVista"
-  lookAndFeelPropertiesURL:<< 	
+  lookAndFeelPropertiesURL:<< 
+  	Rare.class.defaultPackage=String|com.sparseware.bellavista
     Rare.background=Color|black [os="small"]
     Rare.background=Color|#eae8e5
     Rare.foreground=Color|white [os="small"]
-    Rare.foreground=Color|#111111
-    Rare.disabledForeground=Color|#999999
+    Rare.foreground=Color|disabled=#999999;normal=#111111
     defaultBackground=Color|black [os="small"]
     defaultBackground=Color|Rare.background
     Rare.LineBorder.color=Color|defaultBackground^20
     foreground=Color|Rare.foreground
     themeBlue=Color|#009cff
     rowHilite=Color|defaultBackground+5
-    link=Color|#5195ce
+    link=Color|#280f0a
     dimForeground=Color|#cccccc [os="small"]
     dimForeground=Color|#333333
     clinicalPrompt=Color|#999999 [os="small"]
     clinicalPrompt=Color|#555555
+    oeClinicalPrompt=Color|#094a52
 	lightBackground=Color|defaultBackground+5
 	mediumBackground=Color|defaultBackground-10
     darkBackground=Color|defaultBackground^20
+    mediumBorder=Color|defaultBackground^30
     darkBorder=Color|defaultBackground^50
     lightBorder=Color|#cccccc
     textHighlight=Color|#929d8d
+    textAutoHighlight=Color|#929d00@50
     trendBackground=Color|white
 	defaultGradient=Color|defaultBackground+10,defaultBackground-10 
 	abnormal=Color|red-10
 	error=Color|red
-	
+	orderPendingColor=Color|blue
+	orderHoldColor=Color|#555555
+	orderFlaggedColor=Color|#555555
+	orderDiscontinuedColor=Color|#555555
+	orderCompleteColor=Color|disabled=#999999;normal=#008000
+	orderIncompleteColor=Color|link
+	orderEntryColor=Color|#ccffcc, #99fe99
 	unknown=Color|orange-10
-	allergies=Color|#900000
+	allergies=Color|disabled=#999999;normal=#900000
   	spreadsheetCategoryBackground=Color|defaultBackground+5,defaultBackground-20
   	lineChartColor=Color|#00a7ff
   	barChartColor=Color|"#00a7ff-10, #00a7ff+10 [ direction='horizontal_left' ]"
@@ -39,16 +48,16 @@ Application {
   	popupMenuBackground=Color|defaultBackground^5
 	orderDetailsColor=Color|#0c2a11
 	tableHeaderBackground=Color|defaultBackground
-	tableHeaderForeground=Color|foreground
+	tableHeaderForeground=Color|clinicalPrompt
 	tableForeground=Color|black
 	tableGridLineColor=Color|#eeeeee
 	tableBackground=Color|white
-	orderDetailColor=Color|#002000
-	
+	orderCartDetailColor=Color|#009000
+	deleteButtonColor="Color|disabled=#999999;normal=#800000
 	summaryForeground=Color|darkBorder-10
-    summaryBackground=Color|white
-    summaryHeaderForeground=Color|darkBorder-10
-    summaryHeaderBackground=Color|darkBackground
+    summaryBackground=Color|defaultBackground+5
+    summaryHeaderForeground=Color|foreground
+    summaryHeaderBackground=Color|defaultBackground+5,defaultBackground-5
 	
   	Rare.Chart.foreground=Color|clinicalPrompt
   	Rare.Chart.plotBackground=Color|"black" [os="small"]
@@ -58,25 +67,30 @@ Application {
   	Rare.Chart.gridColor=Color|defaultBackground^30
     Rare.Chart.font=Font|{size:-2} [os="touch"]
 
+  	Rare.ComboBox.borderColor=Color|darkBorder
     Rare.Alert.foregroundColor=Color|dimForeground
-    Rare.Alert.backgroundColor=Color|defaultBackground+5
+    Rare.Alert.backgroundColor=Color|white
+    Rare.Alert.title.backgroundColor=Color|defaultBackground+5
     Rare.Dialog.useRuntimeDecorations=Boolean|True
-    Rare.TabPane.minimumTabHeight=String|1.5ln
+	Rare.Dialog.showCloseButton=Boolean|true
+    Rare.TabPane.minimumTabHeight=String|2ln
     Rare.TabPane.tabBorderColor=Color|darkBorder
     Rare.List.dividerLineColor=Color|#c0c0c0
 	Rare.ProgressPopup.background=Color|white@80
 	Rare.Button.minimumHeight=String|1ln [os="small"]
-	Rare.Button.minimumHeight=String|1.75ln
+	Rare.Button.minimumHeight=String|1.5ln [os="not_touch"]
+	Rare.Button.minimumHeight=String|1.75ln [os="touch"]
 	Rare.PushButton.borderInsets=Insets|3,3,3,3 [os="not_touch,small"]  
 	Rare.PushButton.borderInsets=Insets|7,7,7,7 [os="touch"]  
+	Rare.ComboBox.minimumHeight=String|1.5ln [os="touch"]
   	Rare.android.EditText.disableImeExtractUI=Boolean|true
   	Rare.icon.menu=Icon|resource:bv.icon.menu
-  	Rare.List.rowHeight=String|2ln [os="touch"]
 	Rare.Popup.restrictToWindow=Boolean|true [os=not_touch]
-	  	
-  	TrendPanel.trendName=GridCell|{borders: matte [insets="0,0,1,0", color=darkBorder]}
-
-  	Rare.class.defaultPackage=String|com.sparseware.bellavista
+	Rare.Menu.showCloseButton=Boolean|true
+	Rare.PopupMenu.showModal=Boolean|true [os=touch]
+	Rare.TextField.background=Color|transparent
+	Rare.TextField.foreground=Color|black
+	Rare.TextField.border=Border|"custom [class=TextFieldBorder, color=darkBorder]"
   	    >> [ inline="true" ]
   resourceStringsURL: "resource_strings.properties"
   resourceIconsURL: "resource_icons.properties"
@@ -84,40 +98,88 @@ Application {
    Set {
     {
       name: "bv.action.lock"
-      icon: "resource:bv_icon_lock"
-      enabled: false
       value: "{resource:bv.action.lock}"
-    }[onAction="class:Actions#onLock"]
+      icon: "resource:bv.icon.lock"
+      enabled: false
+    } [ onAction="class:Actions#onLock" ]
     {
       name: "bv.action.help"
-      icon: "resource:bv_icon_help"
-      enabled: false
       value: "{resource:bv.action.help}"
-    }[onAction="class:Actions#onHelp"]
+      icon: "resource:bv.icon.help"
+      enabled: false
+    } [ onAction="class:Actions#onHelp" ]
     {
       name: "bv.action.preferences"
-      icon: "resource:bv_icon_preferences"
-      enabled: false
       value: "{resource:bv.action.preferences}"
-    }[onAction="class:Actions#onPreferences"]
-    {
-      name: "bv.action.newOrders"
-      value: "{resource:bv.action.new_orders}"
+      icon: "resource:bv.icon.preferences"
       enabled: false
-      icon: "resource:bv_icon_new_orders"
-    }[onAction="class:Actions#onNewOrders"]
+    } [ onAction="class:Actions#onPreferences" ]
     {
-      name: "bv.action.changePatient"
+      name: "bv.action.order_new"
+      value: "{resource:bv.action.order_new}"
+      icon: "resource:bv.icon.order_new"
+      enabled: false
+    } [ onAction="class:Actions#onOrderNew" ]
+    {
+      name: "bv.action.order_rewrite"
+      value: "{resource:bv.action.order_rewrite}"
+      icon: "resource:bv.icon.order_rewrite"
+      enabled: false
+    } [ onAction="class:Actions#onOrderRewrite" ]
+    {
+      name: "bv.action.order_sign"
+      value: "{resource:bv.action.order_sign}"
+      icon: "resource:bv.icon.order_sign"
+      enabled: false
+    } [ onAction="class:Actions#onOrderSign" ]
+    {
+      name: "bv.action.order_hold"
+      value: "{resource:bv.action.order_hold}"
+      icon: "resource:bv.icon.order_hold"
+      enabled: false
+    } [ onAction="class:Actions#onOrderHold" ]
+    {
+      name: "bv.action.order_unhold"
+      value: "{resource:bv.action.order_unhold}"
+      icon: "resource:bv.icon.order_unhold"
+      enabled: false
+    } [ onAction="class:Actions#onOrderUnHold" ]
+    {
+      name: "bv.action.order_flag"
+      value: "{resource:bv.action.order_flag}"
+      icon: "resource:bv.icon.order_flag"
+      enabled: false
+    } [ onAction="class:Actions#onOrderFlag" ]
+    {
+      name: "bv.action.order_unflag"
+      value: "{resource:bv.action.order_unflag}"
+      icon: "resource:bv.icon.order_unflag"
+      enabled: false
+    } [ onAction="class:Actions#onOrderUnFlag" ]
+    {
+      name: "bv.action.order_discontinue"
+      value: "{resource:bv.action.order_discontinue}"
+      icon: "resource:bv.icon.order_discontinue"
+      enabled: false
+    } [ onAction="class:Actions#onOrderDiscontinue" ]
+    {
+      name: "bv.action.change_patient"
       value: "{resource:bv.action.new_patient}"
+      icon: "resource:bv.icon.find_patient"
       enabled: false
-      icon: "resource:bv_icon_find_patient"
-    }[onAction="class:Actions#onChangePatient"]
+    } [ onAction="class:Actions#onChangePatient" ]
+    {
+      name: "bv.action.new_orders"
+      value: "{resource:bv.action.new_orders}"
+      icon: "resource:bv.icon.order_new"
+      enabled: false
+    } [ onAction="class:Actions#onOrderNew" ]
     {
       name: "bv.action.exit"
       value: "{resource:bv.action.exit}"
+      icon: "resource:bv.icon.exit"
       enabled: true
-      icon: "resource:bv_icon_exit"
-    }[onAction="class:Actions#onExit"]
+    } [ onAction="class:Actions#onExit" ]
     {
       name: "bv.action.allergies"
       value: "{resource:bv.action.allergies}"
@@ -134,46 +196,56 @@ Application {
       value: "{resource:bv.action.flags}"
       icon: "resource:bv.icon.flag"
       enabled: false
-    } [onAction="class:Actions#onFlags"]
+    } [ onAction="class:Actions#onFlags" ]
     {
       name: "bv.action.audio_chat"
       icon: "resource:bv.icon.audio_chat"
       enabled: false
-    }[onAction="class:Actions#onAudioChat"]
+    } [ onAction="class:Actions#onAudioChat" ]
     {
       name: "bv.action.video_chat"
       icon: "resource:bv.icon.video_chat"
       enabled: false
-    }[onAction="class:Actions#onVideoChat"]
+    } [ onAction="class:Actions#onVideoChat" ]
     {
       name: "bv.action.text_chat"
       icon: "resource:bv.icon.text_chat"
       enabled: false
-    }[onAction="class:Actions#onTextChat"]
+    } [ onAction="class:Actions#onTextChat" ]
     {
       name: "bv.action.fullscreen"
       icon: "resource:bv.icon.fullscreen"
-    }[onAction="class:Actions#onFullscreen"]
+    } [ onAction="class:Actions#onFullscreen" ]
     {
       name: "bv.action.scan_barcode"
+      value: "{resource:bv.action.scan_barcode}"
       icon: "resource:bv.icon.barcode"
-      value: "{resource:bv.text.scan_barcode}
-    }[onAction="class:Actions#onFullscreen"]
+    } [ onAction="class:Actions#onScanBarCode" ]
+    {
+      name: "bv.action.orders_cart"
+      value: "{resource:bv.action.orders_cart}"
+      icon: "resource:bv.icon.cart"
+      enabled: false
+    }[ onAction="class:Actions#onShowCart" ]
     {
       name: "bv.action.nearby_patients"
+      value: "{resource:bv.text.find_nearby_patients}"
       icon: "resource:bv.icon.antenna"
-      value: "{resource:bv.text.find_nearby_patients}
-    }[onAction="class:PatientSelect#onNearbyPatientsAction"]
+    } [ onAction="class:PatientSelect#onNearbyPatientsAction" ]
     {
       name: "bv.action.voice_search"
-      icon: "resource:bv.icon.voice_search"
       value: "{resource:bv.text.voice_search}"
-    }[onAction="class:PatientSelect#onVoiceSearchAction"]
+      icon: "resource:bv.icon.voice_search"
+    } [ onAction="class:PatientSelect#onVoiceSearchAction" ]
     {
       name: "bv.action.most_recent_patients"
-      icon: "resource:bv.icon.history"
       value: "{resource:bv.text.most_recent_patients}"
-    }[onAction="class:PatientSelect#onMostRecentAction"]
+      icon: "resource:bv.icon.history"
+    } [ onAction="class:PatientSelect#onMostRecentAction" ]
+    {
+      name: "bv.action.back"
+      icon: "resource:bv.icon.back"
+    } [ onAction="class:Actions#onGoBack" ]
    }
   >> [ inline="true" ]
   attributesURL: "attributes.json"
@@ -187,10 +259,19 @@ Application {
   ignoreFormatExceptions: true
   allTextFieldsDraggable: true
   selectionPainter {
-    bgColor: "textHighlight+30,textHighlight+15"
+    bgColor: "textHighlight+30,textHighlight+25"
   }
   pressedPainter {
     bgColor: "#d0d0d0"
+  }
+  autoHilightPainter {
+    bgColor: "textAutoHighlight+30,textAutoHighlight+15"
+  }
+  widgetFocusPainter {
+  	bgColor:"#79b2ff"
+    borders {
+      shadow [ color="#79b2ff", thickness=7, customProperties="offset=-4,-4"]
+    }
   }
   managedScreenSizes: small_medium_large [ smallScreenPointSize="480", mediumScreenPointSize="960", autoFallback="true" ]
   desktopIconDensity: "mdpi"

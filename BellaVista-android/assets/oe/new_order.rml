@@ -1,0 +1,84 @@
+Form {
+  layout: forms
+  rows: "f:p,f:d:g"
+  columns: "f:d:g"
+  widgets {
+    {
+      ListBox {
+      	bgColor: "defaultBackground"
+        name: "items"
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        itemDescription {
+          icon: "resource:bv.icon.order_item"
+        }
+        handleFirstFocusSelection: false
+        //alternatingHighlightColor: "rowHilite"
+        showDividerLine: true
+        autoSizeRowsToFit: true
+        dividerLineColor: white
+      } [ onAction="class:oe.Ordering#onItemsListAction" ]
+    }
+    {
+      GroupBox {
+        name: "testBox"
+        bgColor: "mediumBackground"
+        bounds {
+          x: "0"
+          y: "0"
+        }
+        layout: forms
+        rows: "2dluY,p,2dluY,d,2dluY"
+        columns: "2dluX,d:g,2dluX"
+        widgets {
+          {
+            PushButton {
+              name: "filter"
+              horizontalAlign: full
+              font {
+                size: "-1"
+              }
+              fgColor: "dimForeground"
+              bounds {
+                x: "1"
+                y: "1"
+              }
+              templateName: "bv.radiobutton.toolbar"
+              icon: "resource:bv.icon.filter"
+              textHAlignment: right
+              iconPosition: right_justified
+              buttonStyle: toolbar
+            } [ onAction="class:oe.Ordering#onFilterAction" ]
+          }
+          {
+            TextField {
+              name: "searchField"
+              borders {
+                line [ cornerArc="6" ]
+                icon [ icon=",,,resource:bv.icon.search", insets="4,4,4,4" ]
+                empty [ insets="0,0,0,4" ]
+              }
+              bgColor: "white"
+              bounds {
+                x: "1"
+                y: "3"
+              }
+              emptyText {
+                value: "{resource:bv.text.search}"
+                font {
+                  style: italic
+                }
+                fgColor: "#999999"
+              }
+              keyboardReturnButtonType: search_type
+              allowDefaultSuggestions: false
+              keyboardType: default_type [ autoCorrect=false, autoCapatilize="none", spellCheck=false]
+            } [ onAction="class:oe.Ordering#onSearchFieldAction" ]
+          }
+        }
+      }
+    }
+  }
+} [ onShown="class:oe.Ordering#onShown" ]

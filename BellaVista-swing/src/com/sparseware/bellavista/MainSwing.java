@@ -30,6 +30,11 @@ public class MainSwing extends Main {
     super(args);
   }
 
+  @Override
+  public void onEscapeKeyPressed() {
+    Utils.popViewerStack();
+  }
+  
   public static void main(String[] args) {
     String resourcePath = null;
 

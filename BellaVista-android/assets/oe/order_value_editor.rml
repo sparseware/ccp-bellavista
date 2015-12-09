@@ -1,0 +1,128 @@
+Form {
+  name: "orderValueEditor"
+  layout: forms
+  rows: "2dluY,d,d,d:g,d,d"
+  columns: "d:g"
+  widgets {
+    {
+      Label {
+        name: "prompt"
+        font {
+          style: bold
+        }
+        bounds {
+          x: "0"
+          y: "2"
+        }
+        templateName: "bv.oe.field_label_prompt"
+        wordWrap: true
+      }
+    }
+    {
+      WidgetPane {
+        name: "valuePane"
+        borders {
+          matte [ insets="1,0,1,0" ]
+        }
+        bounds {
+          x: "0"
+          y: "3"
+        }
+      }
+    }
+    {
+      ToolBar {
+        bounds {
+          x: "0"
+          y: "1"
+        }
+        actAsFormViewer: false
+        widgets {
+          {
+            Bean {
+              name: "Rare.bean.expander"
+            }
+          }
+          {
+            PushButton {
+              templateName: "bv.button"
+              value: "{resource:bv.oe.text.clear_field}"
+            } [ onAction="class:oe.OrderEntry#onClearValueAction" ]
+          }
+          {
+            PushButton {
+              templateName: "bv.button"
+              value: "{resource:bv.oe.text.reset_to_default}"
+            } [ onAction="class:oe.OrderEntry#onResetToDefaultAction" ]
+          }
+        }
+      }
+    }
+    {
+      GroupBox {
+        name: "navigateTo"
+        bounds {
+          x: "0"
+          y: "4"
+        }
+        layout: forms
+        rows: "d,d"
+        columns: "d:g,2dluX,d:g"
+        widgets {
+          {
+            CheckBox {
+              name: "required"
+              horizontalAlign: right
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              value: "{resource:bv.oe.text.required_only}"
+            } [ onAction="class:oe.OrderEntry#onNavigateToXOnlyAction" ]
+          }
+          {
+            CheckBox {
+              name: "empty"
+              horizontalAlign: left
+              bounds {
+                x: "2"
+                y: "0"
+              }
+              value: "{resource:bv.oe.text.empty_only}"
+            } [ onAction="class:oe.OrderEntry#onNavigateToXOnlyAction" ]
+          }
+          {
+            PushButton {
+              name: "previousField"
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "1"
+              }
+              enabled: false
+              value: "{resource:bv.oe.text.previous_field}"
+              icon: "resource:bv.icon.paging_previous"
+              textHAlignment: left
+              buttonStyle: toolbar
+            } [ onAction="class:oe.OrderEntry#onNextOrPreviousField" ]
+          }
+          {
+            PushButton {
+              name: "nextField"
+              horizontalAlign: full
+              bounds {
+                x: "2"
+                y: "1"
+              }
+              value: "{resource:bv.oe.text.next_field}"
+              icon: "resource:bv.icon.paging_next"
+              textHAlignment: right
+              iconPosition: right
+              buttonStyle: toolbar
+            } [ onAction="class:oe.OrderEntry#onNextOrPreviousField" ]
+          }
+        }
+      }
+    }
+  }
+} [ onConfigure="class:oe.OrderEntry#onOrderValueEditorConfigure", onLoad="class:oe.OrderEntry#onOrderValueEditorLoad"  ]

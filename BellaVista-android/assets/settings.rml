@@ -1,63 +1,18 @@
 Form {
-  name: "settings"
-  borders {
-    line [ padForArc="false", cornerArc="8" ]
-  }
-  verticalAlign: full
-  horizontalAlign: full
-  bgColor: "defaultBackground"
-  bounds {
-    width: "-1" [ min="25ch" ]
-    height: "-1" [ min="25ln" ]
-  }
+  title: "{resource:bv.text.settings}"
   layout: forms
-  rows: "f:d,f:d,d:g"
-  columns: "d:g"
+  rows: "2dluY,d,2dluY,d,2dluY"
+  columns: "2dluX,d:g,2dluX"
   widgets {
-    {
-      GroupBox {
-        bgColor: "defaultGradient"
-        bounds {
-          x: "0"
-          y: "0"
-        }
-        layout: forms
-        rows: "d"
-        columns: "4dlu,d:g,4dlu,d,4dlu"
-        widgets {
-          {
-            Label {
-              name: "titleLabel"
-              verticalAlign: full
-              bounds {
-                x: "1"
-                y: "0"
-                width: "17ch"
-                height: "2ln" [ min="!" ]
-              }
-              templateName: "bv.label.dialogTitle"
-              value: "{resource:bv.text.settings}"
-              textHAlignment: left
-            } [ onShown="class:MainEventHandler#onMakeWindowDragger" ]
-          }
-          {
-            PushButton {
-              bounds {
-                x: "3"
-                y: "0"
-              }
-              templateName: "bv.pushbutton.close"
-            } [ onAction="class:Settings#onClose" ]
-          }
-        }
-      }
-    }
     {
       StackPane {
         name: "settingsStack"
+        title: "{resource:bv.text.settings}"
         bounds {
-          x: "0"
-          y: "2"
+          x: "1"
+          y: "1"
+          width: "-1"  [ min="20ch" ]
+          height: "-1" [ min="20ln" ]
         }
         transitionAnimator: "SlideAnimation"
         actAsFormViewer: true
@@ -65,6 +20,32 @@ Form {
           "/basic_settings.rml" [ deferred="false" ]
           "/servers_settings.rml" [ deferred="false" ]
           "/pin_settings.rml" [ deferred="false" ]
+        }
+      }
+    }
+    {
+      GroupBox {
+        horizontalAlign: right
+        bounds {
+          x: "1"
+          y: "3"
+        }
+        layout: forms
+        rows: "d"
+        columns: "d,"
+        widgets {
+          {
+            PushButton {
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "0"
+                width: "7ch"
+              }
+              value: "{resource:Rare.text.close}"
+              templateName: "bv.button.alert"
+            } [ onAction="class:MainEventHandler#onCloseWindow" ]
+          }
         }
       }
     }

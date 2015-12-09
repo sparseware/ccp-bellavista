@@ -1,0 +1,170 @@
+{
+	"rows":[
+		{
+			"id":"12715",
+			"prompt":"Strength dose",
+			"required":true,
+			"seq_number":15.1,
+			"in_preview":true,
+			"type":"decimal",
+			"min_val":"0",
+			"max_val":"999999999999999",
+			"increment":"0",
+			"decimal_places":"4"
+		},
+		{
+			"id":"12716",
+			"prompt":"Strength dose unit",
+			"required":true,
+			"seq_number":15.2,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/54",
+			"name":"duration_unit"
+		},
+		{
+			"id":"12693",
+			"prompt":"Drug Form",
+			"required":true,
+			"seq_number":25.0,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/4002"
+		},
+		{
+			"id":"12711",
+			"prompt":"Route of administration",
+			"required":true,
+			"seq_number":30.0,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/4001"
+		},
+		{
+			"id":"12690",
+			"prompt":"Frequency",
+			"required":true,
+			"seq_number":40.0,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/frequency/705"
+		},
+		{
+			"id":"12703",
+			"prompt":"PRN",
+			"required":false,
+			"seq_number":50.0,
+			"in_preview":true,
+			"type":"boolean",
+			"preview_true_value":"PRN"
+		},
+		{
+			"id":"663786",
+			"prompt":"PRN reason",
+			"required":false,
+			"seq_number":55.0,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/4005"
+		},
+		{
+			"id":"663785",
+			"prompt":"Pharmacy order priority",
+			"required":false,
+			"seq_number":70.1,
+			"in_preview":true,
+			"default_value":"657972",
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/4010",
+			"default_value_display":"Routine"
+		},
+		{
+			"id":"12721",
+			"prompt":"Duration",
+			"required":false,
+			"seq_number":75.0,
+			"in_preview":true,
+			"preview_prefix":"Duration:",
+			"type":"integer",
+			"min_val":"0",
+			"max_val":"0",
+			"increment":"0"
+		},
+		{
+			"id":"12723",
+			"prompt":"Duration unit",
+			"required":false,
+			"seq_number":75.1,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/54",
+			"name":"duration_unit"
+		},
+		{
+			"id":"119605908",
+			"prompt":"Instructions to MD/RN",
+			"required":false,
+			"seq_number":80.0,
+			"in_preview":true,
+			"type":"textfield",
+			"size":"255"
+		},
+		{
+			"id":"119605919",
+			"prompt":"Antibiotic Reason",
+			"required":true,
+			"seq_number":82.0,
+			"in_preview":true,
+			"preview_prefix":"Antibiotic reason:",
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/101150"
+		},
+		{
+			"id":"119605910",
+			"prompt":"Antibiotic Indication",
+			"required":true,
+			"seq_number":84.0,
+			"in_preview":true,
+			"type":"list",
+			"data_url":"/hub/main/util/lists/codes/101155"
+		},
+		{
+			"id":"119605922",
+			"prompt":"Antibiotic Indication (Other)",
+			"required":false,
+			"seq_number":86.0,
+			"in_preview":true,
+			"type":"textfield",
+			"size":"255"
+		},
+		{
+			"id":"119605935",
+			"prompt":"Organism (if known)",
+			"required":false,
+			"seq_number":88.0,
+			"in_preview":true,
+			"type":"textfield",
+			"size":"255"
+		},
+		{
+			"id":"12620",
+			"prompt":"Requested start date and time",
+			"required":false,
+			"seq_number":95.0,
+			"in_preview":true,
+			"preview_prefix":"Start date:",
+			"type":"date_time",
+			"increment":"0"
+		},
+		{
+			"id":"12731",
+			"prompt":"Stop date and time",
+			"required":false,
+			"seq_number":100.0,
+			"in_preview":true,
+			"preview_prefix":"Stop date:",
+			"type":"date_time",
+			"increment":"0"
+		}
+	]
+}

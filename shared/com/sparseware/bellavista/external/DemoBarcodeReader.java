@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista.external;
 
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.iFunctionCallback;
 
-public class DemoBarcodeReader extends aBarcodeReader{
-
-  public DemoBarcodeReader() {
-  }
-
+public class DemoBarcodeReader extends aBarcodeReader {
+  public DemoBarcodeReader() {}
 
   @Override
   public void read(final iFunctionCallback resultCallback) {
     Platform.invokeLater(new Runnable() {
-      
       @Override
       public void run() {
         resultCallback.finished(false, null);
@@ -40,9 +37,6 @@ public class DemoBarcodeReader extends aBarcodeReader{
     return false;
   }
 
-
   @Override
-  public void dispose() {
-  }
-
+  public void dispose() {}
 }

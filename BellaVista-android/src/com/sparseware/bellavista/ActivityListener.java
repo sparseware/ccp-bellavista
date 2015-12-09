@@ -8,27 +8,39 @@ import com.appnativa.rare.platform.android.aActivityListener;
 import com.appnativa.rare.platform.android.iActivity;
 
 public class ActivityListener extends aActivityListener {
-
-  public ActivityListener() {
-  }
+  public ActivityListener() {}
 
   @Override
   public boolean onBackPressed(iPlatformAppContext app, iActivity a, Dialog dialog) {
     do {
       if (!Utils.isApplicationLocked()) {
-        if (Utils.popWorkspaceViewer()) {
-          break;
+        
+        //check if we have a dialog or popup window showing
+        if (Platform.getAppContext().isPopupWindowShowing() || Platform.getAppContext().isDialogWindowShowing()) {
+          return true;
         }
-        if(Platform.getAppContext().isPopupWindowShowing() || Platform.getAppContext().isDialogWindowShowing()) {
-          break;
+
+        // check if we are in pseudo full screen
+        if(Actions.handledPseudoFullScreenMode()) {
+          return true;
         }
-        if (!PatientSelect.isShowing() && Utils.getPatient()!=null) {
+        
+        //check if we have a viewer on the sack and pop it
+        if (Utils.popViewerStack(true)) {
+          return true;
+        }
+        
+        //if change patient is not showing, show it
+        if (!PatientSelect.isShowing() && (Utils.getPatient() != null)) {
           PatientSelect.changePatient(Platform.getWindowViewer(), null);
-          break;
+
+          return true;
         }
       }
+
       Utils.exit();
-    } while (false);
-    return true;
+
+      return true;
+    } while(false);
   }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.ArrayList;
@@ -40,14 +41,13 @@ import com.appnativa.util.StringCache;
 import com.appnativa.util.iPreferences;
 
 /*
- * THis class manages application settings and the UI
+ * This class manages application settings and the UI
  * associated with those settings
- * 
+ *
  */
 public class Settings implements iEventHandler {
   AppPreferences preferences;
   List<Server>   servers;
-
   boolean        serversUpdated;
 
   public Settings() {
@@ -61,6 +61,7 @@ public class Settings implements iEventHandler {
 
   public AppPreferences getAppPreferences(String user) {
     preferences.setUser(user);
+
     return preferences;
   }
 
@@ -70,6 +71,7 @@ public class Settings implements iEventHandler {
 
   public void onBackButton(String eventName, iWidget widget, EventObject event) {
     StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer();
+
     sp.switchTo(0);
   }
 
@@ -86,38 +88,48 @@ public class Settings implements iEventHandler {
   public void onSubmitPin(String eventName, iWidget widget, EventObject event) {
     try {
       String pin = widget.getFormViewer().getWidget("pin").getValueAsString();
+
       if (pin == null) {
         pin = "";
       }
+
       final WindowViewer w = Platform.getWindowViewer();
       final iWidget l = widget.getFormViewer().getWidget("message");
-      if (pin.length() < CardStack.getPinDigitCount() || !SNumber.isNumeric(pin)) {
+
+      if ((pin.length() < CardStack.getPinDigitCount()) || !SNumber.isNumeric(pin)) {
         String s = w.getString("bv.format.invalid_pin", StringCache.valueOf(CardStack.getPinDigitCount()));
+
         l.setValue(s);
         w.beep();
       } else {
         l.setValue("");
+
         if (Utils.isDemo()) {
           l.setValue(w.getString("bv.text.settings.pin_submitted"));
         } else {
-          final ActionLink link = w.createActionLink("/hub/account/allow_pin");
+          final ActionLink link = Utils.createLink(w, "/hub/account/allow_pin");
           final HashMap data = new HashMap(2);
-          data.put("pin", pin);
-          aWorkerTask task = new aWorkerTask() {
 
+          data.put("pin", pin);
+
+          aWorkerTask task = new aWorkerTask() {
             @Override
             public void finish(Object result) {
               w.hideWaitCursor();
+
               if (result instanceof Throwable) {
                 Utils.handleError((Throwable) result);
               } else {
                 String s = (String) result;
+
                 if (s != null) {
                   s = s.trim();
                 }
-                if (s == null || s.length() == 0) {
+
+                if ((s == null) || (s.length() == 0)) {
                   s = w.getString("bv.text.settings.pin_submitted");
                 }
+
                 l.setValue(s);
               }
             }
@@ -126,12 +138,14 @@ public class Settings implements iEventHandler {
             public Object compute() {
               try {
                 link.sendFormData(w, data);
+
                 return link.getContentAsString();
               } catch (Exception e) {
                 return e;
               }
             }
           };
+
           w.spawn(task);
           w.showWaitCursor();
         }
@@ -154,10 +168,12 @@ public class Settings implements iEventHandler {
    */
   public void onClose(String eventName, iWidget widget, EventObject event) {
     StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("settingsStack");
-    iWidget gb = sp == null ? null : sp.getWidget("serversSettings");
+    iWidget gb = (sp == null) ? null : sp.getWidget("serversSettings");
+
     if (gb != null) {
       onServersUnload(eventName, gb, event);
     }
+
     preferences.setServers(servers);
     preferences.update();
     widget.getWindow().close();
@@ -165,26 +181,33 @@ public class Settings implements iEventHandler {
 
   public void onConfigureBasicSettings(String eventName, iWidget widget, EventObject event) {
     iContainer fv = (iContainer) widget;
+
     for (iWidget w : fv.getWidgetList()) {
       switch (w.getWidgetType()) {
         case CheckBox:
           w.setSelected(preferences.getBoolean(w.getName(), false));
+
           break;
 
         default:
           break;
       }
     }
+
     serversUpdated = false;
   }
 
   public void onConfigureLoginComboBox(String eventName, iWidget widget, EventObject event) {
     aListWidget lw = (aListWidget) widget;
+
     servers = preferences.getServers();
+
     for (Server s : servers) {
       lw.addEx(new RenderableDataItem(s.serverName, s, null));
     }
+
     Server s = new Server(Platform.getResourceAsString("bv.text.local_demo"), "local", true);
+
     lw.addEx(new RenderableDataItem(s.serverName, s, null));
     lw.refreshItems();
     lw.setSelectedIndex(0);
@@ -193,23 +216,28 @@ public class Settings implements iEventHandler {
   /**
    * Called to get the default server for the device when the user is not able
    * to choose a server.
-   * 
+   *
    * @return the server
    */
   public Server getDefaultServer() {
     List<Server> list = preferences.getServers();
-    if (list != null && !list.isEmpty()) {
+
+    if ((list != null) && !list.isEmpty()) {
       return list.get(0);
     }
+
     return new Server(Platform.getResourceAsString("bv.text.local_demo"), "local", true);
   }
 
   public void onConfigureServers(String eventName, iWidget widget, EventObject event) {
     servers = preferences.getServers();
+
     aListViewer lv = (aListViewer) widget;
+
     for (Server s : servers) {
       lv.addEx(new RenderableDataItem(s.serverName, s, null));
     }
+
     lv.refreshItems();
   }
 
@@ -219,16 +247,18 @@ public class Settings implements iEventHandler {
 
   /**
    * Called when the setting list is finished being loaded
-   * 
+   *
    * The data in the list is specified a string resource names so after they are
    * loaded we resolve to names into actual values.
    */
   public void onFinishedLoadingList(String eventName, iWidget widget, EventObject event) {
     aListViewer lv = (aListViewer) widget;
     int len = lv.size();
+
     for (int i = 0; i < len; i++) {
       RenderableDataItem item = lv.get(i);
       Object o = item.getValue();
+
       if (o instanceof String) {
         item.setValue(Platform.getResourceAsString((String) o));
       }
@@ -237,6 +267,7 @@ public class Settings implements iEventHandler {
 
   public void onOtherOptionsAction(String eventName, iWidget widget, EventObject event) {
     int n = ((aListViewer) widget).getSelectedIndex();
+
     if (n != -1) {
       ((StackPaneViewer) widget.getFormViewer()).switchTo(n + 1);
     }
@@ -245,41 +276,67 @@ public class Settings implements iEventHandler {
   public void onServersAddAction(String eventName, iWidget widget, EventObject event) {
     final iFormViewer fv = widget.getFormViewer();
     Server s = new Server("", "", false);
-    aListViewer lv = (aListViewer) widget.getFormViewer().getWidget("servers");
+    aListViewer lv = (aListViewer) fv.getWidget("servers");
+
     lv.add(new RenderableDataItem(Platform.getResourceAsString("bv.text.settings.new_server"), s, null));
     servers.add(s);
     lv.setSelectedIndex(lv.size() - 1);
     Platform.invokeLater(new Runnable() {
-
       @Override
       public void run() {
         if (!fv.isDisposed()) {
           iWidget w = fv.getWidget("name");
-          if (w != null && !w.isDisposed()) {
+
+          if ((w != null) && !w.isDisposed()) {
             w.requestFocus();
           }
         }
-
       }
     });
   }
 
+  public void onServersAddRemoteAction(String eventName, iWidget widget, EventObject event) {
+    final iFormViewer fv = widget.getFormViewer();
+    Server s = new Server("", "", false);
+    aListViewer lv = (aListViewer) widget.getFormViewer().getWidget("servers");
+
+    lv.add(new RenderableDataItem(Platform.getResourceAsString("bv.text.settings.new_server"), s, null));
+    servers.add(s);
+    lv.setSelectedIndex(lv.size() - 1);
+    Platform.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (!fv.isDisposed()) {
+          iWidget w = fv.getWidget("name");
+
+          if ((w != null) && !w.isDisposed()) {
+            w.requestFocus();
+          }
+        }
+      }
+    });
+  }
   public void onServersChange(String eventName, iWidget widget, EventObject event) {
     iFormViewer fv = widget.getFormViewer();
     aListViewer lv = (aListViewer) widget;
     Server s = (Server) lv.getSelectionData();
-    fv.getWidget("name").setValue(s == null ? "" : s.serverName);
-    fv.getWidget("url").setValue(s == null ? "" : s.serverURL);
-    fv.getWidget("context").setSelected(s == null ? false : s.isContextServer);
-    fv.getWidget("update").setEnabled(s != null);
+
+    fv.getWidget("name").setValue((s == null) ? "" : s.serverName);
+    fv.getWidget("url").setValue((s == null) ? "" : s.serverURL);
+    fv.getWidget("context").setSelected((s == null) ? false : s.isContextServer());
+    fv.getWidget("update").setEnabled(s != null && !s.isFrozen());
+    fv.getWidget("name").setEnabled(s != null && !s.isFrozen());
+    fv.getWidget("url").setEnabled(s != null && !s.isFrozen());
   }
 
   public void onServersDeleteAction(String eventName, iWidget widget, EventObject event) {
     aListViewer lv = (aListViewer) widget.getFormViewer().getWidget("servers");
     Server s = (Server) lv.getSelectionData();
+
     if (s != null) {
       lv.remove(lv.getSelectedIndex());
     }
+
     servers.remove(s);
   }
 
@@ -288,9 +345,12 @@ public class Settings implements iEventHandler {
    */
   public void onServersUnload(String eventName, iWidget widget, EventObject event) {
     aListViewer lv = (aListViewer) ((iContainer) widget).getWidget("servers");
+
     if (lv != null) {
       servers.clear();
+
       int len = lv.size();
+
       for (int i = 0; i < len; i++) {
         servers.add((Server) lv.get(i).getLinkedData());
       }
@@ -301,12 +361,24 @@ public class Settings implements iEventHandler {
     iFormViewer fv = widget.getFormViewer();
     aListViewer lv = (aListViewer) fv.getWidget("servers");
     int n = lv.getSelectedIndex();
+
     if (n != -1) {
+      String protocol = fv.getWidget("url").getValueAsString().trim();
+      int p = protocol.indexOf(':');
+
+      if ((p == -1) || !Utils.isServerProtocolSupported(protocol.substring(0, p))) {
+        Platform.getWindowViewer().alert(Platform.getWindowViewer().getString("bv.text.settings.protocol_not_supported"));
+
+        return;
+      }
+
       RenderableDataItem item = lv.getSelectedItem();
       Server s = (Server) item.getLinkedData();
+
       s.serverName = fv.getWidget("name").getValueAsString();
-      s.serverURL = fv.getWidget("url").getValueAsString().trim();
-      s.isContextServer = fv.getWidget("context").isSelected();
+      s.serverURL = protocol;
+      s.serverType = fv.getWidget("context").isSelected() ? Server.TYPE_CONTEXT : 0;
+
       if (s.serverName.length() == 0) {
         Platform.getWindowViewer().beep();
       } else {
@@ -322,7 +394,7 @@ public class Settings implements iEventHandler {
 
   /**
    * This class manages the storing and retrieval of preferences
-   * 
+   *
    * @author Don DeCoteau
    */
   public static class AppPreferences {
@@ -335,6 +407,7 @@ public class Settings implements iEventHandler {
 
     public AppPreferences() {
       String path = Settings.class.getPackage().getName();
+
       path = path.replace('.', '/');
       globalPrefs = Functions.getPreferences(path);
     }
@@ -343,6 +416,7 @@ public class Settings implements iEventHandler {
       if (edited) {
         update();
       }
+
       globalPrefs = null;
       prefs = null;
     }
@@ -360,6 +434,7 @@ public class Settings implements iEventHandler {
         return globalPrefs.get("username", null);
       } catch (Throwable e) {
         Platform.ignoreException(null, e);
+
         return null;
       }
     }
@@ -378,16 +453,25 @@ public class Settings implements iEventHandler {
       if (servers == null) {
         ArrayList<Server> list = new ArrayList<Settings.Server>(5);
         String s = globalPrefs.get("servers", null);
-        if (s != null && s.length() > 0) {
+
+        if ((s != null) && (s.length() > 0)) {
           s = Functions.decodeBase64(s);
+
           CharScanner sc = new CharScanner(s);
+
           while ((s = sc.nextToken('\t')) != null) {
-            list.add(new Server(s));
+            Server server=new Server(s);
+            if(server.isValid()) {
+              list.add(server);
+            }
           }
+
           sc.close();
         }
+
         servers = list;
       }
+
       return servers;
     }
 
@@ -430,11 +514,13 @@ public class Settings implements iEventHandler {
 
     public void setServers(List<Server> list) {
       servers = list;
-      if (list == null || list.isEmpty()) {
+
+      if ((list == null) || list.isEmpty()) {
         globalPrefs.remove("servers");
       } else {
         StringBuilder sb = new StringBuilder();
         boolean hasInvalid = false;
+
         for (Server s : list) {
           if (s.isValid()) {
             s.toString(sb).append('\t');
@@ -442,14 +528,17 @@ public class Settings implements iEventHandler {
             hasInvalid = true;
           }
         }
+
         if (sb.length() == 0) {
           globalPrefs.remove("servers");
         } else {
           sb.setLength(sb.length() - 1);
           globalPrefs.put("servers", Functions.base64(sb.toString()));
         }
+
         if (hasInvalid) {
           int len = list.size();
+
           for (int i = len - 1; i > -1; i--) {
             if (!list.get(i).isValid()) {
               list.remove(i);
@@ -457,6 +546,7 @@ public class Settings implements iEventHandler {
           }
         }
       }
+
       edited = true;
     }
 
@@ -471,6 +561,7 @@ public class Settings implements iEventHandler {
           globalPrefs.flush();
           globalPrefs.sync();
         }
+
         if (prefs != null) {
           prefs.flush();
           prefs.sync();
@@ -478,33 +569,64 @@ public class Settings implements iEventHandler {
       } catch (BackingStoreException e) {
         Platform.ignoreException(null, e);
       }
-
     }
   }
 
   public static class Server {
-    public String  serverName;
-    public String  serverURL;
-    public boolean isContextServer;
+    public String           serverName;
+    public String           serverURL;
+    public int              serverType    = 0;
+    public static final int TYPE_CONTEXT  = 0x01;
+    public static final int TYPE_DEMO     = 0x02;
+    public static final int TYPE_FROZEN = 0x100f;
 
     public Server(String s) {
-      isContextServer = s.charAt(0) == '1';
-      int n = s.indexOf('^');
-      serverName = s.substring(1, n);
-      serverURL = s.substring(n + 1);
+      List<String> list = CharScanner.getTokens(s, '^', true);
+
+      if (list.size() < 3) {
+        return; // will cause the isValid method to be false
+      } else {
+        populate(list);
+      }
+    }
+
+    protected void populate(List<String> values) {
+      serverType = SNumber.intValue(values.get(0));
+      serverName = values.get(1);
+      serverURL = values.get(2);
     }
 
     public Server(String serverName, String serverURL, boolean isContextServer) {
       super();
       this.serverName = serverName;
       this.serverURL = serverURL;
-      this.isContextServer = isContextServer;
+      this.serverType = isContextServer ? TYPE_CONTEXT : 0;
+    }
+
+    public Server(String serverName, String serverURL, int serverType) {
+      super();
+      this.serverName = serverName;
+      this.serverURL = serverURL;
+      this.serverType = serverType;
+    }
+
+    public boolean isContextServer() {
+      return (serverType & TYPE_CONTEXT) != 0;
+    }
+
+    public boolean isDemoServer() {
+      return (serverType & TYPE_DEMO) != 0;
+    }
+
+    public boolean isFrozen() {
+      return (serverType & TYPE_FROZEN) != 0;
     }
 
     public boolean isValid() {
-      if (serverName == null || serverName.length() == 0 || serverURL == null || !serverURL.startsWith("http")) {
+      if ((serverName == null) || (serverName.length() == 0) || (serverURL == null)) {
         return false;
       }
+
       return true;
     }
 
@@ -513,8 +635,9 @@ public class Settings implements iEventHandler {
     }
 
     public StringBuilder toString(StringBuilder sb) {
-      sb.append(isContextServer ? "1" : "0");
+      sb.append(serverType).append("^");
       sb.append(serverName).append("^").append(serverURL);
+
       return sb;
     }
   }

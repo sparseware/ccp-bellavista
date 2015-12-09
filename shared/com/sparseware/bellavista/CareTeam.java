@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.ArrayList;
@@ -49,20 +50,22 @@ public class CareTeam implements iEventHandler, iStatusListener {
   protected aCommunicationHandler      commHandler;
   protected Map<String, UserStatus>    userStatuses;
   protected ListBoxViewer              listViewer;
-  protected static UserStatus          OFFLINE    = new UserStatus();
+  protected static UserStatus          OFFLINE = new UserStatus();
   protected Map<Status, iPlatformIcon> statusIcons;
   protected int                        idPosition = 1;
-  protected long lastUpdateTime;
-  protected int dataTimeout;
-  
+  protected long                       lastUpdateTime;
+  protected int                        dataTimeout;
+
   public CareTeam() {
     JSONObject info = (JSONObject) Platform.getAppContext().getData("careTeamInfo");
-    dataTimeout=info.optInt("dataTimeout", 0)*1000;
+
+    dataTimeout = info.optInt("dataTimeout", 0) * 1000;
     commHandler = Utils.getaCommunicationHandler();
+
     if (commHandler != null) {
       userStatuses = new HashMap<String, UserStatus>();
-      statusIcons = Utils.getStatusIcons();
-      idPosition = info.optInt("commIdPosition", 1);
+      statusIcons  = Utils.getStatusIcons();
+      idPosition   = info.optInt("commIdPosition", 1);
     }
   }
 
@@ -70,18 +73,21 @@ public class CareTeam implements iEventHandler, iStatusListener {
     if (commHandler != null) {
       commHandler.removeStatusListener(this);
     }
-    commHandler = null;
+
+    commHandler  = null;
     userStatuses = null;
-    listViewer = null;
+    listViewer   = null;
   }
 
   @Override
-  public void onEvent(String eventName, iWidget widget, EventObject event) {
-  }
+  public void onEvent(String eventName, iWidget widget, EventObject event) {}
 
   protected String getUserID(RenderableDataItem row) {
     RenderableDataItem item = row.getItemEx(idPosition);
-    return item == null ? null : (String) item.getValue();
+
+    return (item == null)
+           ? null
+           : (String) item.getValue();
   }
 
   /**
@@ -89,53 +95,57 @@ public class CareTeam implements iEventHandler, iStatusListener {
    * We adjust's is size for the screen size
    */
   public void onCreated(String eventName, final iWidget widget, EventObject event) {
-    if(!UIScreen.isLargeScreen()) {
-      UIDimension size=UIScreen.getUsableSize();
-      int n=(int) UIScreen.fromPlatformPixels(Math.max(size.width, size.height));
-      if(n<540) {
-        Viewer cfg=(Viewer) ((DataEvent)event).getData();
+    if (!UIScreen.isLargeScreen()) {
+      UIDimension size = UIScreen.getUsableSize();
+      int         n    = (int) UIScreen.fromPlatformPixels(Math.max(size.width, size.height));
+
+      if (n < 540) {
+        Viewer cfg = (Viewer) ((DataEvent) event).getData();
+
         cfg.bounds.height.setValue("14ln");
-      }
-      else {
-        Viewer cfg=(Viewer) ((DataEvent)event).getData();
+      } else {
+        Viewer cfg = (Viewer) ((DataEvent) event).getData();
+
         cfg.bounds.height.setValue("18ln");
       }
     }
   }
-  
+
   /**
    * Called when the careteam view is shown.
    * We check the freshness of the data and reload as appropriate
    */
   public void onShown(String eventName, final iWidget widget, EventObject event) {
-    final WindowViewer w = Platform.getWindowViewer();
+    final WindowViewer    w  = Platform.getWindowViewer();
     final iDataCollection dc = w.getDataCollection("careteam");
-    if(lastUpdateTime+dataTimeout>System.currentTimeMillis() && dc.isLoaded()) {
+
+    if ((lastUpdateTime + dataTimeout > System.currentTimeMillis()) && dc.isLoaded()) {
       updateForm(widget.getFormViewer(), dc);
     } else {
       aWorkerTask task = new aWorkerTask() {
-
         @Override
         public void finish(Object result) {
           w.hideWaitCursor();
+
           if (result != null) {
             Utils.handleError((Throwable) result);
           } else {
             updateForm(widget.getFormViewer(), dc);
           }
         }
-
         @Override
         public Object compute() {
           try {
             dc.refresh(widget);
-            lastUpdateTime=System.currentTimeMillis();
+            lastUpdateTime = System.currentTimeMillis();
+
             return null;
-          } catch (Exception e) {
+          } catch(Exception e) {
             return e;
           }
         }
       };
+
       w.showWaitCursor();
       w.spawn(task);
     }
@@ -143,35 +153,42 @@ public class CareTeam implements iEventHandler, iStatusListener {
 
   protected void updateForm(iFormViewer fv, iDataCollection dc) {
     Collection<RenderableDataItem> items = dc.getItemData(fv, false);
-    int len = (items == null) ? 0 : items.size();
+    int                            len   = (items == null)
+            ? 0
+            : items.size();
 
     if (len == 0) {
       return;
     }
 
-    ArrayList<RenderableDataItem> othersList = new ArrayList<RenderableDataItem>();
+    ArrayList<RenderableDataItem> othersList     = new ArrayList<RenderableDataItem>();
     ArrayList<RenderableDataItem> physiciansList = new ArrayList<RenderableDataItem>();
+    ArrayList<String>             users          = new ArrayList<String>(len);
+    RenderableDataItem            row, item;
+    StringBuilder                 sb = new StringBuilder();
+    String                        s;
+    JSONObject                    user = (JSONObject) Platform.getAppContext().getData("user");
+    String                        me   = user.optString("xmppid", "");
+    boolean                       isme = false;
+    Iterator<RenderableDataItem>  it   = items.iterator();
 
-    ArrayList<String> users = new ArrayList<String>(len);
-    RenderableDataItem row, item;
-    StringBuilder sb = new StringBuilder();
-    String s;
-    JSONObject user = (JSONObject) Platform.getAppContext().getData("user");
-    String me = user.optString("xmppid","");
-    boolean isme = false;
-    Iterator<RenderableDataItem> it = items.iterator();
-    while (it.hasNext()) {
+    while(it.hasNext()) {
       row = it.next();
+
       if (row.size() < 4) {
         continue;
       }
 
       final boolean small = UIScreen.isSmallScreen();
+
       item = row.get(2).copy();
       sb.setLength(0);
       sb.append("<html>").append((String) row.get(3).getValue());
-      sb.append(small ? "<br/>- " : " - ");
+      sb.append(small
+                ? "<br/>- "
+                : " - ");
       sb.append((String) item.getValue());
+
       if (!isme) {
         isme = me.equals(row.get(0).getValue());
 
@@ -179,6 +196,7 @@ public class CareTeam implements iEventHandler, iStatusListener {
           sb.append(" (Me) ");
         }
       }
+
       sb.append("</html>");
       s = sb.toString();
       item.setValue(s);
@@ -191,30 +209,32 @@ public class CareTeam implements iEventHandler, iStatusListener {
         othersList.add(item);
       }
 
-      s = commHandler == null ? null : getUserID(row);
+      s = (commHandler == null)
+          ? null
+          : getUserID(row);
 
       if (s == null) {
         continue;
       }
+
       item.setLinkedData(s);
       users.add(s);
     }
 
     aListViewer physicians = (aListViewer) fv.getWidget("physicians");
-    aListViewer others = (aListViewer) fv.getWidget("others");
+    aListViewer others     = (aListViewer) fv.getWidget("others");
 
     if (physicians != null) {
       physicians.setAll(physiciansList);
     }
 
     if (others != null) {
-
       others.setAll(othersList);
     }
+
     if (!users.isEmpty()) {
       commHandler.addStatusListener(users, this);
     }
-
   }
 
   public void onListShown(String eventName, iWidget widget, EventObject event) {
@@ -223,24 +243,35 @@ public class CareTeam implements iEventHandler, iStatusListener {
 
   public void onListChange(String eventName, iWidget widget, EventObject event) {
     if (commHandler != null) {
-      iFormViewer fv = widget.getFormViewer();
-      RenderableDataItem item = ((ListBoxViewer) widget).getSelectedItem();
-      String id = item == null ? null : (String) item.getLinkedData();
-      UserStatus status = id == null ? OFFLINE : userStatuses.get(id);
+      iFormViewer        fv     = widget.getFormViewer();
+      RenderableDataItem item   = ((ListBoxViewer) widget).getSelectedItem();
+      String             id     = (item == null)
+                                  ? null
+                                  : (String) item.getLinkedData();
+      UserStatus         status = (id == null)
+                                  ? OFFLINE
+                                  : userStatuses.get(id);
+
       if (status == null) {
         status = OFFLINE;
       }
+
       PushButtonWidget pb = (PushButtonWidget) fv.getWidget("bv.action.video_chat");
+
       if (pb != null) {
-        pb.setEnabled(commHandler.isVideoChatAvailable() && status.videoChat != Status.ONLINE);
+        pb.setEnabled(commHandler.isVideoChatAvailable() && (status.videoChat != Status.ONLINE));
       }
+
       pb = (PushButtonWidget) fv.getWidget("bv.action.audio_chat");
+
       if (pb != null) {
-        pb.setEnabled(commHandler.isVideoChatAvailable() && status.audioChat != Status.ONLINE);
+        pb.setEnabled(commHandler.isVideoChatAvailable() && (status.audioChat != Status.ONLINE));
       }
+
       pb = (PushButtonWidget) fv.getWidget("bv.action.text_chat");
+
       if (pb != null) {
-        pb.setEnabled(commHandler.isVideoChatAvailable() && status.textChat != Status.ONLINE);
+        pb.setEnabled(commHandler.isVideoChatAvailable() && (status.textChat != Status.ONLINE));
       }
     }
   }
@@ -255,22 +286,27 @@ public class CareTeam implements iEventHandler, iStatusListener {
   @Override
   public void statusChanged(aCommunicationHandler handler, String user, UserStatus status) {
     userStatuses.put(user, status);
+
     if (listViewer != null) {
-      ListBoxViewer lv = listViewer;
-      int len = lv.size();
+      ListBoxViewer lv  = listViewer;
+      int           len = lv.size();
+
       for (int i = 0; i < len; i++) {
         String id = (String) lv.get(i).getLinkedData();
-        if (id != null && id.equals(user)) {
+
+        if ((id != null) && id.equals(user)) {
           RenderableDataItem item = lv.get(i);
+
           item.setIcon(statusIcons.get(status));
           lv.repaintRow(i);
+
           if (lv.isRowSelected(i)) {
             onListChange(iConstants.EVENT_CHANGE, listViewer, null);
           }
+
           break;
         }
       }
     }
   }
-
 }

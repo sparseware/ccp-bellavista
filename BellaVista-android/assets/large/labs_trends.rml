@@ -1,6 +1,6 @@
 Form {
   name: "labsOverview"
-  bgColor: "tableHeaderBackground+15, tableHeaderBackground"
+  bgColor: "summaryBackground"
   local: false
   layout: forms
   rows: "d:g"
@@ -18,7 +18,7 @@ Form {
         autoResizeMode: none
         selectionMode: invisible
         columnSelectionAllowed: true
-        gridLineType: none
+        gridLineType: none; 
         autoSizeRowsToFit: true
         rowHeight: "3.75ln"
         showStandardColumnHeader: false

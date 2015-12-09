@@ -7,12 +7,16 @@
       "gender": "Male",
       "mrn": "BB0000001",
       "photo": "PIC-BB0000001.jpg",
-      "attending_id": "5",
-      "attending_name": "PORCELLI, ROBERT",
+      "attending": {
+	      "linkedData": "5",
+	      "value": "PORCELLI, ROBERT"
+      },
       "encounter_date": "2009-07-06T10:00",
       "encounter_reason": "BIPOLAR",
-      "location_id": "11",
-      "location": "PSYCH",
+      "location": {
+	      "linkedData": "11",
+	      "value": "PSYCH"
+      },
       "rm_bed": "802-1",
       "host_patient_id": "19",
       "facility_id": "3",

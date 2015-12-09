@@ -1,0 +1,524 @@
+325|%
+727394|/100 WBC
+238|1/2Day
+79512993|A
+678187|abs
+79513007|ACE Units
+643453|Amp
+79513017|APL Units/mL
+654648|Appl
+695322|APS
+79513025|APS Units/mL
+83581932|ARU
+678188|AUC(Carboplatin)
+685109|AUnits
+695323|AUnits/mL
+79513001|A Units/mL
+721830|Bag
+2942087|BAG(S)
+79513071|bands
+83581991|BASE PRU
+79513078|bases
+29771463|Bead
+240|Bottle
+79512831|% bound
+241|Box
+239|bpm
+678167|br/min
+2942086|BUNDLE(S)
+79513084|BUnits
+685111|CAE
+643454|Cap
+2942092|CARTONS
+2942091|CARTRIDGE
+242|Casts
+243|Cells
+79513143|cells/mcL
+695324|CFU/mL
+244|cg
+245|cL
+246|cm
+247|cm2
+248|cm3
+249|cmH20
+79513171|cmH2O/L/sec
+79513177|cMorgan
+79513158|cm/sec
+79513163|cm/sec/sec
+11548574|Consult
+79513192|containers
+685113|cP
+695327|CPM
+695328|cPU
+695329|cpy/mL
+250|Cs
+79513216|Da
+251|Day
+79512835|% deficient
+252|DegC
+253|DegF
+79513235|degrees
+79513243|delta OD
+68556683|Device
+61829378|DG
+254|dgm
+2942093|DISPENSERS
+255|dL
+79513248|dL/day
+23991788|dL/hr
+79513255|dL/min
+256|dm
+257|dm2
+669402|Dollars
+79513261|dollars/day
+79513264|dollars/hr
+79513267|dollars/min
+79513279|dollars/month
+79513284|dollars/sec
+79513287|dollars/unit
+79513291|dollars/week
+79513297|dollars/year
+258|Doses/Times
+2942095|DOZENS
+79513304|dpm
+259|Drop
+2942094|DRUMS
+79513307|dyne-sec/cm5
+260|ea
+2942097|EACH
+695330|EIU
+695331|ETU/mL
+685115|EU
+79513364|EU/24hr
+685117|EU/dL
+79513369|EU/mL
+678189|euros
+79512863|% excret
+678190|film
+727393|fL
+79513385|fl oz
+884578|Fr.
+261|ft
+262|ft2
+263|g
+28116420|g/24 hrs
+695332|g/5HR
+2944002|Gallons
+79513413|gauge
+678191|GBP
+264|g/Day
+685119|g/dL
+658657|g/kg
+658658|g/m2
+79513470|gm/210 L
+79513509|gm/EA
+79513525|gm/gm Cr
+79513531|gm/hr
+79513537|gm/kg/day
+79513544|gm/kg/hr
+79513552|gm/kg/min
+265|g/mL
+79513557|gm/L
+79513445|gm-m
+79513448|gm-m/beat
+79513452|gm-m/beat/m2
+79513560|gm/min
+79513467|gm-m/m2
+79513566|gm/spec
+685121|GPL
+79513571|GPL unit/mL
+79513577|GPL units
+678168|gum
+79512891|% hemol
+727398|%HGB
+727389|/HPF
+266|HR
+79513583|Hz
+268|in2
+267|inch
+79512895|% index
+654649|INH
+79513625|inhalers
+79512904|% inhib
+691361|ISR
+79513638|IU/day
+79513685|IU/EA
+79513718|IU/gm Hb
+79513745|IU/hr
+79513752|IU/kg/hr
+79513777|IU/min
+269|IUnits
+682727|IUnits/dL
+695333|IUnits/g
+678169|IUnits/kg
+270|IUnits/L
+678170|IUnits/m2
+685125|IUnits/mL
+685127|IV
+796998|Jar
+79513812|kb
+79513820|kbp
+79513842|kcal
+670590|Kcal/Day
+79513846|kcal/gm
+79513850|kcal/kg
+79513866|kcal/kg/day
+79513873|kcal/kg/hr
+79513895|kcal/mL
+79513902|kcal/tbsp
+79513920|kcal/total kcal
+79513926|kcal/tsp
+79513948|kDa
+614369|kelvin
+271|kg
+79514005|kg/day
+79514025|kg/hr
+79513975|kg-m
+79514046|kg/m2
+614370|kg/m3
+79514068|kg/min
+79513981|kg-m/m2
+614371|kg/sec
+673950|kits
+79513799|K.I.U./mL
+678192|kJ
+79514075|kPa
+685128|kU/L
+272|L
+79514112|L/24hr
+273|lb
+79514116|L/day
+79514159|L/hr
+685134|LIV
+79512910|% live
+79514166|L/kg
+274|L/min
+79514186|L/min/m2
+685136|log
+79514190|log10
+79514196|LogCopies/mL
+79514206|LogIU/mL
+685137|log IUnit
+673951|lozenge
+727390|/LPF
+275|L/sec
+276|m
+277|m2
+614372|m3
+614373|m3/sec
+46241756|mA
+79514217|Mb
+79514223|mcEq/L
+278|mcg
+27520581|mcg/24 hrs
+634905|mcg/cc
+279|mcg/Day
+280|mcg/dL
+79514370|mcgE1/g
+79514258|mcg/EA
+727399|mcgEq/mL
+727400|mcg/g
+727401|mcg/g CRT
+79514298|mcg/gm dry wt
+79514309|mcg/gm Hb
+281|mcg/HR
+658659|mcg/kg
+79514321|mcg/kg/day
+678171|mcg/kg/HR
+634907|mcg/kg/min
+282|mcg/L
+658660|mcg/m2
+79514326|mcg/m2/day
+727396|mcg/mg
+79514345|mcg/mg Cr
+682728|mcg/min
+283|mcg/mL
+79514360|mcg/mmol cre
+79514234|mcg N/dL
+79514365|mcg/spec
+79514242|mcg T4/dL
+678193|mCi
+678194|mCi/kg
+685412|mcIUnits/mL
+685089|#/mcL
+727402|mcL
+79512989|/mcL
+727403|mcmol
+79514426|mcmol/24hr
+685413|mcmol/Day
+727404|mcmol/dL
+727405|mcmol/g
+30461984|mcmol/g CRT
+79514648|mcmol/gm/yr
+79514654|mcmol/hr/mL
+685414|mcmol/L
+685436|mcmol/m
+727406|mcmol/mL
+79514684|mcmol/mmol
+79514693|mcmol/mol
+79514701|mcohm
+727407|mcUnits
+727408|mcUnits/mL
+79514843|mcV
+284|mEq
+79514878|mEq/24 hr
+285|mEq/Day
+79514883|mEq/dL
+79514889|mEq/EA
+79514894|mEq/hr
+670587|mEq/kg
+79514911|mEq/kg/day
+79514917|mEq/kg/hr
+79514926|mEq/kg/min
+286|mEq/L
+678172|mEq/m2
+79514986|mEq/min
+79514997|mEq/mL
+79515009|meter/sec
+287|mg
+79515017|mg %
+27520439|mg/24 hrs
+79515101|mg/2 hr
+288|mg/Day
+289|mg/dL
+79515141|mg/dL RBC
+79515148|mg/EA
+685138|mg/g
+79515161|mg/gm Cr
+79515027|mg Hb/gm
+290|mg/HR
+658661|mg/kg
+678173|mg/kg/Day
+678174|mg/kg/HR
+79515164|mg/kg/min
+685139|mg/L
+658662|mg/m2
+678175|mg/m2/Day
+79515171|mg/m2/hr
+79515032|mg-m/beat
+291|mg/min
+634906|mg/mL
+79515189|mg/mmol
+79515195|mg/mmol Cr
+61828750|mgPE
+61828783|mgPE/kg
+79515202|mg/spec
+695334|MIC
+38505683|Miles
+305|MillionUnits
+292|min
+727397|/min
+79515235|mIU/L
+695338|mIUnits
+695990|mIUnits/hr
+685560|mIUnits/mL
+293|mL
+727395|mL/2HR
+79515286|mL/beat
+79515293|mL/cm H2O
+294|mL/Day
+79515304|mL/EA
+777947|mL/Feed
+614374|mL/HR
+670588|mL/kg
+79515311|mL/kg/day
+79515316|mL/kg/hr
+79515320|mL/kg/min
+79515332|mL/L
+678176|mL/m2
+79515337|mL/m2/beat
+79515344|mL/m2/day
+79515348|mL/m2/hr
+295|mL/min
+24183877|mL/min/1.73m2
+79515352|mL/min/kg
+79515366|mL/min/SA
+79515369|mL/mL
+79515373|mL/sec
+297|mm
+79515380|MM 1stHR
+298|mm2
+299|mm3
+300|/mm3
+79515386|mm H2O
+678177|mmHg
+301|mm/HR
+302|mmol
+695339|mmol/Day
+79515470|mmol/dL
+79515484|mmol/EA
+79515492|mmol/hr
+670586|mmol/kg
+79515496|mmol/kg/day
+79515500|mmol/kg/hr
+79515504|mmol/kg/min
+685149|mmol/L
+79515522|mmol/m2
+79515527|mmol/min
+79515543|mmol/mL
+79515548|mmol/mmol
+695340|mmol/mol CRT
+79515557|mmol/spec
+695341|mol
+79515573|MoM
+303|Month(s)
+304|mOsm
+695342|mOsm/kg
+79515587|mOsm/kg H2O
+682729|mOsm/L
+685150|MPL
+79515599|MPL unit/mL
+695343|MPOL
+79515605|MPS unit/mL
+79515611|msec
+79515618|MU/m2
+79515628|munit/day
+79515640|munit/gm Hb
+79515643|munit/gm protein
+79515659|munit/hr
+79515665|munit/kg
+79515671|munit/kg/day
+79515674|munit/kg/hr
+79515681|munit/kg/min
+79515695|munit/min
+79515699|munit/mL
+724775|mUnits
+695344|mUnits/g
+695345|mUnits/L
+296|mUnits/mL
+46241766|mV
+79512918|% NaCl
+79512922|% neg ctrl
+306|ng
+79515704|ng/24 hr
+79515710|ng/day
+307|ng/dL
+79515718|ng/gm
+79515727|ng/hr
+678178|ng/kg
+79515746|ng/kg/day
+79515771|ng/kg/hr
+79515812|ng/kg/min
+695346|ng/L
+685228|ng/L/HR
+79515865|ng/m2
+79515871|ng/m2/day
+79515877|ng/m2/hr
+79515883|ng/m2/min
+678195|ng/mcL
+79515887|ng/min
+308|ng/mL
+134991004|ng/mL (D-DU)
+695347|ng/mL/HR
+309|nm
+695349|nmol
+79515908|nmol BCE
+695350|nmol/Day
+695351|nmol/dL
+79516031|nmol/dL GF
+695352|nmol/g
+79516123|nmol/hr/mg
+79516132|nmol/hr/mL
+685231|nmol/L
+79516167|nmol/mg Cr
+695354|nmol/mL
+695348|nmol/mmol
+79516207|nmol/mmol Cr
+79516212|nmol/sec/L
+79512929|% normal
+678196|OD
+310|oz
+2942099|PACKAGES
+673952|packet
+79516220|packs
+2944003|Pair(s)
+654651|patch
+79516249|pbpm
+685232|pg
+311|pg/dL
+312|pg/mL
+685233|pH
+2942098|PIECE
+79516284|pints
+77050611|pledget
+695356|pmol
+695963|pmol/g
+79516326|pmol/L
+79516336|ppb
+695964|ppm
+79512934|% precip
+79516374|protein/kg
+83581977|PRU
+1006458|psi
+643455|puff
+685234|ratio
+2944004|Rolls
+673953|scoops
+695965|SD
+313|sec
+2944009|Sets
+695966|SI
+2944010|Sleeve
+77095473|SP
+796969|sponge
+643456|spray
+777948|stick
+678197|stones
+777949|strip
+654650|supp
+79516400|syringes
+314|tab
+79516403|tbsp
+315|TbUnits
+22373195|Test
+79516411|thou/mcL
+79516432|times
+79516435|titer
+79516441|torr
+79512947|% total
+79516446|Tot/Mech
+2944011|Tray
+79516452|TSI index
+79516458|tsp
+721829|Tube
+695967|TV
+79516470|"unit/10^10"
+79516473|"unit/10^10 cells"
+79516484|unit/dL
+79516493|unit/EA
+79516519|unit/gm prot
+79516525|unit/kg/min
+79516530|unit/m2/day
+79516541|unit/mL RBC
+79516553|unit/mmol cre
+614376|Units
+317|Units/2hr
+695968|Units/Day
+695969|Units/g
+685403|Units/gHgb
+678179|Units/hr
+670589|Units/kg
+678180|Units/kg/Day
+678181|Units/kg/HR
+319|Units/L
+678182|Units/m2
+614375|Units/m3
+79516538|Units/min
+320|Units/mL
+79516560|unknown unit
+321|vial
+669403|visit
+79512952|% vol
+884607|watts
+326|watts/cm2
+322|wbc
+323|Week(s)
+79516566|"x10^12/L"
+682730|"X 10^3"
+79516575|"x10^3/mcL"
+727391|"X 10^3/mm3"
+79516581|"x10^6/mcL"
+79516585|"x10^6/mL"
+727392|"X 10^6/mm3"
+79516591|"x10^9/L"
+324|Year(s)

@@ -1,0 +1,125 @@
+SplitPane {
+  splitProportions {
+    .5
+  }
+  regions {
+    {
+      borders {
+        shadow
+      }
+      horizontalFill: preferred
+      viewer {
+        GroupBox {
+          layout: forms
+          rows: "d,d:g"
+          columns: "d:g"
+          widgets {
+            {
+              TreeTable {
+                name: "ordersTable"
+                verticalAlign: full
+                bgColor: "defaultBackground"
+                bounds {
+                  x: "0"
+                  y: "1"
+                }
+                dataURL: "/hub/main/orders/list" [ columnSeparator="^", ldSeparator="|" ]
+                templateName: "bv.table.data"
+                gridLineColor: "white"
+                alternatingHighlightType: none
+                parentItemsSelectable: false
+                popupMenu {
+                  {
+                    name: "bv.action.order_rewrite"
+                  } 
+                  {
+                    name: "bv.action.order_sign"
+                  } 
+                  {
+                    name: "bv.action.order_flag"
+                  } 
+                  {
+                    name: "bv.action.order_hold"
+                  } 
+                  {
+                    name: "bv.action.order_discontinue"
+                  }
+                } [ onAction="class:Orders#onPopupMenu", cancelButtonText="{%value[%contextMenuRow,1]}"]
+              } [ onCreated="class:oe.Ordering#onTableCreated", onAction="class:oe.Ordering#onTableAction" ]
+            }
+            {
+              ToolBar {
+                name: "tableToolbar"
+                borders {
+                  empty [ insets="2,2,2,2" ]
+                }
+                bounds {
+                  x: "0"
+                  y: "0"
+                }
+                actAsFormViewer: false
+                widgets {
+                  {
+                    PushButton {
+                      name: "tools"
+                      enabled: false
+                      templateName: "bv.pushbutton.menu"
+                      value: "{resource:bv.text.tools}"
+                      icon: "resource:bv_icon_tools"
+                      actionType: popup_menu
+                    }
+                  }
+                  {
+                    Bean {
+                      name: "Rare.bean.separator"
+                    }
+                  }
+                  {
+                    ComboBox {
+                      name: "categories"
+                      bounds {
+                        width: "-1" [ min="17ch" ]
+                      }
+                      templateName: "bv.combobox.filter"
+                      emptyText {
+                        value: "{resource:bv.text.no_orders}"
+                        font {
+                          style: italic
+                        }
+                      }
+                    } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder" ]
+                  }
+                  {
+                    Bean {
+                      name: "Rare.bean.expander"
+                    }
+                  }
+                  {
+                    Bean {
+                      name: "Rare.bean.separator"
+                    }
+                  }
+                  {
+                    PushButton {
+                      enabled: false
+                      templateName: "bv.pushbutton.toolbar"
+                      value: "{resource:bv.text.dictate_orders}"
+                      icon: "resource:bv_icon_dictate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      borders {
+        shadow
+      }
+      name: "orderingContentViewer"
+      dataURL: "/oe/new_order.rml"
+    }
+  }
+} [ onConfigure="class:oe.Ordering#onConfigure", onDispose="class:oe.Ordering#onDispose" ]

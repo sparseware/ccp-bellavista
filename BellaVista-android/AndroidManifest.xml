@@ -19,7 +19,7 @@
             android:value="lib:application.rml" />
         <activity
             android:name="com.sparseware.bellavista.MainActivity"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize"
             android:launchMode="singleTask" >
             <intent-filter>

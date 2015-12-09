@@ -2,41 +2,17 @@ Form {
   name: "labsOverview"
   local: false
   layout: forms
-  rows: "d,d:g"
-  columns: "d:g"
+  rows: "d:g"
+  columns: "10dlu,d:g"
+  bgColor: "summaryBackground"
   widgets {
-    {
-      ToolBar {
-        borders {
-          matte [ insets="0,0,1,0" ]
-        }
-        bounds {
-          x: "0"
-          y: "0"
-        }
-        actAsFormViewer: false
-        widgets {
-          {
-            Label {
-              value: "{resource:bv.text.lab_trends}"
-              textHAlignment: center
-            } [ onConfigure="class:MainEventHandler#onMakeExpander" ]
-          }
-          {
-            PushButton {
-              templateName: "bv.pushbutton.fullscreen"
-            } [ onConfigure="class:Actions#onConfigureFullscreen" ]
-          }
-        }
-      }
-    }
     {
       Table {
         name: "trendsTable"
-        bgColor: "lightBackground"
+		bgColor: "summaryBackground"
         bounds {
-          x: "0"
-          y: "1"
+          x: "1"
+          y: "0"
         }
         local: false
         autoResizeMode: none
@@ -58,7 +34,7 @@ Form {
             rendererClass: "FormsLayoutRenderer" [ options="rows=\"d,d,d,d:g\",columns=\"2dluX,d,2dluX,d,2dluX,d:g\"" ]
           }
         }
-      } [ onCreated="class:Labs#onTrendsTableCreated", onConfigure="class:Labs#onTrendsTableConfigure" ]
+      } [ onConfigure="class:Labs#onTrendsTableConfigure", onCreated="class:Labs#onTrendsTableCreated" ]
     }
   }
 }

@@ -1,12 +1,9 @@
 Form {
-  borders {
-    line [ padForArc="false", cornerArc="8" ]
-  }
   verticalAlign: full
   horizontalAlign: full
   bgColor: "defaultBackground"
   layout: forms
-  rows: "f:d,f:d,4dlu,14dlu,4dlu,f:d"
+  rows: "f:d,4dluY,14dluY,4dluY,f:d"
   columns: "d:g"
   widgets {
     {
@@ -15,32 +12,46 @@ Form {
         horizontalAlign: center
         bounds {
           x: "0"
-          y: "5"
+          y: "4"
         }
         layout: forms
         rows: "d:g,4dlu"
-        columns: "4dlu,d,2dlu,d,4dlu"
+        columns: "4dluX,d,2dluX,d,2dluX,d,4dluX"
         widgets {
           {
             PushButton {
               name: "okButton"
               bounds {
-                x: "1"
+                x: "5"
                 y: "0"
                 width: "10ch"
               }
               enabled: false
+              templateName: "bv.button"
               value: "{resource:Rare.text.ok}"
             } [ onAction="class:PickList#onOkAction" ]
           }
           {
             PushButton {
-              name: "cancelButton"
+              name: "noneButton"
               bounds {
                 x: "3"
                 y: "0"
                 width: "10ch"
               }
+              templateName: "bv.button"
+              visible: false
+            } [ onAction="class:PickList#onNoneAction" ]
+          }
+          {
+            PushButton {
+              name: "cancelButton"
+              bounds {
+                x: "1"
+                y: "0"
+                width: "10ch"
+              }
+              templateName: "bv.button"
               value: "{resource:Rare.text.cancel}"
             } [ onAction="class:PickList#onCancelAction" ]
           }
@@ -51,7 +62,7 @@ Form {
       Line {
         bounds {
           x: "0"
-          y: "3"
+          y: "2"
         }
         contentPadding {
           left: "0"
@@ -68,7 +79,7 @@ Form {
         bgColor: "tableBackground"
         bounds {
           x: "0"
-          y: "1"
+          y: "0"
           width: "10ch"
         }
         handleFirstFocusSelection: false
@@ -78,43 +89,6 @@ Form {
         singleClickActionEnabled: true
         rowHeight: "2ln"
       } [ onAction="class:PickList#onListAction" ]
-    }
-    {
-      GroupBox {
-        bgColor: "defaultGradient"
-        bounds {
-          x: "0"
-          y: "0"
-        }
-        layout: forms
-        rows: "d"
-        columns: "4dlu,d:g,4dlu,d,4dlu"
-        widgets {
-          {
-            Label {
-              name: "titleLabel"
-              verticalAlign: full
-              bounds {
-                x: "1"
-                y: "0"
-                width: "17ch"
-                height: "2.5ln"
-              }
-              templateName: "bv.label.dialogTitle"
-              textHAlignment: left
-            }
-          }
-          {
-            PushButton {
-              bounds {
-                x: "3"
-                y: "0"
-              }
-              templateName: "bv.pushbutton.close"
-            } [ onAction="class:PickList#onCancelAction" ]
-          }
-        }
-      }
     }
   }
 }

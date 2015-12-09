@@ -44,10 +44,8 @@ Form {
           {
             ComboBox {
               name: "filters"
-              bounds {
-                width: "-1" [ min="17ch" ]
-              }
               enabled: false
+              horizontalAlign: full
               templateName: "bv.combobox.filter"
             } [ onWillExpand="class:MainEventHandler#handleComboBoxMenuBorder", onWillCollapse="class:MainEventHandler#handleComboBoxMenuBorder",
                 onConfigure="class:Notes#onFiltersConfigure" ]

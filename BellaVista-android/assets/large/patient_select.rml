@@ -168,7 +168,7 @@ SplitPane {
                           name: "orders"
                         }
                         {
-                          name: "consults"
+                          name: "procedures"
                         }
                         {
                           name: "notes"
@@ -243,7 +243,7 @@ SplitPane {
                     }
                   }
                 }
-              } [ onFling="class:PatientSelect#onFormHeaderFlung" ]
+              } 
             }
             {
               Table {

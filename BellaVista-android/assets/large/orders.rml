@@ -24,11 +24,32 @@ SplitPane {
                 }
                 dataURL: "/hub/main/orders/list" [ columnSeparator="^", ldSeparator="|" ]
                 templateName: "bv.table.data"
+                parentItemsSelectable: false
+                popupMenu {
+                  {
+                    name: "bv.action.order_new"
+                  } 
+                  {
+                    name: "bv.action.order_rewrite"
+                  } 
+                  {
+                    name: "bv.action.order_sign"
+                  } 
+                  {
+                    name: "bv.action.order_flag"
+                  } 
+                  {
+                    name: "bv.action.order_hold"
+                  } 
+                  {
+                    name: "bv.action.order_discontinue"
+                  }
+                } [ onAction="class:Orders#onPopupMenu", cancelButtonText="{%value[%contextMenuRow,1]}"]
                 columns {
                   {
                     title: " "
                     renderDetail: icon_only
-                    width: "22!"
+                    width: "26!"
                   }
                   {
                     title: "{resource:bv.text.order}"
@@ -39,9 +60,11 @@ SplitPane {
                     title: "{resource:bv.text.directions}"
                     width: "8ch"
                     wordWrap: true
+                    iconPosition: right_justified
                   }
                 }
-              } [ onCreated="class:Orders#onTableCreated", onAction="class:Orders#onTableAction" ]
+              } [ onCreated="class:Orders#onTableCreated", onAction="class:Orders#onTableAction",onShown="class:Orders#onTableShown",
+                  onHidden="class:Orders#onTableHidden" ]
             }
             {
               ToolBar {

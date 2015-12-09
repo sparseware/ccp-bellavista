@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.Date;
@@ -24,19 +25,19 @@ public class ClinicalValue {
   protected String name;
   protected Date   date;
   protected String value;
-  private String attributName;
+  private String   attributName;
 
   public ClinicalValue(String id, String name) {
     super();
-    this.id = id;
+    this.id   = id;
     this.name = name;
   }
 
   public ClinicalValue(String id, String name, Date date, String value) {
     super();
-    this.id = id;
-    this.name = name;
-    this.date = date;
+    this.id    = id;
+    this.name  = name;
+    this.date  = date;
     this.value = value;
   }
 
@@ -46,7 +47,6 @@ public class ClinicalValue {
 
   public String getID() {
     return id;
-
   }
 
   public String getName() {
@@ -58,10 +58,11 @@ public class ClinicalValue {
   }
 
   public void update(Date date, String value) {
-    if (this.date == null || date.after(this.date) || date.equals(this.date)) {
+    if ((this.date == null) || date.after(this.date) || date.equals(this.date)) {
       this.value = value;
-      this.date = date;
-      if(attributName!=null) {
+      this.date  = date;
+
+      if (attributName != null) {
         Platform.getAppContext().putData(attributName, value);
       }
     }

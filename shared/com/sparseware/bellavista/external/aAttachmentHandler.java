@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista.external;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import com.sparseware.bellavista.Document.DocumentItem;
 /**
  * This class provides a base implementation for attachment handlers
  * that handle special document attachment types
- * 
+ *
  * @author Don DeCoteau
  *
  */
@@ -36,12 +37,11 @@ public abstract class aAttachmentHandler {
   /**
    * Creates a new instance
    */
-  public aAttachmentHandler() {
-  }
+  public aAttachmentHandler() {}
 
   /**
    * Creates a viewer to render the specified attachment
-   * 
+   *
    * @param parent
    *          the parent for the viewer
    * @param document
@@ -51,11 +51,12 @@ public abstract class aAttachmentHandler {
    * @param cb
    *          the callback to be called when the viewer is created or on failure
    */
-  public abstract void createViewer(iContainer parent, Document document, DocumentItem attachment, iFunctionCallback cb);
+  public abstract void createViewer(iContainer parent, Document document, DocumentItem attachment,
+                                    iFunctionCallback cb);
 
   /**
    * Gets a list of widgets to be placed on the document toolbar
-   * 
+   *
    * @param viewer
    *          the viewer for the attachment (created by this handler)
    * @return
@@ -67,5 +68,4 @@ public abstract class aAttachmentHandler {
    * and all resources released.
    */
   public abstract void dispose();
-
 }

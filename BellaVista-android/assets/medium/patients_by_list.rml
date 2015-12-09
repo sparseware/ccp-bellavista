@@ -8,9 +8,6 @@ GroupBox {
     {
       ComboBox {
         name: "listCategories"
-        borders {
-          none
-        }
         bgColor: "defaultGradient"
         bounds {
           x: "0"

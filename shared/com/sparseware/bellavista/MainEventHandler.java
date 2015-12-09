@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.beans.PropertyChangeEvent;
@@ -33,6 +34,7 @@ import com.appnativa.rare.spot.Widget;
 import com.appnativa.rare.ui.ActionBar;
 import com.appnativa.rare.ui.BorderUtils;
 import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.UIColor;
 import com.appnativa.rare.ui.UIImage;
 import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.iCollapsible;
@@ -55,6 +57,7 @@ import com.appnativa.rare.viewer.aListViewer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iFormViewer;
 import com.appnativa.rare.viewer.iViewer;
+import com.appnativa.rare.widget.ComboBoxWidget;
 import com.appnativa.rare.widget.PushButtonWidget;
 import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
@@ -66,13 +69,12 @@ public class MainEventHandler implements iEventHandler {
   UILineBorder         lineBorder;
   static CharSequence  actionBarTitle;
   static iPlatformIcon actionBarIcon;
-
   public MainEventHandler() {
+    
   }
 
   @Override
-  public void onEvent(String eventName, iWidget widget, EventObject event) {
-  }
+  public void onEvent(String eventName, iWidget widget, EventObject event) {}
 
   public void onLoginFormEnter(String eventName, iWidget widget, EventObject event) {
     if (widget.getName().equals("password")) {
@@ -80,19 +82,31 @@ public class MainEventHandler implements iEventHandler {
     } else if (widget.getName().equals("username")) {
       widget.getFormViewer().getWidget("password").requestFocus();
     }
+  }
 
+  public void onResolveComboStrings(String eventName, iWidget widget, EventObject event) {
+    ComboBoxWidget cb  = (ComboBoxWidget) widget;
+    int            len = cb.size();
+
+    for (int i = 0; i < len; i++) {
+      RenderableDataItem row = cb.get(i);
+
+      row.setValue(cb.expandString(row.toString()));
+    }
   }
 
   public void onFlagsListAction(String eventName, iWidget widget, EventObject event) {
     final aListViewer lv = (aListViewer) widget;
-    String id = lv.getSelectionDataAsString();
-    aWidget tw = (aWidget) widget.getFormViewer().getWidget("flagText");
-    if (id != null && !id.equals(tw.getLinkedData())) {
+    String            id = lv.getSelectionDataAsString();
+    aWidget           tw = (aWidget) widget.getFormViewer().getWidget("flagText");
+
+    if ((id != null) &&!id.equals(tw.getLinkedData())) {
       try {
         ActionLink l = Platform.getWindowViewer().createActionLink("/hub/main/patient/flag/" + id + ".html");
+
         tw.setDataLink(l);
         tw.setLinkedData(id);
-      } catch (MalformedURLException e) {
+      } catch(MalformedURLException e) {
         Utils.handleError(e);
       }
     }
@@ -116,38 +130,46 @@ public class MainEventHandler implements iEventHandler {
    * Called to login when using a wearable
    */
   public void onCardStackLogin(String eventName, iWidget widget, EventObject event) {
-    iContainer fv = (iContainer) Platform.getWindowViewer().getViewer("logonPanel");
-    String pin = fv.getWidget("pinValue").getValueAsString();
-    Server server = Utils.getDefaultServer();
+    iContainer fv     = (iContainer) Platform.getWindowViewer().getViewer("logonPanel");
+    String     pin    = fv.getWidget("pinValue").getValueAsString();
+    Server     server = Utils.getDefaultServer();
+
     Utils.signIn(widget, pin, pin, server);
   }
 
   public void onCreatedFlagsPopup(String eventName, iWidget widget, EventObject event) {
     Viewer cfg = (Viewer) ((DataEvent) event).getData();
+
     if (UIScreen.isLargeScreen()) {
       Widget w = cfg.findWidget("bv.action.fullscreen");
+
       w.visible.setValue(false);
     } else {
       Widget w = cfg.findWidget("okButton");
+
       w.visible.setValue(false);
     }
   }
 
   public void onConfigureFlagsPopup(String eventName, iWidget widget, EventObject event) {
-    iDataCollection dc = CollectionManager.getInstance().getCollection("flags");
+    iDataCollection                dc   = CollectionManager.getInstance().getCollection("flags");
     Collection<RenderableDataItem> rows = dc.getItemData(widget, false);
-    iContainer fv = widget.getContainerViewer();
-    final aListViewer lv = (aListViewer) fv.getWidget("flagsList");
+    iContainer                     fv   = widget.getContainerViewer();
+    final aListViewer              lv   = (aListViewer) fv.getWidget("flagsList");
+
     lv.clear();
+
     for (RenderableDataItem row : rows) {
       RenderableDataItem item = row.get(0);
+
       lv.addEx(item);
     }
+
     lv.refreshItems();
-    if (!lv.isEmpty()) { //should never be at this point
+
+    if (!lv.isEmpty()) {    //should never be at this point
       lv.setSelectedIndex(0);
       Platform.invokeLater(new Runnable() {
-
         @Override
         public void run() {
           lv.fireActionForSelected();
@@ -157,21 +179,22 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void popWorkspaceViewer(String eventName, iWidget widget, EventObject event) {
-    Utils.popWorkspaceViewer();
+    Utils.popViewerStack();
   }
 
   public void goBackInStackPane(String eventName, iWidget widget, EventObject event) {
     final StackPaneViewer sp = Utils.getStackPaneViewer(widget);
+
     if (sp != null) {
       final int pos = sp.getEntryCount() - 1;
+
       if (pos > -1) {
-
         sp.switchTo(pos - 1, new iFunctionCallback() {
-
           @Override
           public void finished(boolean canceled, Object returnValue) {
-            if (!sp.isDisposed() && sp.getEntryCount() == pos + 1) {
+            if (!sp.isDisposed() && (sp.getEntryCount() == pos + 1)) {
               iViewer v = sp.removeViewer(pos);
+
               if (v != null) {
                 v.dispose();
               }
@@ -183,20 +206,22 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void moveListItemDown(String eventName, iWidget widget, EventObject event) {
-    String list = ((ActionEvent) event).getQueryString();
-    iFormViewer fv = widget.getFormViewer();
-    aListViewer lb = (aListViewer) fv.getWidget(list);
-    int n = lb.getSelectedIndex();
-    int len = lb.size();
-    if (n > -1 && n < len - 2) {
+    String      list = ((ActionEvent) event).getQueryString();
+    iFormViewer fv   = widget.getFormViewer();
+    aListViewer lb   = (aListViewer) fv.getWidget(list);
+    int         n    = lb.getSelectedIndex();
+    int         len  = lb.size();
+
+    if ((n > -1) && (n < len - 2)) {
       lb.clearSelection();
       lb.swap(n, n + 1);
       lb.setSelectedIndex(n + 1);
+
       if (n == len - 1) {
         widget.setEnabled(false);
       }
-      fv.getWidget("upButton").setEnabled(true);
 
+      fv.getWidget("upButton").setEnabled(true);
     }
   }
 
@@ -207,28 +232,48 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void moveListItemUp(String eventName, iWidget widget, EventObject event) {
-    String list = ((ActionEvent) event).getQueryString();
-    iFormViewer fv = widget.getFormViewer();
-    aListViewer lb = (aListViewer) fv.getWidget(list);
-    int n = lb.getSelectedIndex();
+    String      list = ((ActionEvent) event).getQueryString();
+    iFormViewer fv   = widget.getFormViewer();
+    aListViewer lb   = (aListViewer) fv.getWidget(list);
+    int         n    = lb.getSelectedIndex();
+
     if (n > 0) {
       lb.clearSelection();
       lb.swap(n, n - 1);
       lb.setSelectedIndex(n - 1);
+
       if (n == 1) {
         widget.setEnabled(false);
       }
+
       fv.getWidget("downButton").setEnabled(true);
     }
   }
 
   public void requestFocus(String eventName, iWidget widget, EventObject event) {
     String name = ((EventBase) event).getQueryString();
-    if ("username".equals(name) && Platform.isTouchDevice()) {
-      return;
+
+    if (name == null) {
+      widget.requestFocus();
+    } else {
+      iFormViewer fv = widget.getFormViewer();
+
+      fv.getWidget(name).requestFocus();
     }
-    iFormViewer fv = widget.getFormViewer();
-    fv.getWidget(name).requestFocus();
+  }
+
+  public void requestFocusIfKeyboardPresent(String eventName, iWidget widget, EventObject event) {
+    if (Platform.hasPhysicalKeyboard()) {
+      String name = ((EventBase) event).getQueryString();
+
+      if (name == null) {
+        widget.requestFocus();
+      } else {
+        iFormViewer fv = widget.getFormViewer();
+
+        fv.getWidget(name).requestFocus();
+      }
+    }
   }
 
   public void onConfigureMainView(String eventName, iWidget widget, EventObject event) {
@@ -236,14 +281,22 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void handleComboBoxMenuBorder(String eventName, iWidget widget, EventObject event) {
-
     if (lineBorder == null) {
-      lineBorder = new UILineBorder(UILineBorder.getDefaultLineColor());
+      UIColor c = Platform.getUIDefaults().getColor("Rare.ComboBox.borderColor");
+
+      if (c == null) {
+        c = UILineBorder.getDefaultLineColor();
+      }
+
+      lineBorder = new UILineBorder(c);
     }
+
     iPlatformBorder b = (iPlatformBorder) widget.getAttribute("_border");
+
     if (b == null) {
       b = new UICompoundBorder(lineBorder, BorderUtils.TWO_POINT_EMPTY_BORDER);
     }
+
     widget.setAttribute("_border", widget.getBorder());
     widget.setBorder(b);
   }
@@ -262,10 +315,12 @@ public class MainEventHandler implements iEventHandler {
    * device
    */
   public void onPageNavigatorCreated(String eventName, iWidget widget, EventObject event) {
-    GroupBox cfg = (GroupBox) ((DataEvent) event).getData();
-    boolean touch = Platform.isTouchDevice();
+    GroupBox cfg   = (GroupBox) ((DataEvent) event).getData();
+    boolean  touch = Platform.isTouchDevice();
+
     for (String s : Arrays.asList("firstPage", "nextPage", "previousPage", "lastPage")) {
       Widget w = cfg.findWidget(s, false);
+
       if (touch) {
         cfg.removeWidget(w);
       } else {
@@ -274,37 +329,47 @@ public class MainEventHandler implements iEventHandler {
     }
   }
 
-  public void onRegionFling(String eventName, iWidget widget, EventObject event) {
-
-  }
+  public void onRegionFling(String eventName, iWidget widget, EventObject event) {}
 
   public void onTabPaneCreated(String eventName, iWidget widget, EventObject event) {
-    ActionPath p = Utils.getActionPath(false);
-    String tab = p == null ? null : p.shift();
-    if (tab != null) {
-      int index = -1;
-      TabPane cfg = (TabPane) ((DataEvent) event).getData();
-      int len = cfg.tabs.size();
-      for (int i = 0; i < len; i++) {
-        if (((Tab) cfg.tabs.getEx(i)).name.equals(tab)) {
-          index = i;
-          break;
+    ActionPath p     = Utils.getActionPath(false);
+    String     tab   = (p == null)
+                       ? null
+                       : p.shift();
+    int        index = -1;
+    JSONObject ti    = (JSONObject) Platform.getAppContext().getData("tabsInfo");
+    TabPane    cfg   = (TabPane) ((DataEvent) event).getData();
+    int        len   = cfg.tabs.size();
+
+    for (int i = 0; i < len; i++) {
+      Tab t = (Tab) cfg.tabs.getEx(i);
+
+      if ((tab != null) && t.name.equals(tab)) {
+        index = i;
+      } else if (t.name.equals("notes")) {
+        if (!ti.optBoolean("hasNotes", true)) {
+          t.enabled.setValue(false);
         }
-      }
-      if (index != -1) {
-        cfg.selectedIndex.setValue(index);
+      } else if (t.name.equals("procedures")) {
+        if (!ti.optBoolean("hasProcedures", true)) {
+          t.enabled.setValue(false);
+        }
       }
     }
 
+    if (index != -1) {
+      cfg.selectedIndex.setValue(index);
+    }
   }
 
   /**
    * Makes the specified widget an expanding widget in a toolbar. The parent of
    * the widget is assumed to be a toolbar viewer
-   * 
+   *
    */
   public void onMakeExpander(String eventName, iWidget widget, EventObject event) {
     ToolBarViewer tb = (ToolBarViewer) widget.getParent();
+
     tb.setAsExpander(widget, true);
   }
 
@@ -323,8 +388,9 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void onInfobarOrientationWillChange(String eventName, iWidget widget, EventObject event) {
-    Object config = ((PropertyChangeEvent) event).getNewValue();
-    iContainer fv = widget.getContainerViewer();
+    Object     config = ((PropertyChangeEvent) event).getNewValue();
+    iContainer fv     = widget.getContainerViewer();
+
     adjustInfobar(fv, UIScreen.isWiderForConfiguration(config));
   }
 
@@ -336,14 +402,19 @@ public class MainEventHandler implements iEventHandler {
     fv.getWidget("location").setVisible(visible);
     fv.getWidget("code_status").setVisible(visible);
     fv.getWidget("code_status_label").setVisible(visible);
+
     iWidget dr = fv.getWidget("provider_label");
-    String s = Platform.getResourceAsString(visible ? "bv.text.provider" : "bv.text.hcp");
+    String  s  = Platform.getResourceAsString(visible
+            ? "bv.text.provider"
+            : "bv.text.hcp");
+
     dr.setValue(s + ":");
     fv.update();
   }
 
   public void onCollapsiblePaneToggle(String eventName, iWidget widget, EventObject event) {
     iCollapsible pane = (iCollapsible) Platform.getPlatformComponent(event.getSource());
+
     if (pane != null) {
       pane.setShowTitle(pane.isExpanded());
     }
@@ -351,10 +422,12 @@ public class MainEventHandler implements iEventHandler {
 
   public void onFormHeaderFlung(String eventName, iWidget widget, EventObject event) {
     FlingEvent fling = (FlingEvent) event;
-    float vy = fling.getYVelocity();
-    float vx = fling.getXVelocity();
+    float      vy    = fling.getYVelocity();
+    float      vx    = fling.getXVelocity();
+
     if (Math.abs(vy) > Math.abs(vx)) {
       ActionBar ab = Platform.getWindowViewer().getActionBar();
+
       if (vy < 0) {
         if (ab.isVisible()) {
           ab.setVisible(false);
@@ -367,10 +440,31 @@ public class MainEventHandler implements iEventHandler {
     }
   }
 
+  public void onFinishedLoadingSummaryTable(String eventName, iWidget widget, EventObject event) {
+    TableViewer table=(TableViewer) widget;
+    if(table.isEmpty()) {
+      String resource = ((EventBase) event).getQueryString();
+      if(resource==null || resource.length()==0) {
+        resource="bv.text.no_data_found";
+      }
+      RenderableDataItem row=table.createRow(2, true);
+      row.setEnabled(false);
+      RenderableDataItem item=row.get(0);
+      item.setEnabled(false);
+      item.setColumnSpan(-1);
+      item.setValue(Platform.getResourceAsString(resource));
+      item.setFont(table.getFont().deriveItalic());
+      table.add(row);
+    }
+    else {
+      table.sort(0, false);
+    }
+  }
   public void onFlingInfoBar(String eventName, iWidget widget, EventObject event) {
-    FlingEvent fe = (FlingEvent) event;
-    float y = fe.getYVelocity();
+    FlingEvent   fe   = (FlingEvent) event;
+    float        y    = fe.getYVelocity();
     iCollapsible pane = widget.getViewer().getCollapsiblePane();
+
     if (pane != null) {
       if (y < 0) {
         pane.collapsePane();
@@ -383,23 +477,27 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void onConfigureInfoBar(String eventName, iWidget widget, EventObject event) {
-    iFormViewer fv = widget.getFormViewer();
+    iFormViewer           fv = widget.getFormViewer();
     final ImagePaneViewer ip = (ImagePaneViewer) fv.getWidget("photo");
+
     if (ip != null) {
       JSONObject patient = (JSONObject) Platform.getAppContext().getData("patient");
-      String s;
+      String     s;
+
       ip.setImage(Platform.getAppContext().getResourceAsImage("bv.icon.no_photo"));
       s = patient.optString("photo");
-      if (s != null && s.length() > 0) {
+
+      if ((s != null) && (s.length() > 0)) {
         try {
           ActionLink link = Utils.createPhotosActionLink(s, false);
+
           if (link != null) {
             Platform.getWindowViewer().getContent(ip, link, ActionLink.ReturnDataType.IMAGE, new iFunctionCallback() {
-
               @Override
               public void finished(boolean canceled, Object returnValue) {
-                if (returnValue instanceof ObjectHolder && !ip.isDisposed()) {
+                if ((returnValue instanceof ObjectHolder) &&!ip.isDisposed()) {
                   ObjectHolder oh = (ObjectHolder) returnValue;
+
                   if (oh.value instanceof UIImage) {
                     ip.setImage((UIImage) oh.value);
                   }
@@ -407,18 +505,23 @@ public class MainEventHandler implements iEventHandler {
               }
             });
           }
-        } catch (MalformedURLException e) {
+        } catch(MalformedURLException e) {
           e.printStackTrace();
         }
       }
+
       if (!UIScreen.isWider()) {
         adjustInfobar(fv, false);
       }
     }
+
     CollectionManager.getInstance().updateUI();
+
     PushButtonWidget pb = (PushButtonWidget) fv.getWidget("bv.action.flags");
-    if (pb != null && pb.isEnabled()) {
+
+    if ((pb != null) && pb.isEnabled()) {
       JSONObject info = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
+
       if (info.optBoolean("autoShowFlags", false)) {
         pb.click();
       }
@@ -426,15 +529,16 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void signIn(String eventName, iWidget widget, EventObject event) {
-    iFormViewer fv = widget.getFormViewer();
-    String password = fv.getWidget("password").getValueAsString();
+    iFormViewer fv       = widget.getFormViewer();
+    String      password = fv.getWidget("password").getValueAsString();
+
     if (Utils.isApplicationLocked()) {
       Utils.resignIn(widget, password);
     } else {
       String username = fv.getWidget("username").getValueAsString();
-      Server server = (Server) fv.getWidget("server").getSelectionData();
+      Server server   = (Server) fv.getWidget("server").getSelectionData();
+
       Utils.signIn(widget, username, password, server);
     }
   }
-
 }

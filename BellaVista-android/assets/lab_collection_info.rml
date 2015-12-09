@@ -43,7 +43,7 @@ GridPane {
                   y: "0"
                 }
                 templateName: "bv.pushbutton.fullscreen"
-              } [ onConfigure="class:Actions#onConfigureFullscreen" ]
+              } 
             }
           }
         }

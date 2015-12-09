@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.sparseware.bellavista;
 
 import java.util.Collections;
@@ -50,53 +51,65 @@ import com.appnativa.util.StringCache;
 import com.appnativa.util.json.JSONObject;
 
 public abstract class aChartHandler {
-  public static float         MIN_ANGLED_LABEL_HEIGHT = UIScreen.toPlatformPixels(400, Unit.POINT, false);
+  public static float MIN_ANGLED_LABEL_HEIGHT = UIScreen.toPlatformPixels(400, Unit.POINT, false);
+  static final String TOTAL_POINT_LABELS_SIZE = "maxValueCharCount";
 
-  static final String         TOTAL_POINT_LABELS_SIZE = "maxValueCharCount";
   /** the info to use to configure the handler */
-  protected JSONObject        chartsInfo;
-  /** holds a mapping of chart types for chart item item keys */
-  private Map<String, String> chartTypeMap            = new LinkedHashMap<String, String>(4);
-  /** the column to use for chart name */
-  protected int               nameColumn;
-  /** the column to use for chart dates */
-  protected int               dateColumn;
-  /** the column to use for chart values */
-  protected int               valueColumn;
-  /** name of the class that will handle chart events */
-  protected String            eventHandlerClass;
-  /** the number of points to page by when zooming */
-  protected int               chartPageSize           = 7;
-  /** the number of points to initially display */
-  protected int               chartPoints             = 7;
+  protected JSONObject chartsInfo;
 
-  public aChartHandler(String eventHandlerClass, JSONObject chartsInfo, int nameColumn, int dateColumn, int valueColumn) {
-    this.chartsInfo = chartsInfo;
-    this.nameColumn = nameColumn;
-    this.dateColumn = dateColumn;
-    this.valueColumn = valueColumn;
+  /** holds a mapping of chart types for chart item item keys */
+  private Map<String, String> chartTypeMap = new LinkedHashMap<String, String>(4);
+
+  /** the column to use for chart name */
+  protected int nameColumn;
+
+  /** the column to use for chart dates */
+  protected int dateColumn;
+
+  /** the column to use for chart values */
+  protected int valueColumn;
+
+  /** name of the class that will handle chart events */
+  protected String eventHandlerClass;
+
+  /** the number of points to page by when zooming */
+  protected int chartPageSize = 7;
+
+  /** the number of points to initially display */
+  protected int chartPoints = 7;
+
+  public aChartHandler(String eventHandlerClass, JSONObject chartsInfo, int nameColumn, int dateColumn,
+                       int valueColumn) {
+    this.chartsInfo        = chartsInfo;
+    this.nameColumn        = nameColumn;
+    this.dateColumn        = dateColumn;
+    this.valueColumn       = valueColumn;
     this.eventHandlerClass = eventHandlerClass;
   }
 
   public boolean canZoomIn(ChartViewer cv) {
-    ChartDefinition cd = cv.getChartDefinition();
-    int count = cd.getSeriesCount();
+    ChartDefinition cd    = cv.getChartDefinition();
+    int             count = cd.getSeriesCount();
+
     for (int n = 0; n < count; n++) {
       if (cd.getSeries(n).size() > chartPageSize) {
         return true;
       }
     }
+
     return false;
   }
 
   public boolean canZoomOut(ChartViewer cv) {
-    ChartDefinition cd = cv.getChartDefinition();
-    int count = cd.getSeriesCount();
+    ChartDefinition cd    = cv.getChartDefinition();
+    int             count = cd.getSeriesCount();
+
     for (int n = 0; n < count; n++) {
       if (cd.getSeries(n).isFiltered()) {
         return true;
       }
     }
+
     return false;
   }
 
@@ -116,13 +129,15 @@ public abstract class aChartHandler {
    * @return the new chart viewer
    */
   public ChartViewer createChart(iFormViewer fv, String key, int viewers, ChartDataItem series) {
-    Chart cfg = new Chart();
+    Chart       cfg = new Chart();
     ChartViewer viewer;
+
     cfg.setEventHandler("onFling", "class:" + eventHandlerClass + "#onChartFling");
     cfg.setEventHandler("onScale", "class:" + eventHandlerClass + "#onChartScale");
     cfg.setEventHandler("onResize", "class:" + eventHandlerClass + "#onChartResize");
 
     int len = series.size();
+
     if (viewers == 1) {
       cfg.font.size.setValue("-2");
       cfg.getPlotReference().labels.setValue(Plot.CLabels.linked_data);
@@ -130,6 +145,7 @@ public abstract class aChartHandler {
       cfg.font.size.setValue("-4");
       cfg.domainAxis.visible.setValue(false);
     }
+
     cfg.domainAxis.fgColor.setValue("darkBorder");
     cfg.rangeAxis.fgColor.setValue("darkBorder");
     cfg.domainAxis.spot_setAttribute("labelColor", "Rare.Chart.foreground");
@@ -139,14 +155,18 @@ public abstract class aChartHandler {
     cfg.setHorizontalAlignment(Chart.CHorizontalAlign.full);
     viewer = new ChartViewer(fv);
     configureChart(viewer, cfg, key, series);
+
     if (len > chartPoints) {
       for (int i = len - chartPoints; i < len; i++) {
         series.addIndexToFilteredList(i);
       }
     }
+
     viewer.configure(cfg);
     viewer.addSeries(series);
+
     String range = (String) series.getLinkedData();
+
     if (range != null) {
       viewer.addRangeMarker(range, '-');
     }
@@ -154,64 +174,86 @@ public abstract class aChartHandler {
     viewer.setLinkedData(key);
     viewer.rebuildChart();
     viewer.setPlotValuesVisible(false);
+
     return viewer;
   }
 
-  public LinkedHashMap<String, ChartDataItem> createSeries(List<RenderableDataItem> rows, Map<String, String> keys, int rangeColumn) {
-    int dateCol = dateColumn;
-    int nameCol = nameColumn;
-    int valueCol = valueColumn;
-    int len = rows.size();
-    RenderableDataItem row, item;
+  public LinkedHashMap<String, ChartDataItem> createSeries(List<RenderableDataItem> rows, Map<String, String> keys,
+          int rangeColumn) {
+    int                                  dateCol  = dateColumn;
+    int                                  nameCol  = nameColumn;
+    int                                  valueCol = valueColumn;
+    int                                  len      = rows.size();
+    RenderableDataItem                   row, item;
     LinkedHashMap<String, ChartDataItem> seriesMap = new LinkedHashMap<String, ChartDataItem>(keys.size());
+
     for (int i = 0; i < len; i++) {
-      row = rows.get(i);
+      row  = rows.get(i);
       item = row.get(nameCol);
-      String key = (String) item.getLinkedData();
+
+      String key  = (String) item.getLinkedData();
       String type = keys.get(key);
+
       if (type == null) {
         continue;
       }
+
       ChartDataItem series = seriesMap.get(key);
+
       if (series == null) {
         String s = (String) item.getValue();
+
         series = ChartViewer.createSeries(s);
         series.setTitle(s);
         seriesMap.put(key, series);
+
         if (rangeColumn > -1) {
           s = (String) row.get(rangeColumn).getValue();
-          if (s != null && s.length() > 0) {
+
+          if ((s != null) && (s.length() > 0)) {
             series.setLinkedData(s);
           }
         }
-
       }
+
       Date date = (Date) row.get(dateCol).getValue();
+
       item = row.get(valueCol);
+
       String value = (String) item.getValue();
-      Number num = createNumber(type, value);
+      Number num   = createNumber(type, value);
+
       if (num != null) {
         ChartDataItem di;
+
         series.add(di = ChartViewer.createSeriesValue(date, num));
         di.setForeground(item.getForeground());
+
         int n = value.indexOf(' ');
+
         if (n != -1) {
           value = value.substring(0, n);
         }
+
         di.setLinkedData(value);
       }
     }
+
     return seriesMap;
   }
 
   public void adjustForSize(ChartViewer cv) {
-    boolean cardstack=Utils.isCardStack();
-    int oangle=cv.getDomainAxis().getAngle();
-    boolean oshow=cv.getChartDefinition().isShowPlotLabels();
-    int angle=cardstack? 0 : getDomainAngleBasedOnPlotSize(cv);
-    boolean show=shouldPlotLabelsBeVisible(cv);
-    if(show!=oshow || angle!=oangle) {
-      ChartDefinition cd=cv.getChartDefinition();
+    boolean cardstack = Utils.isCardStack();
+    int     oangle    = cv.getDomainAxis().getAngle();
+    boolean oshow     = cv.getChartDefinition().isShowPlotLabels();
+    int     angle     = cardstack
+                        ? 0
+                        : getDomainAngleBasedOnPlotSize(cv);
+    boolean show      = shouldPlotLabelsBeVisible(cv);
+
+    if ((show != oshow) || (angle != oangle)) {
+      ChartDefinition cd = cv.getChartDefinition();
+
       cd.setShowPlotLabels(show);
       cd.getDomainAxis().setAngle(angle);
       cv.rebuildChart();
@@ -219,8 +261,9 @@ public abstract class aChartHandler {
   }
 
   public int getDomainAngleBasedOnPlotSize(ChartViewer cv) {
-    ChartDefinition cd = cv.getChartDefinition();
-    UIDimension size = cv.getPlotAreaSize();
+    ChartDefinition cd   = cv.getChartDefinition();
+    UIDimension     size = cv.getPlotAreaSize();
+
     if (cv.getCustomProperty("bv_dont_mess_with_angle") == null) {
       if (size.height < MIN_ANGLED_LABEL_HEIGHT) {
         return 0;
@@ -228,35 +271,43 @@ public abstract class aChartHandler {
         return -90;
       }
     }
+
     return cd.getDomainAxis().getAngle();
   }
 
   protected boolean shouldPlotLabelsBeVisible(ChartViewer cv) {
-    ChartDefinition cd = cv.getChartDefinition();
-    UIDimension size = cv.getPlotAreaSize();
+    ChartDefinition cd   = cv.getChartDefinition();
+    UIDimension     size = cv.getPlotAreaSize();
+
     if (cd.getSeriesCount() == 1) {
-      ChartDataItem series = cd.getSeries(0);
-      Integer pointWidth = (Integer) series.getCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE);
+      ChartDataItem series     = cd.getSeries(0);
+      Integer       pointWidth = (Integer) series.getCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE);
+
       if (pointWidth == null) {
-        UIFontMetrics fm = UIFontMetrics.getMetrics(cv.getFont());
-        int len = series.size();
-        int count = 0;
-        int w=0;
-        int mw=0;
+        UIFontMetrics fm    = UIFontMetrics.getMetrics(cv.getFont());
+        int           len   = series.size();
+        int           count = 0;
+        int           w     = 0;
+        int           mw    = 0;
+
         for (int i = 0; i < len; i++) {
           String s = (String) series.get(i).getLinkedData();
+
           if (s != null) {
-            w=fm.stringWidth(s);
+            w     = fm.stringWidth(s);
             count += w;
-            if(w>mw) {
-              mw=w;
+
+            if (w > mw) {
+              mw = w;
             }
           }
         }
-        count += mw*6;
+
+        count      += mw * 6;
         pointWidth = count;
-       series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, pointWidth);
+        series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, pointWidth);
       }
+
       return size.width > pointWidth;
     } else {
       return false;
@@ -264,38 +315,56 @@ public abstract class aChartHandler {
   }
 
   public ChartDataItem createSeries(List<RenderableDataItem> rows, String key, int rangeColumn) {
-    String type = getChartType(key);
-    Map<String, String> map = chartTypeMap;
+    String              type = getChartType(key);
+    Map<String, String> map  = chartTypeMap;
+
     map.clear();
     map.put(key, type);
+
     return createSeries(rows, map, rangeColumn).get(key);
   }
 
-  public ChartDataItem createSeriesFromSpreadSheet(TableViewer table, String key, RenderableDataItem row, int rangeColumn) {
-    int len = table.getColumnCount();
-    String s = (String) row.get(0).getValue();
+  public ChartDataItem createSeriesFromSpreadSheet(TableViewer table, String key, RenderableDataItem row,
+          int rangeColumn) {
+    int           len    = table.getColumnCount();
+    String        s      = (String) row.get(0).getValue();
     ChartDataItem series = ChartViewer.createSeries(s);
+
     series.setTitle(s);
+
     if (rangeColumn > -1) {
       s = (String) row.get(rangeColumn).getValue();
-      if (s != null && s.length() > 0) {
+
+      if ((s != null) && (s.length() > 0)) {
         series.setLinkedData(s);
       }
     }
+
     String type = getChartType(key);
+
     for (int i = 0; i < len; i++) {
       Column col = table.getColumn(i);
-      if (!col.isVisible() || !(col.getLinkedData() instanceof Date)) {
+
+      if (!col.isVisible() ||!(col.getLinkedData() instanceof Date)) {
         continue;
       }
-      Date date = (Date) col.getLinkedData();
+
+      Date               date = (Date) col.getLinkedData();
       RenderableDataItem item = row.get(i);
-      s = item == null ? null : (String) item.getValue();
-      Number num = s == null ? null : createNumber(type, s);
+
+      s = (item == null)
+          ? null
+          : (String) item.getValue();
+
+      Number num = (s == null)
+                   ? null
+                   : createNumber(type, s);
+
       if (num != null) {
         series.add(ChartViewer.createSeriesValue(date, num));
       }
     }
+
     return series;
   }
 
@@ -313,7 +382,7 @@ public abstract class aChartHandler {
 
   public void setChartPageSize(int chartPageSize) {
     this.chartPageSize = chartPageSize;
-    this.chartPoints = chartPageSize;
+    this.chartPoints   = chartPageSize;
   }
 
   public void setChartPoints(int chartPoints) {
@@ -321,36 +390,46 @@ public abstract class aChartHandler {
   }
 
   public void updateZoomButtons(iContainer fv) {
-    boolean zoomin = false;
-    boolean zoomout = false;
-    int min = 0;
-    int max = 0;
-    ChartViewer cv;
+    boolean         zoomin  = false;
+    boolean         zoomout = false;
+    int             min     = 0;
+    int             max     = 0;
+    ChartViewer     cv;
     StackPaneViewer sp = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
-    iViewer v = sp.getActiveViewer();
+    iViewer         v  = sp.getActiveViewer();
+
     if (v instanceof ChartViewer) {
       cv = (ChartViewer) v;
+
       if (canZoomIn(cv)) {
         zoomin = true;
       }
+
       if (canZoomOut(cv)) {
         zoomout = true;
       }
+
       NumberRange r = getZoomRange(cv);
+
       max = r.getHighValue().intValue();
       min = r.getLowValue().intValue();
     } else if (v != null) {
       List<iWidget> widgets = v.getContainerViewer().getWidgetList();
+
       for (iWidget w : widgets) {
         if (w instanceof ChartViewer) {
           cv = (ChartViewer) w;
+
           if (canZoomIn(cv)) {
             zoomin = true;
           }
+
           if (canZoomOut(cv)) {
             zoomout = true;
           }
+
           NumberRange r = getZoomRange(cv);
+
           if (r.getHighValue().intValue() > max) {
             max = r.getHighValue().intValue();
             min = r.getLowValue().intValue();
@@ -358,46 +437,58 @@ public abstract class aChartHandler {
         }
       }
     }
+
     iWidget w = fv.getWidget("zoomin");
+
     if (w != null) {
       w.setEnabled(zoomin);
     }
+
     w = fv.getWidget("zoomout");
+
     if (w != null) {
       w.setEnabled(zoomout);
     }
+
     w = fv.getWidget("chartLabel");
+
     if (w != null) {
       String s;
+
       if (max == 0) {
         s = "";
       } else {
-        s = Platform.getWindowViewer().getString("bv.text.chart_point_range", StringCache.valueOf(min), StringCache.valueOf(max));
+        s = Platform.getWindowViewer().getString("bv.text.chart_point_range", StringCache.valueOf(min),
+                StringCache.valueOf(max));
       }
+
       w.setValue(s);
     }
   }
 
   protected NumberRange getZoomRange(ChartViewer cv) {
-    ChartDefinition cd = cv.getChartDefinition();
-    int count = cd.getSeriesCount();
-    int max = 0;
-    int min = 0;
+    ChartDefinition cd    = cv.getChartDefinition();
+    int             count = cd.getSeriesCount();
+    int             max   = 0;
+    int             min   = 0;
+
     for (int n = 0; n < count; n++) {
       ChartDataItem series = cd.getSeries(n);
-      int nmax = series.getUnfilteredList().size();
+      int           nmax   = series.getUnfilteredList().size();
+
       if (nmax > max) {
         max = nmax;
         min = series.size();
       }
     }
+
     return new NumberRange(min, max);
   }
 
   /**
    * Handles zooming in/out of charts. This is accomplished by simply filtering
    * the list of points to only contain the points we want to show
-   * 
+   *
    * @param cv
    *          the chart viewer
    * @param in
@@ -409,38 +500,47 @@ public abstract class aChartHandler {
    * @return true if the chart was zoomed; false otherwise
    */
   public boolean zoom(ChartViewer cv, boolean in, boolean update) {
-    ChartDefinition cd = cv.getChartDefinition();
-    int count = cd.getSeriesCount();
-    int cp = 0;
-    boolean zoomed = false;
+    ChartDefinition cd     = cv.getChartDefinition();
+    int             count  = cd.getSeriesCount();
+    int             cp     = 0;
+    boolean         zoomed = false;
+
     for (int n = 0; n < count; n++) {
-      ChartDataItem series = cd.getSeries(n);
-      int len = series.size();
-      boolean filtered = series.isFiltered();
+      ChartDataItem series   = cd.getSeries(n);
+      int           len      = series.size();
+      boolean       filtered = series.isFiltered();
+
       if (in) {
         if (len > chartPageSize) {
           int start = len - chartPageSize;
+
           if (start < chartPageSize) {
             start = chartPageSize;
           }
+
           series.unfilter();
-          len = series.size();
+          len   = series.size();
           start = len - start;
+
           for (int i = start; i < len; i++) {
             series.addIndexToFilteredList(i);
           }
+
           series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, null);
           zoomed = true;
         }
       } else if (filtered) {
         int clen = series.getUnfilteredList().size();
-        int end = clen - len;
-        len += chartPageSize;
+        int end  = clen - len;
+
+        len         += chartPageSize;
         chartPoints += chartPageSize;
+
         if (end <= 0) {
           series.unfilter();
         } else {
           int start = Math.max(0, end - chartPageSize);
+
           if (start == 0) {
             series.unfilter();
           } else {
@@ -449,23 +549,28 @@ public abstract class aChartHandler {
             }
           }
         }
+
         series.setCustomProperty(aChartHandler.TOTAL_POINT_LABELS_SIZE, null);
         zoomed = true;
       }
+
       cp = Math.max(cp, series.size());
     }
+
     if (zoomed) {
-      cp = (cp + chartPageSize - 1) / chartPageSize;
+      cp          = (cp + chartPageSize - 1) / chartPageSize;
       chartPoints = Math.max(cp, 1) * chartPageSize;
       cd.getDomainAxis().setAngle(getDomainAngleBasedOnPlotSize(cv));
       cd.setShowPlotLabels(shouldPlotLabelsBeVisible(cv));
       cv.rebuildChart();
+
       if (update) {
         updateZoomButtons(cv.getFormViewer());
       }
     } else if (update) {
       Utils.showShakeAnimation(cv);
     }
+
     return zoomed;
   }
 
@@ -473,7 +578,7 @@ public abstract class aChartHandler {
    * Handles zooming in/out of charts. This is accomplished by simply filtering
    * the list of points to only contain the points we want to show. The method
    * will look for all chart viewers and zoom them
-   * 
+   *
    * @param fv
    *          the form viewer containing chart viewers the chart viewer
    * @param in
@@ -482,12 +587,14 @@ public abstract class aChartHandler {
    */
   public void zoom(iContainer fv, boolean in) {
     StackPaneViewer sp = (StackPaneViewer) Platform.getWindowViewer().getViewer("chartPaneStack");
-    iViewer v = sp.getActiveViewer();
+    iViewer         v  = sp.getActiveViewer();
+
     if (v instanceof ChartViewer) {
       zoom((ChartViewer) v, in, true);
     } else {
-      boolean zoomed = false;
+      boolean       zoomed  = false;
       List<iWidget> widgets = v.getContainerViewer().getWidgetList();
+
       for (iWidget w : widgets) {
         if (w instanceof ChartViewer) {
           if (zoom((ChartViewer) w, in, false)) {
@@ -495,6 +602,7 @@ public abstract class aChartHandler {
           }
         }
       }
+
       if (zoomed) {
         updateZoomButtons(fv);
       } else {
@@ -516,11 +624,11 @@ public abstract class aChartHandler {
    *          the key
    */
   protected void configureChart(iWidget context, Chart cfg, String key, ChartDataItem series) {
-
-    JSONObject o = chartsInfo.optJSONObject(key);
-    Map<String, String> attrs = o == null ? Collections.EMPTY_MAP : o.getObjectMap();
-
-    boolean gray = Utils.isCardStack() || Utils.getPreferences().getBoolean("gray_charts", false);
+    JSONObject          o     = chartsInfo.optJSONObject(key);
+    Map<String, String> attrs = (o == null)
+                                ? Collections.EMPTY_MAP
+                                : o.getObjectMap();
+    boolean             gray  = Utils.isCardStack() || Utils.getPreferences().getBoolean("gray_charts", false);
 
     cfg.showLegends.setValue(false);
     cfg.autoSort.setValue(true);
@@ -535,12 +643,18 @@ public abstract class aChartHandler {
 
     String s = attrs.get("domainContext");
 
-    cfg.domainAxis.valueContext.setValue((s == null) ? "|M/d@HH:mm' '" : s);
+    cfg.domainAxis.valueContext.setValue((s == null)
+            ? "|M/d@HH:mm' '"
+            : s);
     s = attrs.get("domain");
-    if(Utils.isCardStack()) {
-      s="";
+
+    if (Utils.isCardStack()) {
+      s = "";
     }
-    cfg.domainAxis.spot_setAttribute("label", (s == null) ? "Date" : s);
+
+    cfg.domainAxis.spot_setAttribute("label", (s == null)
+            ? "Date"
+            : s);
     s = attrs.get("chartType");
 
     if (s == null) {
@@ -557,10 +671,15 @@ public abstract class aChartHandler {
     }
 
     if (gray) {
-      s = (cfg.chartType.intValue() == Chart.CChartType.line) ? "lineChartColor_g" : "barChartColor_g";
+      s = (cfg.chartType.intValue() == Chart.CChartType.line)
+          ? "lineChartColor_g"
+          : "barChartColor_g";
     } else {
-      s = (cfg.chartType.intValue() == Chart.CChartType.line) ? "lineChartColor" : "barChartColor";
+      s = (cfg.chartType.intValue() == Chart.CChartType.line)
+          ? "lineChartColor"
+          : "barChartColor";
     }
+
     cfg.rangeAxis.setValue(getRangeTitle(series.getTitle()));
     cfg.rangeAxis.getGridCellReference().bgColor.setValue(s);
 
@@ -572,6 +691,7 @@ public abstract class aChartHandler {
 
     if (s != null) {
       ItemDescription marker = new ItemDescription();
+
       marker.value.setValue(s);
       cfg.getRangeMarkersReference().add(marker);
     }
@@ -590,35 +710,44 @@ public abstract class aChartHandler {
   }
 
   protected String getChartType(String key) {
-
     JSONObject o = chartsInfo.optJSONObject(key);
-    return o == null ? "line" : o.optString("chartType", "line");
+
+    return (o == null)
+           ? "line"
+           : o.optString("chartType", "line");
   }
 
   protected String getRangeTitle(String title) {
-
     JSONObject o = chartsInfo.optJSONObject("shortNamesMap");
-    return o == null ? title : o.optString(title, title);
+
+    return (o == null)
+           ? title
+           : o.optString(title, title);
   }
 
   protected static Number createNumber(String type, String value) {
     Number num;
+
     value = value.trim();
+
     if (type.startsWith("range")) {
       int n = value.indexOf('/');
+
       if (n != -1) {
         num = new NumberRange(new SNumber(value.substring(n + 1).trim()), new SNumber(value.substring(0, n)));
       } else {
         n = value.indexOf('-');
+
         if (n == -1) {
           return null;
         }
+
         num = new NumberRange(new SNumber(value.substring(0, n)), new SNumber(value.substring(n + 1).trim()));
       }
     } else {
       num = new SNumber(value);
     }
+
     return num;
   }
-
 }

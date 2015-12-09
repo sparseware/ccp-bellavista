@@ -3,7 +3,7 @@ GroupBox {
   verticalAlign: full
   horizontalAlign: full
   layout: forms
-  rows: "f:d,d,d,d,d,4dluY,d:g,d"
+  rows: "f:d,d,d,d,4dluY,d:g,d"
   columns: "d:g"
   widgets {
     {
@@ -43,38 +43,29 @@ GroupBox {
       } [ onAction="class:Settings#onCheckBoxAction" ]
     }
     {
-      Line {
-        bounds {
-          x: "0"
-          y: "4"
-        }
-      }
-    }
-    {
       ListBox {
         name: "otherOptions"
+        borders {
+          matte [ insets="1,0,0,0" ]
+        }
         bgColor: "transparent"
         bounds {
           x: "0"
-          y: "6"
+          y: "5"
         }
         dataURL:<< 
          1|bv.text.settings.manage_servers
          2|bv.text.settings.enter_pin
-        >> [ inline="true", ldSeparator="|" ]
+                    >> [ inline="true", ldSeparator="|" ]
         itemDescription {
           iconPosition: right_justified
-          gridCell {
-            borders {
-              matte [ insets="0,0,1,0" ]
-            }
-          }
           icon: "resource:bv.icon.paging_next"
         }
-        showDividerLine: false
+        showDividerLine: true
+        rowHeight: "2ln"
         singleClickActionEnabled: true
-      } [ onFinishedLoading="class:Settings#onFinishedLoadingList", onAction="class:Settings#onOtherOptionsAction",
-          onHidden="class:MainEventHandler#clearSelection" ]
+      } [ onFinishedLoading="class:Settings#onFinishedLoadingList", onHidden="class:MainEventHandler#clearSelection",
+          onAction="class:Settings#onOtherOptionsAction" ]
     }
   }
 } [ onConfigure="class:Settings#onConfigureBasicSettings" ]
