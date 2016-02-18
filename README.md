@@ -17,8 +17,8 @@ The client has a demo mode which allows you to tests out its UI and functionalit
 
 ##Latest News
 ###17 Feb 2016
-* Support for direct access to FHIR servers added, see the FHIR section in the [Working with the Client](Configuring) page
-* Documented how to test the Bluetooth Beacon support, see the Bluetooth Beacons section in the [Working with the Client](Configuring) page
+* Support for direct access to FHIR servers added, see the FHIR section in the [Working with the Client](https://github.com/sparseware/ccp-bellavista/wiki/Configuring) page
+* Documented how to test the Bluetooth Beacon support, see the Bluetooth Beacons section in the [Working with the Client](https://github.com/sparseware/ccp-bellavista/wiki/Configuring) page
 * Experimental Order Entry workflow added, log into the 'Local Demo' server, choose a patient and then click on the 'New Orders' button on the action bar
 * iOS version available for testing for the next 60 days via Apple's beta testing program. Send an email to <bvbeta1@sparseware.com> to get a copy. This version includes the real-time vital signs (numerics and waveforms) functionality, demonstrating how integration would work in the real world.
 
