@@ -28,9 +28,11 @@ The client has a demo mode which allows you to tests out its UI and functionalit
 Please see the [WiKi](https://github.com/sparseware/ccp-bellavista/wiki) for screenshots and design information
 
 ##Binaries
+Some platform binaries are available in the release section of the repo.
+
 * iOS - You can compile your own version from the repo or you can send an email to <bvbeta1@sparseware.com> and if there is currently a version available via Apple's TestFlight beta testing program, you will be added as a tester. You need iOS version 8 or later to participate in the beta testing program, version 7+ if you compile the application yourself. 
-* Android - Available in the repo here. You need Android version 4.42 or later
-* Desktop - Available in the repo here. You need Java 1.8.0_72 (on you Mac or PC) or newer
+* Android - Available in the repo and can be downloaded directly to your Android device from [here](https://github.com/sparseware/ccp-bellavista/releases/download/v0.9.5/bellavista-android-0.9.5.apk). You need Android version 4.4.2 or later
+* Desktop - Available in the repo can be downloaded directly to your Mac or PC device from [here](https://github.com/sparseware/ccp-bellavista/releases/download/v0.9.5/bellavista-desktop-0.9.5.jar). You need Java 1.8.0_72 (on you Mac or PC) or newer
 
 
 ##Development Requirements
