@@ -70,10 +70,10 @@ public class MainActivity extends com.appnativa.rare.platform.android.MainActivi
      * specify the correct URL in order use the live assets when running in the
      * emulator
      */
-    if (isRunningOnEmulator() || isUsingDebuggingBridge()) {
-
-      System.setProperty("Rare.applicationURL", "http://192.168.1.51/apps/BellaVista/BellaVista-android/assets/application.rml");
-    }
+//    if (isRunningOnEmulator() || isUsingDebuggingBridge()) {
+//
+//      System.setProperty("Rare.applicationURL", "http://192.168.1.51/apps/BellaVista/BellaVista-android/assets/application.rml");
+//    }
   }
   @Override
   protected void showSplashScreen() {
