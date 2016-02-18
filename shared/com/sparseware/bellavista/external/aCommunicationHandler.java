@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.appnativa.util.IdentityArrayList;
+import com.appnativa.util.json.JSONObject;
 
 /**
  * This class provides a base implementation for a communication handler that
@@ -65,65 +66,64 @@ public abstract class aCommunicationHandler {
   /**
    * Changes the status of the local user
    *
-   * @param user
-   *          the user
+   * @param id the id of the user
    * @param status
    *          the new status
    */
-  public abstract void changeLocalUserStatus(String user, UserStatus status);
+  public abstract void changeLocalUserStatus(String id, UserStatus status);
 
   /**
    * Gets the status of a user
    *
-   * @param user
+   * @param id the id of the user
    * @return the user's status
    */
-  public abstract UserStatus getUserStatus(String user);
+  public abstract UserStatus getUserStatus(String id);
 
   /**
    * Initiates an audio chat with the specified user
    *
-   * @param user
-   *          the user
+   * @param user the user's profile information
    */
-  public void initiateAudioChat(String user) {}
+  public void initiateAudioChat(JSONObject user) {}
 
   /**
    * Initiates a text chat with the specified user
    *
-   * @param user
-   *          the user
+   * @param user the user's profile information
    */
-  public void initiateTextChat(String user) {}
+  public void initiateTextChat(JSONObject user) {}
 
   /**
    * Initiates a video chat with the specified user
    *
-   * @param user
-   *          the user
+   * @param user the user's profile information
    */
-  public void initiateVideoChat(String user) {}
+  public void initiateVideoChat(JSONObject user) {}
 
   /**
    * Returns whether of not audio chatting is available
    *
+   * @param user the user's profile information
    * @return true if it is; false otherwise
    */
-  public abstract boolean isAudioChatAvailable();
+  public abstract boolean isAudioChatAvailable(JSONObject user);
 
   /**
    * Returns whether of not text chatting is available
    *
+   * @param user the user's profile information
    * @return true if it is; false otherwise
    */
-  public abstract boolean isTextChatAvailable();
+  public abstract boolean isTextChatAvailable(JSONObject user);
 
   /**
    * Returns whether of not video chatting is available
    *
+   * @param user the user's profile information
    * @return true if it is; false otherwise
    */
-  public abstract boolean isVideoChatAvailable();
+  public abstract boolean isVideoChatAvailable(JSONObject user);
 
   /**
    * Removes the specified for receiving notifications from any users
@@ -179,14 +179,13 @@ public abstract class aCommunicationHandler {
   /**
    * Adds a status listener for a user
    *
-   * @param user
-   *          the user
+   * @param id the id of the user
    * @param listener
    *          the listener
    */
-  protected void addStatusListener(String user, iStatusListener listener) {
+  protected void addStatusListener(String id, iStatusListener listener) {
     if (listenerMap == null) {
-      Object o = listenerMap.get(user);
+      Object o = listenerMap.get(id);
 
       if (o == listener) {
         return;
@@ -197,7 +196,7 @@ public abstract class aCommunicationHandler {
       }
 
       if (o == null) {
-        listenerMap.put(user, listener);
+        listenerMap.put(id, listener);
       } else if (o instanceof List) {
         ((List) o).add(listener);
       } else {
@@ -205,10 +204,10 @@ public abstract class aCommunicationHandler {
 
         list.add(o);
         list.add(listener);
-        listenerMap.put(user, list);
+        listenerMap.put(id, list);
       }
 
-      registerInterest(user, o != null);
+      registerInterest(id, o != null);
     }
   }
 
@@ -319,10 +318,9 @@ public abstract class aCommunicationHandler {
   /**
    * Called when there are no listeners interested in updates about this user
    *
-   * @param user
-   *          the user
+   * @param id the id of the user
    */
-  protected void unregisterInterest(String user) {}
+  protected void unregisterInterest(String id) {}
 
   /**
    * Status listener interface

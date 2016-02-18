@@ -19,4 +19,5 @@
 -(void) dispose;
 -(BOOL) wasAccessGranted;
 -(BOOL) isAccessPending;
+-(void) requestAuthorization;
 @end

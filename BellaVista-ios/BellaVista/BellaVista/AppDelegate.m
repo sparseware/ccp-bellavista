@@ -67,9 +67,9 @@
    * un-comment this code and specify the correct URL
    * in order use the live assets when launched via XCode
    */
-  if([RAREAPApplication amIBeingDebugged]) {
-    arguments = [NSArray arrayWithObject: @"http://192.168.1.50/apps/BellaVista/BellaVista-android/assets/application.rml"];
-  }
+//  if([RAREAPApplication amIBeingDebugged]) {
+//    arguments = [NSArray arrayWithObject: @"http://192.168.1.51/apps/BellaVista/BellaVista-android/assets/application.rml"];
+//  }
 
   if(!arguments){
     arguments = [NSArray arrayWithObject: @"lib:assets/application.rml"];

@@ -16,32 +16,11 @@
 
 package com.sparseware.bellavista;
 
-/**
- * This provides a core set of functionality for managing results for display The data is assumed to be returned is
- * reverse chronological order (newest values first). The middle-ware should
- * enforce this constraint.
- *
- * @author Don DeCoteau
- */
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map.Entry;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aWorkerTask;
-import com.appnativa.rare.iConstants;
 import com.appnativa.rare.converters.DateTimeConverter;
 import com.appnativa.rare.converters.iDataConverter;
+import com.appnativa.rare.iConstants;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.ItemDescription;
@@ -52,7 +31,7 @@ import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.UIColor;
 import com.appnativa.rare.ui.UIFont;
 import com.appnativa.rare.ui.UIScreen;
-import com.appnativa.rare.ui.iPlatformIcon;
+import com.appnativa.rare.ui.UISoundHelper;
 import com.appnativa.rare.ui.chart.ChartDataItem;
 import com.appnativa.rare.ui.effects.iTransitionAnimator;
 import com.appnativa.rare.ui.event.ActionEvent;
@@ -60,6 +39,7 @@ import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.FlingEvent;
 import com.appnativa.rare.ui.event.ScaleEvent;
 import com.appnativa.rare.ui.event.iActionListener;
+import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.util.SubItemComparator;
 import com.appnativa.rare.viewer.ChartViewer;
 import com.appnativa.rare.viewer.GroupBoxViewer;
@@ -69,6 +49,7 @@ import com.appnativa.rare.viewer.TableViewer;
 import com.appnativa.rare.viewer.ToolBarViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
+import com.appnativa.rare.viewer.iFormViewer;
 import com.appnativa.rare.viewer.iTarget;
 import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.PushButtonWidget;
@@ -82,9 +63,38 @@ import com.appnativa.util.StringCache;
 import com.appnativa.util.iFilterableList;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
+
 import com.sparseware.bellavista.ActionPath.iActionPathSupporter;
 
-public abstract class aResultsManager extends aEventHandler implements iActionPathSupporter {
+/**
+ * This provides a core set of functionality for managing results for display The data is assumed to be returned is
+ * reverse chronological order (newest values first). The middle-ware should
+ * enforce this constraint.
+ *
+ * @author Don DeCoteau
+ */
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
+/**
+ * This is the base class for managing patient
+ * results. 
+ * 
+ * @author Don DeCoteau
+ *
+ */
+public abstract class aResultsManager extends aEventHandler implements iActionPathSupporter, iDataPagingSupport {
   public static int     DATE_POSITION           = 0;
   public static int     NAME_POSITION           = 1;
   public static int     VALUE_POSITION          = 2;
@@ -136,10 +146,34 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   /** manages chartable items traversal */
   protected ChartableItemsManager chartableItemsManager;
   protected ActionLink            dataLink;
+  protected ListPager             pager = new ListPager();
 
   public aResultsManager(String namePrefix, String scriptClassName) {
     this.namePrefix      = namePrefix;
     this.scriptClassName = scriptClassName;
+  }
+
+  @Override
+  public void changePage(boolean next, iWidget nextPageWidget, iWidget previousPageWidget) {
+    ActionLink link = null;
+
+    if (next) {
+      link = pager.next();
+    } else {
+      link = pager.previous();
+    }
+
+    if (link == null) {    //should not happen
+      if (next) {
+        nextPageWidget.setEnabled(false);
+      } else {
+        previousPageWidget.setEnabled(false);
+      }
+
+      UISoundHelper.beep();
+    } else {
+      parseDataURL(dataTable, link, true);
+    }
   }
 
   public void changeView(String eventName, iWidget widget, EventObject event) {
@@ -173,7 +207,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       if (len == 1) {
         table.addParsedRow(rows.get(0));
       } else {
-        table.addParsedRow(createNoDataRow(table));
+        table.addParsedRow(createNoDataRow(table, null));
       }
 
       table.finishedParsing();
@@ -341,19 +375,19 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   }
 
   public void onFirstPage(String eventName, iWidget widget, EventObject event) {
-    changePage(widget, false, true);
+    changeSpreadsheetPage(widget, false, true);
   }
 
   public void onLastPage(String eventName, iWidget widget, EventObject event) {
-    changePage(widget, true, true);
+    changeSpreadsheetPage(widget, true, true);
   }
 
   public void onNextPage(String eventName, iWidget widget, EventObject event) {
-    changePage(widget, true, false);
+    changeSpreadsheetPage(widget, true, false);
   }
 
   public void onPreviousPage(String eventName, iWidget widget, EventObject event) {
-    changePage(widget, false, false);
+    changeSpreadsheetPage(widget, false, false);
   }
 
   /**
@@ -378,9 +412,14 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     Table      cfg  = (Table) de.getData();
     ActionLink link = new ActionLink(widget, cfg.dataURL);
 
+    link.setRowInfoSeparator(Utils.riSeparator);
     cfg.dataURL.spot_clear();    // clear it out so that the widget does not try to
     // load it
     dataTable = (TableViewer) widget;
+
+    iFormViewer fv = dataTable.getFormViewer();
+
+    fv.setAttribute("data_paging_support", this);
     parseDataURL((aWidget) widget, link, true);
     dataLink = link;
   }
@@ -487,7 +526,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
    */
   protected void addCurrentPathID(ActionPath path) {}
 
-  protected void changePage(iWidget widget, boolean forward, boolean jump) {
+  protected void changeSpreadsheetPage(iWidget widget, boolean forward, boolean jump) {
     if (widget.getParent().getName().equals("tableToolbar")) {
       if (forward) {
         if (jump) {
@@ -604,9 +643,10 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
    *
    * @param table
    *          the table that will contain the row
+   * @param message message to display (can be null for default message)
    * @return the create row
    */
-  protected RenderableDataItem createNoDataRow(TableViewer table) {
+  protected RenderableDataItem createNoDataRow(TableViewer table, String message) {
     int                cc  = table.getColumnCount();
     RenderableDataItem row = table.createRow(cc, true);
 
@@ -619,7 +659,13 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     item.setEnabled(false);
     item.setColumnSpan(-1);
     item.setType(RenderableDataItem.TYPE_STRING);
-    item.setValue(Platform.getResourceAsString("bv.text.no_" + namePrefix + "_found"));
+
+    if (message == null) {
+      item.setValue(Platform.getResourceAsString("bv.text.no_" + namePrefix + "_found"));
+    } else {
+      item.setValue(message);
+    }
+
     item.setFont(table.getFont().deriveItalic());
 
     return row;
@@ -850,19 +896,20 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
    * @return true if it is false otherwise
    */
   protected boolean hasDocumentLoaded(String id, iContainer fv) {
-    iViewer dv=null;
-    if(fv!=null) {
-      if(fv.getLinkedData() instanceof Document) {
-        dv=fv;
-      }
-      else {
-        dv=(iViewer) fv.getWidget("documentViewer");
+    iViewer dv = null;
+
+    if (fv != null) {
+      if (fv.getLinkedData() instanceof Document) {
+        dv = fv;
+      } else {
+        dv = (iViewer) fv.getWidget("documentViewer");
       }
     }
+
     iViewer wv = (dv == null)
                  ? Platform.getWindowViewer().getWorkspaceViewer()
                  : dv;
-                 
+
     if ((wv != null) && (wv.getLinkedData() instanceof Document)) {
       if (id.equals(((Document) wv.getLinkedData()).getID())) {
         return true;
@@ -974,6 +1021,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     itemDates        = null;
     chartsLoaded     = false;
     spreadsheetTable = null;
+    pager.clear();
   }
 
   protected void selectFirstChartableItem(TableViewer table, boolean fireAction) {
@@ -1334,6 +1382,51 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
     }
   }
 
+  /**
+   * Must be called when new data was loaded via the specified link
+   * The link for the new data
+   *
+   * @param link the link that was used to update the table
+   */
+  protected void tableDataLoaded(ActionLink link) {
+    if (dataTable != null) {
+      if (dataLink != null) {
+        dataTable.setWidgetDataLink(dataLink);    //reset the data link to it original value so that urls relative  to the table data source work
+      }
+
+      iFormViewer fv          = dataTable.getFormViewer();
+      iWidget     buttonPanel = fv.getWidget("_nextPreviousPanel");
+
+      if (buttonPanel != null) {
+        String pn = null;
+
+        pager.add(link);
+        pn = link.getPagingNext();
+
+        if (pn != null) {
+          buttonPanel.setVisible(true);
+          pager.setNext(ListPager.createPagingLink(link, pn));
+        }
+
+        if (buttonPanel.isVisible()) {
+          aGroupableButton pb = (aGroupableButton) fv.getWidget("_nextPage");
+
+          if (pb != null) {
+            pb.setEnabled(pager.hasNext());
+          }
+
+          pb = (aGroupableButton) fv.getWidget("_previousPage");
+
+          if (pb != null) {
+            pb.setEnabled(pager.hasPrevious());
+          }
+        }
+
+        fv.update();
+      }
+    }
+  }
+
   protected void updateCardStackTitle(String title, String subtitle) {
     iContainer fv = (iContainer) Platform.getWindowViewer().getViewer(namePrefix);
 
@@ -1576,7 +1669,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
   }
 
   /**
-   * Called by sub-classes when the man viewer has been populated
+   * Called by sub-classes when the main viewer has been populated
    */
   protected void viewerPopulated(iViewer v) {
     StackPaneViewer sp = Utils.getStackPaneViewer(v);
@@ -1624,10 +1717,9 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
 
     /** list of chartable keys for the current result values */
     List<String> chartableKeys = new ArrayList<String>();
-    
+
     /** set of chartable keys for the type of result */
     List<String> filteredChartableKeys = new ArrayList<String>();
-
 
     public ChartableItemsManager() {}
 
@@ -1654,7 +1746,7 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
           c = value.charAt(1);
         }
 
-        if (Character.isDigit(c)) {
+        if (Character.isDigit(c) || (c == '.')) {
           chartableSet.add(key);
 
           return true;
@@ -1730,9 +1822,11 @@ public abstract class aResultsManager extends aEventHandler implements iActionPa
       List<String>       keys = chartableKeys;
       String             key;
       RenderableDataItem row;
-      if(!filteredChartableKeys.isEmpty()) {
-        keys=filteredChartableKeys;
+
+      if (!filteredChartableKeys.isEmpty()) {
+        keys = filteredChartableKeys;
       }
+
       do {
         int index = table.getSelectedIndex();
 

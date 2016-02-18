@@ -26,6 +26,7 @@ import com.appnativa.rare.ui.iPlatformBorder;
 import com.appnativa.rare.viewer.FormViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
+import com.appnativa.rare.viewer.iFormViewer;
 import com.appnativa.rare.widget.CheckBoxWidget;
 import com.appnativa.rare.widget.ComboBoxWidget;
 import com.appnativa.rare.widget.DateChooserWidget;
@@ -157,6 +158,7 @@ public class FormsManager {
               });
             }
           };
+
           w.hideWaitCursor();
           w.spawn(r);
         }
@@ -379,6 +381,40 @@ public class FormsManager {
 
           break;
 
+        case SEARCHLIST :
+          link = Utils.createLink(parent, field.getString(OrderFields.DATA_URL), false);
+
+          Form      sform = (Form) w.createConfigurationObject("ListBox", "bv.search_list");
+          ListBox   lb    = (ListBox) sform.findWidget("list");
+          TextField sf    = (TextField) sform.findWidget("search");
+
+          s = field.optString(OrderFields.SEARCHFIELD_NAME, null);
+
+          if ((s != null) && (s.length() > 0)) {
+            sf.name.setValue(s);
+          }
+
+          s = field.optString(OrderFields.SEARCHFIELD_EMPTYTEX, null);
+
+          if ((s != null) && (s.length() > 0)) {
+            sf.getEmptyTextReference().value.setValue(s);
+          }
+
+          if (standalone) {
+            if (sform.getBorders() == null) {
+              sform.addBorder("line");
+            }
+
+            lb.spot_setAttribute(iConstants.ATTRIBUTE_ON_ACTION, VALUE_CHANGED);
+            lb.spot_setAttribute(iConstants.ATTRIBUTE_ON_DOUBLECLICK, VALUE_ACTION);
+          }
+          if(max!=null) {
+            lb.customProperties.setValue("pageSize="+max.toString());
+          }
+          cfg = sform;
+
+          break;
+
         case DATE :
         case DATE_TIME :
           s = (type == FieldType.DATE)
@@ -553,10 +589,9 @@ public class FormsManager {
       yPosition.set(y);
 
       if (link != null) {
-        if(links!=null) {
+        if (links != null) {
           links.add(new WidgetDataLink(widget, link));
-        }
-        else {
+        } else {
           widget.setDataLink(link);
         }
       }
@@ -573,10 +608,13 @@ public class FormsManager {
 
     if (row != null) {
       Label l = (Label) f.findWidget("order");
-
+      String s=Orders.getOrderDirections(row);
       l.value.setValue(row.get(1).toString());
       l = (Label) f.findWidget("directions");
-      l.value.setValue(Orders.getOrderDirections(row));
+      if(s.length()>40) {
+        l.bounds.width.setValue("40ch");
+      }
+      l.value.setValue(s);
     }
 
     Form ff = (Form) f.findWidget("formFields");
@@ -614,10 +652,13 @@ public class FormsManager {
     List<JSONObject>        fields      = order.orderFields.getFields();
     int                     widgetCount = order.orderFields.getWidgetCount();
     Label                   l           = (Label) f.findWidget("order");
-
+    String s=order.directionsItem.toString();
     l.value.setValue(order.orderedItem.toString());
     l = (Label) f.findWidget("directions");
-    l.value.setValue(order.directionsItem.toString());
+    l.value.setValue(s);
+    if(s.length()>40) {
+      l.bounds.width.setValue("40ch");
+    }
 
     Form          ff  = (Form) f.findWidget("formFields");
     StringBuilder sb  = new StringBuilder();
@@ -679,7 +720,9 @@ public class FormsManager {
   public static void populateContainer(iContainer c, List<JSONObject> fields, int widgetCount, WindowViewer w,
           Map<String, FieldValue> values, ArrayList<WidgetDataLink> links) {
     MutableInteger pos       = new MutableInteger(0);
-    boolean        useCombos = widgetCount > (UIScreen.isLargeScreen() ? 2 : 1);
+    boolean        useCombos = widgetCount > (UIScreen.isLargeScreen()
+            ? 2
+            : 1);
 
     for (JSONObject field : fields) {
       if (OrderFields.isHidden(field) &&!OrderFields.isEditable(field)) {
@@ -811,6 +854,18 @@ public class FormsManager {
 
         break;
 
+      case SEARCHLIST : {
+        if (widget instanceof iFormViewer) {
+          widget = ((iFormViewer) widget).getWidget("list");
+        }
+
+        widget.setValue(fv.value);
+        fv.value        = widget.getSelectionData();
+        fv.displayValue = widget.getSelectionAsString();
+
+        break;
+      }
+
       case GROUP :
         iContainer              g      = (iContainer) widget;
         Map<String, FieldValue> values = resolveValuesMap(widget, fv);
@@ -879,14 +934,33 @@ public class FormsManager {
 
           break;
 
-        case LIST :
+        case LIST : {
           widget.setValue(fv.value);
-          int row=((iListHandler)widget).getSelectedIndex();
-          if(row!=-1) {
-            ((iListHandler)widget).scrollRowToVisible(row);
+
+          int row = ((iListHandler) widget).getSelectedIndex();
+
+          if (row != -1) {
+            ((iListHandler) widget).scrollRowToVisible(row);
           }
 
           break;
+        }
+
+        case SEARCHLIST : {
+          if (widget instanceof iFormViewer) {
+            widget = ((iFormViewer) widget).getWidget("list");
+          }
+
+          widget.setValue(fv.value);
+
+          int row = ((iListHandler) widget).getSelectedIndex();
+
+          if (row != -1) {
+            ((iListHandler) widget).scrollRowToVisible(row);
+          }
+
+          break;
+        }
 
         case GROUP :
           iContainer g      = (iContainer) widget;

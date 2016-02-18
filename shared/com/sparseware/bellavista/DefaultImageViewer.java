@@ -25,6 +25,7 @@ import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.spot.Viewer;
 import com.appnativa.rare.ui.RenderableDataItem;
+import com.appnativa.rare.ui.UIImage;
 import com.appnativa.rare.ui.event.iChangeListener;
 import com.appnativa.rare.viewer.CarouselViewer;
 import com.appnativa.rare.viewer.ImagePaneViewer;
@@ -34,6 +35,7 @@ import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.ObjectHolder;
 import com.sparseware.bellavista.Document.DocumentItem;
+import com.sparseware.bellavista.Document.DocumentItemType;
 import com.sparseware.bellavista.external.aAttachmentHandler;
 
 public class DefaultImageViewer extends aAttachmentHandler implements iChangeListener {
@@ -58,25 +60,37 @@ public class DefaultImageViewer extends aAttachmentHandler implements iChangeLis
         ObjectHolder   oh     = (ObjectHolder) result;
         iContainer     v      = (iContainer) w.createViewer(parent.getFormViewer(), (Viewer) oh.type);
         CarouselViewer slides = (CarouselViewer) v.getWidget("thumbNails");
-
-        slides.addAll((List<RenderableDataItem>) oh.value);
-        slides.addChangeListener(DefaultImageViewer.this);
+        if(attachment.getItemType()==DocumentItemType.IMAGE_SLIDES) {
+          slides.addAll((List<RenderableDataItem>) oh.value);
+          slides.addChangeListener(DefaultImageViewer.this);
+        }
+        else {
+          slides.setVisible(false);
+          ImagePaneViewer pane = (ImagePaneViewer) v.getWidget("imageViewer");
+          pane.setImage((UIImage)oh.value);
+        }
         cb.finished(false, new ObjectHolder(DefaultImageViewer.this, attachment, v));
       }
       @Override
       public Object compute() {
         try {
-          String                   id   = document.getID();
-          ActionLink               link = Utils.createLink(w, "/hub/main/imaging/thumbnails/" + id, false);
-          List<RenderableDataItem> list = w.parseDataLink(link, true);
-
-          for (RenderableDataItem item : list) {
-            item.setValue(item.get(THUMBNAIL_URL_POSITION).getValue());
+          Object value;
+          if(attachment.getItemType()==DocumentItemType.IMAGE_SLIDES) {
+            String                   id   = document.getID();
+            ActionLink               link = Utils.createLink(w, "/hub/main/imaging/thumbnails/" + id, false);
+            List<RenderableDataItem> list = w.parseDataLink(link, true);
+  
+            for (RenderableDataItem item : list) {
+              item.setValue(item.get(THUMBNAIL_URL_POSITION).getValue());
+            }
+            value=list;
           }
-
+          else {
+            value=w.getImage(attachment.getHREF());
+          }
           Viewer cfg = (Viewer) w.createConfigurationObject(w.createActionLink("/image_viewer.rml"));
 
-          return new ObjectHolder(cfg, list);
+          return new ObjectHolder(cfg, value);
         } catch(Exception e) {
           return e;
         }

@@ -59,6 +59,7 @@ import java.util.List;
 public class Notes extends aResultsManager implements iValueChecker {
   protected int                             attachmentColumn;
   protected int                             parentColumn;
+  protected int                             documentURLColumn;
   protected String                          infoName     = "notesInfo";
   protected String                          documentPath = "/hub/main/documents/document/";
   Document                                  loadedDocument;
@@ -75,9 +76,10 @@ public class Notes extends aResultsManager implements iValueChecker {
 
     JSONObject info = (JSONObject) Platform.getAppContext().getData("notesInfo");
 
-    attachmentColumn = info.optInt("attachmentColumn", -1);
-    parentColumn     = info.optInt("parentColumn", -1);
-    attachmentIcon   = Platform.getResourceAsIcon("bv.icon.document_with_attachment");
+    attachmentColumn  = info.optInt("attachmentColumn", -1);
+    parentColumn      = info.optInt("parentColumn", -1);
+    documentURLColumn = info.optInt("documentURLColumn", -1);
+    attachmentIcon    = Platform.getResourceAsIcon("bv.icon.document_with_attachment");
 
     if (Document.documentViewerCfg == null) {
       Platform.getWindowViewer().spawn(new Runnable() {
@@ -221,16 +223,40 @@ public class Notes extends aResultsManager implements iValueChecker {
       if (sp != null) {
         fv = sp;
       }
-      if(hasDocumentLoaded(id, fv)) {
+
+      if (hasDocumentLoaded(id, fv)) {
         return;
       }
+
       if (loadedDocument != null) {
         loadedDocument.dispose();
       }
 
       String     title = row.get(NAME_POSITION).toString();
-      ActionLink link  = new ActionLink(widget, widget.getURL(documentPath + id + ".html"));
-      Document   doc   = new Document(widget, link, id);
+      ActionLink link  = null;
+
+      if (documentURLColumn > -1) {
+        RenderableDataItem ri  = row.getItemEx(documentURLColumn);
+        String             url = (ri == null)
+                                 ? null
+                                 : ri.toString();
+
+        if ((url != null) && (url.length() > 0)) {
+          URL u = fv.getURL(url);
+
+          if (!Utils.getServerHost().equals(u.getHost())) {
+            throw new MessageException(Platform.getResourceAsString("bv.text.cant_load_xdocument"));
+          }
+
+          link = new ActionLink(url);
+        }
+      }
+
+      if (link == null) {
+        link = new ActionLink(widget, widget.getURL(documentPath + id + ".html"));
+      }
+
+      Document doc = new Document(widget, link, id);
 
       loadedDocument = doc;
       doc.setMainDocumentInfo(date, title);
@@ -287,17 +313,15 @@ public class Notes extends aResultsManager implements iValueChecker {
   @Override
   protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
     originalRows = rows;
+    tableDataLoaded(link);
 
-    final TableViewer table = (TableViewer) widget;
+     TableViewer table = (TableViewer) widget;
 
-    dataTable = table;
-    table.setWidgetDataLink(link);
-
-    if (checkAndHandleNoData(table, rows)) {
-      return;
-    } else {
-      processData(table, rows);
-    }
+      if (checkAndHandleNoData(table, rows)) {
+        return;
+      } else {
+        processData(table, rows);
+      }
   }
 
   protected void addAttachment(TableViewer table, Document doc, RenderableDataItem row) throws MalformedURLException {
@@ -394,7 +418,13 @@ public class Notes extends aResultsManager implements iValueChecker {
     public void actionPerformed(ActionEvent e) {}
 
     public boolean isDefault() {
-      return filter.getBoolean("serverSide") && (filter.getString("filter").length() == 0);
+      String s = filter.optString("filter", null);
+
+      if (s == null) {
+        return false;
+      }
+
+      return filter.optBoolean("serverSide", false) && (s.length() == 0);
     }
   }
 

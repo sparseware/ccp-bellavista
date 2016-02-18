@@ -65,9 +65,8 @@ GroupBox {
         widgets {
           {
             PushButton {
-              visible: false
-              icon: "resource:bv_icon_add_server"
-            } [ onAction="class:Settings#onServersAddRemoteAction" ]
+              icon: "resource:bv_icon_cloud_download"
+            } [ onAction="class:Settings#onNetworkServersAddAction" ]
           }
           {
             PushButton {

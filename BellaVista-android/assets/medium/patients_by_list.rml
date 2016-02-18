@@ -47,6 +47,7 @@ GroupBox {
         selectionMode: single
         itemDescription {
           icon: "resource:bv.icon.list"
+          wordWrap: true
         }
         autoSizeRowsToFit: true
         singleClickActionEnabled: true

@@ -16,16 +16,12 @@
 
 package com.sparseware.bellavista;
 
-import java.beans.PropertyChangeEvent;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EventObject;
-
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iDataCollection;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.net.ActionLink;
+import com.appnativa.rare.spot.Browser;
 import com.appnativa.rare.spot.GroupBox;
 import com.appnativa.rare.spot.Tab;
 import com.appnativa.rare.spot.TabPane;
@@ -37,17 +33,17 @@ import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.UIColor;
 import com.appnativa.rare.ui.UIImage;
 import com.appnativa.rare.ui.UIScreen;
-import com.appnativa.rare.ui.iCollapsible;
-import com.appnativa.rare.ui.iEventHandler;
-import com.appnativa.rare.ui.iListHandler;
-import com.appnativa.rare.ui.iPlatformBorder;
-import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.border.UICompoundBorder;
 import com.appnativa.rare.ui.border.UILineBorder;
 import com.appnativa.rare.ui.event.ActionEvent;
 import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.EventBase;
 import com.appnativa.rare.ui.event.FlingEvent;
+import com.appnativa.rare.ui.iCollapsible;
+import com.appnativa.rare.ui.iEventHandler;
+import com.appnativa.rare.ui.iListHandler;
+import com.appnativa.rare.ui.iPlatformBorder;
+import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.viewer.ImagePaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
@@ -63,18 +59,57 @@ import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.ObjectHolder;
 import com.appnativa.util.json.JSONObject;
+
 import com.sparseware.bellavista.Settings.Server;
+
+import java.beans.PropertyChangeEvent;
+
+import java.net.MalformedURLException;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EventObject;
 
 public class MainEventHandler implements iEventHandler {
   UILineBorder         lineBorder;
   static CharSequence  actionBarTitle;
   static iPlatformIcon actionBarIcon;
-  public MainEventHandler() {
-    
-  }
+
+  public MainEventHandler() {}
 
   @Override
   public void onEvent(String eventName, iWidget widget, EventObject event) {}
+
+  public void onError(String eventName, iWidget widget, EventObject event) {
+    DataEvent de = (DataEvent) event;
+    Throwable e  = (Throwable) de.getData();
+
+    de.consume();
+    Utils.handleError(e);
+  }
+
+  /**
+   * Called when the next or previous page button is pressed
+   */
+  public void onNextOrPreviousPage(String eventName, iWidget widget, EventObject event) {
+    iDataPagingSupport dps = (iDataPagingSupport) widget.getFormViewer().getAttribute("data_paging_support");
+    if (dps != null) {
+      dps.changePage(widget.getName().equals("_nextPage"), widget, widget.getParent().getWidget("_previousPage"));
+    }
+  }
+
+  public void onConfigureReloginPanel(String eventName, iWidget widget, EventObject event) {
+    Server server = Utils.getServer();
+
+    if (server.hasCustomLogin()) {
+      iFormViewer fv = (iFormViewer) widget;
+
+      fv.getWidget("password").setVisible(false);
+      fv.getWidget("passwordLabel").setVisible(false);
+      fv.getWidget("userLabel").setValue(Platform.getResourceAsString("bv.text.remote_session_timedout"));
+      fv.getWidget("signIn").setValue(Platform.getResourceAsString("bv.text.re_authenticate"));
+    }
+  }
 
   public void onLoginFormEnter(String eventName, iWidget widget, EventObject event) {
     if (widget.getName().equals("password")) {
@@ -329,7 +364,30 @@ public class MainEventHandler implements iEventHandler {
     }
   }
 
-  public void onRegionFling(String eventName, iWidget widget, EventObject event) {}
+  public void showHelp(String eventName, iWidget widget, EventObject event) {
+    String       name = ((EventBase) event).getQueryString();
+    WindowViewer w    = Platform.getWindowViewer();
+
+    if (name != null) {
+      if (name.startsWith(iConstants.RESOURCE_PREFIX)) {
+        name = name.substring(iConstants.RESOURCE_PREFIX_LENGTH);
+        w.alert(Platform.getResourceAsString(name));
+      } else {
+        Browser b = new Browser();
+
+        b.dataURL.setValue(name);
+
+        final iViewer v = w.createViewer(w, b);
+
+        w.alert(v, new iFunctionCallback() {
+          @Override
+          public void finished(boolean canceled, Object returnValue) {
+            v.dispose();
+          }
+        });
+      }
+    }
+  }
 
   public void onTabPaneCreated(String eventName, iWidget widget, EventObject event) {
     ActionPath p     = Utils.getActionPath(false);
@@ -441,25 +499,31 @@ public class MainEventHandler implements iEventHandler {
   }
 
   public void onFinishedLoadingSummaryTable(String eventName, iWidget widget, EventObject event) {
-    TableViewer table=(TableViewer) widget;
-    if(table.isEmpty()) {
+    TableViewer table = (TableViewer) widget;
+
+    if (table.isEmpty()) {
       String resource = ((EventBase) event).getQueryString();
-      if(resource==null || resource.length()==0) {
-        resource="bv.text.no_data_found";
+
+      if ((resource == null) || (resource.length() == 0)) {
+        resource = "bv.text.no_data_found";
       }
-      RenderableDataItem row=table.createRow(2, true);
+
+      RenderableDataItem row = table.createRow(2, true);
+
       row.setEnabled(false);
-      RenderableDataItem item=row.get(0);
+
+      RenderableDataItem item = row.get(0);
+
       item.setEnabled(false);
       item.setColumnSpan(-1);
       item.setValue(Platform.getResourceAsString(resource));
       item.setFont(table.getFont().deriveItalic());
       table.add(row);
-    }
-    else {
+    } else {
       table.sort(0, false);
     }
   }
+
   public void onFlingInfoBar(String eventName, iWidget widget, EventObject event) {
     FlingEvent   fe   = (FlingEvent) event;
     float        y    = fe.getYVelocity();

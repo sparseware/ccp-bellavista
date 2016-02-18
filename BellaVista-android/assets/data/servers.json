@@ -1,0 +1,75 @@
+{
+	"servers":[
+		{
+			"name":"Local Demo",
+			"url":"local",
+			"restricted":false
+		},
+		{
+			"name":"SMART on FHIR - Open",
+			"url":"fhirs://fhir-open-api-dstu2.smarthealthit.org",
+			"restricted":false,
+			"fhir":{
+				"debug":true,
+				"get_encounter":true,
+				"supports_prefix_search": false,
+				"orders":{
+					"generateNutritionReport":true,
+					"generateDisgnosticReport":true,
+					"generateMedicationReport":true,
+					"generateMedicationDirections":true
+				},
+				"labs":{
+					"tools":[
+						{
+							"display":"Other Diagnostic Reports",
+							"url":"/hub/main/labs/list_by_category?category=SP,PAT,SR,URN,VR,PF,MYC"
+						},
+						
+					]
+					
+				}
+				
+			}
+		},
+		{
+			"name":"SMART on FHIR - Restricted",
+			"url":"fhirs://fhir-api-dstu2.smarthealthit.org",
+			"custom_login":true,
+			"restricted":false,
+			"fhir":{
+				"aud":"https://fhir-api-dstu2.smarthealthit.org",
+				"oauth_redirect_uri":"http://healthcare.sparseware.com/oauth/",
+				"oauth_client_id":"25905765-38e8-4e17-afe9-3c17316af823",
+				"oauth_scope":"patient/*.read user/*.* user/*.read openid profile",
+				"client_timeout":10,
+				"debug":true,
+				"get_encounter":true,
+				"supports_prefix_search": false,
+				"orders":{
+					"generateNutritionReport":true,
+					"generateDisgnosticReport":true,
+					"generateMedicationReport":true,
+					"generateMedicationDirections":true,
+				}
+			}
+		},
+		{
+			"name":"Cerner - Open",
+			"url":"fhirs://fhir-open.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f",
+			"restricted":false,
+			"fhir":{
+				"debug":true,
+				"orders":{
+					"generateNutritionReport":true,
+					"generateDisgnosticReport":true,
+					"generateMedicationReport":true,
+					"generateMedicationDirections":false,
+					
+				}
+				
+			}
+			
+		}
+	]
+}

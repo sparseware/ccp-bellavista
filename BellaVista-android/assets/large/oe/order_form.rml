@@ -16,4 +16,4 @@ SplitPane {
       dataURL: "/oe/order_value_editor.rml" [deferred=false]
     }
   }
-}[ onCreated="class:oe.OrderEntry#onOrderFormCreated", onConfigure="class:oe.OrderEntry#onOrderFormConfigure", onDispose="class:oe.OrderEntry#onOrderFormDispose" ]
+}[ onCreated="class:.oe.OrderEntry#onOrderFormCreated", onConfigure="class:.oe.OrderEntry#onOrderFormConfigure", onDispose="class:.oe.OrderEntry#onOrderFormDispose" ]

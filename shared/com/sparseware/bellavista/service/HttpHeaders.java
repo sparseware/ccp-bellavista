@@ -157,6 +157,21 @@ public class HttpHeaders {
   }
 
   /**
+   * Sets the content type 
+   *@param type the type
+   */
+  public void mime(String type) {
+    add("content-type", type);
+  }
+
+  /**
+   * Sets the content type to {@code text/html}
+   */
+  public void mimeMultipart(String boundary) {
+    add("content-type",  "multipart/mixed; boundary=" + boundary);
+  }
+
+  /**
    * Sets the content type to {@code text/plain;ldseparator=|}
    */
   public void mimeList() {
@@ -167,7 +182,7 @@ public class HttpHeaders {
    * Sets the content type to {@code text/plain;separator=^;ldseparator=|}
    */
   public void mimeRow() {
-    add("content-type", "text/plain;separator=^;ldseparator=|");
+    add("content-type", "text/plain;separator=^;ldseparator=|;riseparator=~");
   }
 
   /**

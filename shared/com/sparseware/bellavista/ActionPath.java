@@ -16,17 +16,17 @@
 
 package com.sparseware.bellavista;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.appnativa.util.CharScanner;
 import com.appnativa.util.Helper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * The class has a path thorough the application. It is meant to be use to
- * programmatically move through through application. When fully implemented all
+ * The class manages a path thorough the application. It is meant to be used to
+ * programmatically move through the application. When fully implemented all
  * primary screens in the application will have a unique path and will be able
- * to be navigated to programmatically via its action path
+ * to be navigated to, programmatically via, its path.
  *
  * @author Don DeCoteau
  *
@@ -34,48 +34,95 @@ import com.appnativa.util.Helper;
 public class ActionPath extends ArrayList<String> {
   protected Object linkedData;
 
-  public ActionPath() {}
-
-  public ActionPath(int pathCount) {
-    super(pathCount);
+  /**
+   * Creates a new empty path.
+   */
+  public ActionPath() {
+    super(5);
   }
 
-  public ActionPath(List<String> path) {
-    if (path != null) {
-      addAll(path);
+  /**
+   * Creates a new path with the specified segments.
+   *
+   * @param segments the segment to add
+   */
+  public ActionPath(List<String> segments) {
+    super(5);
+
+    if (segments != null) {
+      addAll(segments);
     }
   }
 
-  public ActionPath(String... path) {
-    if (path != null) {
-      addPath(path);
+  /**
+   * Creates a new path with the specified segments.
+   *
+   * If a single segment is added then that segment
+   * is parsed looking for segments separated by a forward slash, otherwise
+   * the segments are added as is.
+   *
+   * @param segments the segment to add
+   */
+  public ActionPath(String... segments) {
+    super(5);
+
+    if (segments != null) {
+      addSegments(segments);
     }
   }
 
-  public void addPath(String... path) {
-    int len = (path == null)
+  /**
+   * Add segments to a path. If a single segment is added then that segment
+   * is parsed looking for segments separated by a forward slash, otherwise
+   * the segments are added as is.
+   *
+   * @param segments the segment to add
+   */
+  public void addSegments(String... segments) {
+    int len = (segments == null)
               ? 0
-              : path.length;
+              : segments.length;
 
     if (len == 1) {
-      if (path[0].indexOf("/") != -1) {
-        CharScanner.getTokens(path[0], '/', false, this);
+      if (segments[0].indexOf("/") != -1) {
+        CharScanner.getTokens(segments[0], '/', false, this);
       } else {
-        add(path[0]);
+        add(segments[0]);
       }
     } else {
       for (int i = 0; i < len; i++) {
-        add(path[i]);
+        add(segments[i]);
       }
     }
   }
 
+  @Override
+  public Object clone() {
+    return copy();
+  }
+
+  /**
+   * Returns a path that is a copy of this path
+   * @return  a path that is a copy of this path
+   */
   public ActionPath copy() {
     ActionPath p = new ActionPath(this);
 
     return p;
   }
 
+  /**
+   * Gets any data associated with the path
+   * @return any data associated with the path
+   */
+  public Object getLinkedData() {
+    return linkedData;
+  }
+
+  /**
+   * Sees the last segment in the path
+   * @return  the last segment in the path or null
+   */
   public String peek() {
     int len = size();
 
@@ -84,14 +131,10 @@ public class ActionPath extends ArrayList<String> {
            : get(len - 1);
   }
 
-  public String shiftPeek() {
-    int len = size();
-
-    return (len == 0)
-           ? null
-           : get(0);
-  }
-
+  /**
+   * Gets the last segment in the path
+   * @return  the last segment in the path or null
+   */
   public String pop() {
     int len = size();
 
@@ -100,11 +143,37 @@ public class ActionPath extends ArrayList<String> {
            : remove(len - 1);
   }
 
-  public void push(String path) {
-    add(path);
+  /**
+   * Add a segment to the end of the path
+   * @param segment the segment to add
+   */
+  public void push(String segment) {
+    add(segment);
   }
 
-  public String see() {
+  /**
+   * Sets data associated with the path
+   * @param linkedData the data
+   */
+  public void setLinkedData(Object linkedData) {
+    this.linkedData = linkedData;
+  }
+
+  /**
+   * Gets the first segment in the path
+   * @return  the first segment in the path or null
+   */
+  public String shift() {
+    return isEmpty()
+           ? null
+           : remove(0);
+  }
+
+  /**
+   * Sees the first segment in the path
+   * @return  the first segment in the path or null
+   */
+  public String shiftPeek() {
     int len = size();
 
     return (len == 0)
@@ -112,31 +181,26 @@ public class ActionPath extends ArrayList<String> {
            : get(0);
   }
 
-  public String shift() {
-    return isEmpty()
-           ? null
-           : remove(0);
-  }
-
   @Override
   public String toString() {
     return Helper.toString(this, "/");
   }
 
-  public void unshift(String path) {
-    add(0, path);
+  /**
+   * Add a segment to the beginning of the path
+   * @param segment the segment to add
+   */
+  public void unshift(String segment) {
+    add(0, segment);
   }
 
-  public Object getLinkedData() {
-    return linkedData;
-  }
-
-  public void setLinkedData(Object linkedData) {
-    this.linkedData = linkedData;
-  }
-
+  /**
+   * Parses the specified string an creates and action path
+   * @param path the string representing the path
+   * @return the new path
+   */
   public static ActionPath fromString(String path) {
-    ActionPath p = new ActionPath(3);
+    ActionPath p = new ActionPath();
 
     CharScanner.getTokens(path, '/', false, p);
 
@@ -152,17 +216,17 @@ public class ActionPath extends ArrayList<String> {
   interface iActionPathSupporter {
 
     /**
-     * Gets the a path for the information currently displayed by the handler.
+     * Gets the a path for the information currently displayed by the supporter.
      *
      * @return a path for the information currently displayed information
      */
     ActionPath getDisplayedActionPath();
 
     /**
-     * Called on an active handler to handle the specified path.
+     * Called on an active supporter to handle the specified path.
      *
      * @param path
-     *          a path that is relative to the handler
+     *          a path that is relative to the supporter
      */
     void handleActionPath(ActionPath path);
   }

@@ -1,0 +1,157 @@
+body {
+	font-family: Century Gothic, sans-serif;
+	font-size: 80%;
+}
+
+hr {
+	height: 1px;
+	border: none;
+	color: #eee;
+	background-color: #eee
+}
+
+hr.bold {
+	height: 2px;
+	border: none;
+	color: #999;
+  background-color: #999;
+ }
+h1 {
+	text-align: center;
+	font-size: 1.5em;
+	color: #555
+}
+
+h2 {
+	font-size: 1.5em;
+	color: #555
+}
+
+h3 {
+	font-size: 1.25em;
+	border-bottom: 1px solid #ccc;
+	color: #555
+}
+
+h2.sub {
+	font-size: 1.5em;
+	background-color: #eeeeee;
+	color: #555
+}
+
+h3.sub {
+	font-size: 1.25em;
+	border-bottom: 1px solid #ccc;
+	color: #555
+}
+td h3.sub {
+	font-size: 1em;
+	border-bottom: 1px solid #ccc;
+	color: #555555;
+	margin-left: 30px;
+}
+td.section{ 
+	background-color: #f2f2f2;
+	font-size: .75em;
+	margin-bottom: 5px;
+}
+h4.sub {
+	font-size: 1em;
+	color: #555
+}
+
+strong,b {
+	color: #555
+}
+
+div.sub2 {
+	padding-left: 10px;
+}
+
+div.sub3 {
+	padding-left: 20px;
+}
+
+div.sub4 {
+	padding-left: 30px;
+}
+
+div.notes_div {
+}
+
+div.text_div {
+}
+
+div.event_div {
+}
+
+div.item_div {
+	margin-left: 20px;
+	margin-bottom: 5px;
+	background-color: #eeeeee;
+	padding: 10px;
+}
+
+table.value_table{
+	margin-top: 10px;
+}
+td.value_name {
+	text-align: right;
+	white-space: nowrap;
+	vertical-align: top;
+	color: #555;
+}
+pre {
+	font-size: 0.8em;
+	font-family: Lucida Console, Monaco, Menlo, Courier New, monospace;
+	white-space: pre-wrap;
+	margin: 0;
+	padding: 0;
+	white-space: pre-wrap;
+}
+
+div.image_doc { 
+	text-align: center;
+}
+caption, th
+{
+}
+table
+{
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+table.lab_report caption
+{
+	font-size: 1.25em;
+	background-color: #eeeeee;
+	color: #333333;
+/*	border-bottom: 2px solid #6678b1;*/
+}
+table.lab_report
+{
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+}
+table.lab_report th
+{
+  text-align: left;
+  visibility: hidden;
+}
+
+table.lab_report td
+{
+	border-bottom: 1px solid #ccc;
+	padding: 6px 8px;
+}
+table.component td
+{
+	color: #669;
+	border:none;
+}
+
+td.lab_name
+{
+	width: 60%;
+}

@@ -35,6 +35,8 @@ import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeType;
  */
 public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
   Object             monitorProxy;
+  boolean listeningForPatients;
+  boolean listeningForLocations;
   ArrayList<Monitor> monitors = new ArrayList<BluetoothBeaconLocatorSupport.Monitor>(2);
 
   public BluetoothBeaconLocatorSupport() {
@@ -90,6 +92,11 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
    * Called to start listening for locations
    */
   public void startListeningForLocations() {
+    listeningForLocations=true;
+    if(isAccessPending()) {
+      requestAuthorization();
+      return;
+    }
     for (Monitor m : monitors) {
       if (m.type == LocatorChangeType.LOCATIONS) {
         m.start();
@@ -101,6 +108,11 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
    * Called to start listening for patients
    */
   public void startListeningForPatients() {
+    listeningForPatients=true;
+    if(isAccessPending()) {
+      requestAuthorization();
+      return;
+    }
     for (Monitor m : monitors) {
       if (m.type == LocatorChangeType.PATIENTS) {
         m.start();
@@ -112,6 +124,7 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
    * Called to stop listening for locations
    */
   public void stopListeningForLocations() {
+    listeningForLocations=false;
     for (Monitor m : monitors) {
       if (m.type == LocatorChangeType.LOCATIONS) {
         m.stop();
@@ -123,6 +136,7 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
    * Called to stop listening for patients
    */
   public void stopListeningForPatients() {
+    listeningForPatients=false;
     for (Monitor m : monitors) {
       if (m.type == LocatorChangeType.PATIENTS) {
         m.stop();
@@ -138,7 +152,12 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
     if (granted) {
       for (Monitor m : monitors) {
         if (m.monitoring) {
-          startMonitoring(m.beacons);
+          if(m.type==LocatorChangeType.PATIENTS &&  listeningForPatients) {
+            startMonitoring(m.beacons);
+          }
+          else if(m.type==LocatorChangeType.LOCATIONS &&  listeningForLocations) {
+            startMonitoring(m.beacons);
+          }
         }
       }
     } else if (changeListener != null) {
@@ -259,6 +278,12 @@ public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
   native boolean wasAccessGranted()
   /*-[
     return [(CCPBVBeaconMonitor*)monitorProxy_ wasAccessGranted];
+  ]-*/;
+
+
+  native void requestAuthorization()
+  /*-[
+    [(CCPBVBeaconMonitor*)monitorProxy_ requestAuthorization];
   ]-*/;
 
   native static Object createProxy(BluetoothBeaconLocatorSupport bbs)

@@ -16,12 +16,14 @@
 
 #import "BVBeaconMonitor.h"
 #include "com/sparseware/bellavista/external/BluetoothBeaconLocatorSupport.h"
+#include "com/sparseware/bellavista/Utils.h"
 
 @implementation CCPBVBeaconMonitor {
   CLLocationManager* locationManager;
   __weak CCPBVBluetoothBeaconLocatorSupport* locatorSupport;
   BOOL deniedAccess;
   BOOL pendingAccess;
+  BOOL ignorePausingSet;
 }
 - (instancetype)initWithLocatorSupport: (CCPBVBluetoothBeaconLocatorSupport*) support
 {
@@ -30,27 +32,18 @@
     locatorSupport=support;
     locationManager=[[CLLocationManager alloc] init];
     locationManager.delegate = self;
-    CLAuthorizationStatus status=[CLLocationManager authorizationStatus];
-    pendingAccess=YES;
     deniedAccess=![CLLocationManager isRangingAvailable];
+    CLAuthorizationStatus status=[CLLocationManager authorizationStatus];
     switch(status) {
       case kCLAuthorizationStatusNotDetermined:
-        if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-          [locationManager requestWhenInUseAuthorization];
-        }
-        else {
-          [locationManager startUpdatingLocation];
-        }
+        pendingAccess=YES;
         break;
       case kCLAuthorizationStatusDenied:
       case kCLAuthorizationStatusRestricted:
-        pendingAccess=NO;
         deniedAccess=YES;
         break;
       default:
-        pendingAccess=NO;
         break;
-        
     }
   }
   return self;
@@ -61,6 +54,24 @@
 -(BOOL) isAccessPending {
   return pendingAccess;
 }
+
+-(void) requestAuthorization {
+  ignorePausingSet=NO;
+  CLAuthorizationStatus status=[CLLocationManager authorizationStatus];
+  if(status==kCLAuthorizationStatusNotDetermined ) {
+    pendingAccess=YES;
+    deniedAccess=![CLLocationManager isRangingAvailable];
+    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+      ignorePausingSet=YES;
+      [CCPBVUtils setIgnorePausingWithBoolean:YES];
+      [locationManager requestWhenInUseAuthorization];
+    }
+    else {
+      [locationManager startUpdatingLocation];
+    }
+  }
+}
+
 -(void) startMonitoringBeacon: (NSString*) uuidString major: (int) bmajor minor: (int) bminor identifier: (NSString*) identifier {
   
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
@@ -138,8 +149,8 @@
 }
          
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-  BOOL den=deniedAccess;
   pendingAccess=NO;
+  deniedAccess=NO;
   switch(status) {
     case kCLAuthorizationStatusNotDetermined:
       pendingAccess=YES;
@@ -152,9 +163,11 @@
       break;
   }
   if(!pendingAccess) {
-    if(den !=deniedAccess) {
-      [locatorSupport accessChangedWithBoolean:!deniedAccess];
+    if(ignorePausingSet) {
+      [CCPBVUtils setIgnorePausingWithBoolean:NO];
+      ignorePausingSet=NO;
     }
+    [locatorSupport accessChangedWithBoolean:!deniedAccess];
     if(!deniedAccess) {
       [locationManager startUpdatingLocation];
     }

@@ -16,6 +16,14 @@
 
 package com.sparseware.bellavista;
 
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
 import com.appnativa.rare.FunctionCallbackWaiter;
 import com.appnativa.rare.FunctionCallbackWaiter.CallbackResult;
 import com.appnativa.rare.Platform;
@@ -23,7 +31,6 @@ import com.appnativa.rare.aWorkerTask;
 import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.net.ActionLink;
-import com.appnativa.rare.net.JavaURLConnection;
 import com.appnativa.rare.net.iMultipartMimeHandler.iMultipart;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.GridPane;
@@ -53,20 +60,8 @@ import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.ObjectHolder;
 import com.appnativa.util.StringCache;
 import com.appnativa.util.json.JSONObject;
-
 import com.google.j2objc.annotations.Weak;
-
 import com.sparseware.bellavista.external.aAttachmentHandler;
-
-import java.io.StringReader;
-
-import java.net.MalformedURLException;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
 public class Document extends aWorkerTask {
   protected String                        documentID;
@@ -123,7 +118,7 @@ public class Document extends aWorkerTask {
    * @param href
    *          the attachment's href (required if there is no body)
    */
-  public void addAttachment(DocumentItemType type, Date date, String title, String mimeType, String body, String href) {
+  public DocumentItem addAttachment(DocumentItemType type, Date date, String title, String mimeType, String body, String href) {
     final WindowViewer w   = Platform.getWindowViewer();
     RenderableDataItem row = w.createRow(5, true);
 
@@ -146,6 +141,7 @@ public class Document extends aWorkerTask {
     }
 
     docAttachments.add(di);
+    return di;
   }
 
   static void staticInitialize() throws Exception {
@@ -185,7 +181,7 @@ public class Document extends aWorkerTask {
         }
       }
 
-      iMultipart               mp    = link.getFirstPart(contextWidget);
+      iMultipart               mp    = link.getFirstPart();
       int                      i     = 0;
       String                   s     = mp.getPreamble();
       List<RenderableDataItem> items = null;
@@ -441,10 +437,12 @@ public class Document extends aWorkerTask {
 
     if (cpv != null) {
       TableViewer     table = (TableViewer) cpv.getWidget();
-      iActionListener al    = new AttachmentActionListener();
 
       table.clear();
-      table.setActionListener(al);
+      if(table.getActionListener()==null) {
+        iActionListener al    = new AttachmentActionListener();
+        table.setActionListener(al);
+      }
 
       int len = getAttachmentCount();
 
@@ -452,7 +450,6 @@ public class Document extends aWorkerTask {
 
       if (len > 0) {
         cpv.setTitleText(w.getString("bv.format.attachments_spec", StringCache.valueOf(len)));
-        cpv.setActionListener(al);
         // we can change this because we have already populated the form
         mainDocument.rowData.get(1).setValue(w.getString("bv.text.master_document"));
 
@@ -476,6 +473,9 @@ public class Document extends aWorkerTask {
 
         table.setColumnVisible(2, hasDate);
         table.refreshItems();
+        if(hasDate) {
+          table.sort(2, true);
+        }
       }
     }
   }
@@ -501,7 +501,7 @@ public class Document extends aWorkerTask {
       if (field != null) {
         s = (row == null)
             ? ""
-            : Functions.convertDateTime(field, row.get(2).getValue());
+            : Functions.convertDateTime(row.get(2).getValue());
         field.setValue(s);
       }
 
@@ -554,10 +554,11 @@ public class Document extends aWorkerTask {
           s = doc.itemBody;
 
           if (!html) {
-            s = "<html><body><pre>" + s + "</pre></body></html>";
+            s = "<html><body><pre style=\"white-space: pre-wrap; margin:0; padding:0\">" + s + "</pre></body></html>";
           }
-
-          String           href    = JavaURLConnection.baseToExternalForm(documentLink.getURL(contextWidget));
+          //do not pass in the base href because if it is not http/https it will break some browsers (notable iOS)
+          String           href    = null; //JavaURLConnection.baseToExternalForm(documentLink.getURL(contextWidget));
+                              
           final WebBrowser browser = (WebBrowser) v;
 
           if (v.getWidth() < 50) {
@@ -573,7 +574,6 @@ public class Document extends aWorkerTask {
              */
             final String data = s;
             final String url  = href;
-
             browser.getContainerComponent().addViewListener(new aViewListenerAdapter() {
               @Override
               public void viewResized(ChangeEvent e) {
@@ -590,6 +590,9 @@ public class Document extends aWorkerTask {
           } else {
             browser.setHTML(href, s);
           }
+        }
+        else {
+          v.setValue(doc.itemBody);
         }
       }
     } catch(Exception e) {
@@ -672,7 +675,7 @@ public class Document extends aWorkerTask {
       }
 
       doc.itemType = type;
-
+      RenderableDataItem item0=row.get(0);
       switch(type) {
         case DOCUMENT :
           if ("true".equals(row.get(3).getValue())) {
@@ -682,8 +685,14 @@ public class Document extends aWorkerTask {
           break;
 
         case IMAGE :
-          row.get(0).setIcon(Platform.getAppContext().getResourceAsIcon("bv.icon.xray"));
-
+          if(item0.getIcon()==null) {
+            item0.setIcon(Platform.getAppContext().getResourceAsIcon("bv.icon.camera"));
+          }
+          break;
+        case IMAGE_SLIDES :
+          if(item0.getIcon()==null) {
+            item0.setIcon(Platform.getAppContext().getResourceAsIcon("bv.icon.xray"));
+          }
           break;
 
         default :
@@ -788,7 +797,8 @@ public class Document extends aWorkerTask {
 
     public aAttachmentHandler getHandler() {
       if (handler == null) {
-        handler = Utils.getAttachmentHandler(itemType);
+        String type=itemType==DocumentItemType.CUSTOM ?customItemType : itemType.name();
+        handler = Utils.getAttachmentHandler(type);
       }
 
       return handler;
@@ -816,11 +826,15 @@ public class Document extends aWorkerTask {
     public String toString() {
       return itemBody;
     }
+
+    public DocumentItemType getItemType() {
+      return itemType;
+    }
   }
 
 
   public static enum DocumentItemType {
-    DOCUMENT, IMAGE, AUDIO, VIDEO, CUSTOM
+    DOCUMENT, IMAGE, IMAGE_SLIDES,AUDIO, VIDEO, CUSTOM
   }
 
   /**
@@ -913,6 +927,7 @@ public class Document extends aWorkerTask {
 
             if (returnValue instanceof Throwable) {
               Utils.handleError((Throwable) returnValue);
+              return;
             } else if (canceled || fv.isDisposed()) {
               return;
             }

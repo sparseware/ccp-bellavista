@@ -308,7 +308,7 @@ SplitPane {
                       width: "8ch"
                     }
                   }
-                } [ onAction="class:Orders#onSummaryTableAction" ]
+                } [ onAction="class:Orders#onSummaryTableAction", onFinishedLoading="class:MainEventHandler#onFinishedLoadingSummaryTable?bv.text.no_active_meds" ]
               }
             }
             {

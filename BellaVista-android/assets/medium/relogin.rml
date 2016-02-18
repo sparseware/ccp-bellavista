@@ -15,10 +15,11 @@ WidgetPane {
             local: false
             layout: forms
             rows: "4dluY,d,4dluY,f:[30dlu,d],4dluY,[50dlu,d],4dluY,d,4dluY,d,14dluY"
-            columns: "4dluX,d,2dluX,d,4dluX"
+            columns: "4dluX,d,2dluX,[100dlu,d],4dluX"
             widgets {
               {
                 Label {
+                  name: "passwordLabel"
                   bounds {
                     x: "1"
                     y: "7"
@@ -39,6 +40,7 @@ WidgetPane {
               }
               {
                 PushButton {
+                  name: "signIn"
                   bounds {
                     x: "3"
                     y: "9"
@@ -54,7 +56,6 @@ WidgetPane {
                   bounds {
                     x: "1"
                     y: "1"
-                    width: "15ch"
                   }
                   icon: "resource:bv.launcher"
                   value: "{resource:bv.text.welcome}"
@@ -89,7 +90,7 @@ WidgetPane {
                 }
               }
             }
-          }
+          } [ onConfigure="class:MainEventHandler#onConfigureReloginPanel" ]
         }
         {
           WidgetPane {
@@ -107,4 +108,4 @@ WidgetPane {
       }
     }
   }
-}
+} [ onConfigure="class:MainEventHandler#onConfigureReloginPanel" ]

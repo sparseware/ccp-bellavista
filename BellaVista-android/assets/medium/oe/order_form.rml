@@ -1,4 +1,4 @@
 WidgetPane {
   actAsFormViewer: true
   dataURL: "/oe/order_fields.rml" [deffered="true"]
-}[ onCreated="class:oe.OrderEntry#onOrderFormCreated", onConfigure="class:oe.OrderEntry#onOrderFormConfigure", onDispose="class:oe.OrderEntry#onOrderFormDispose" ]
+}[ onCreated="class:.oe.OrderEntry#onOrderFormCreated", onConfigure="class:.oe.OrderEntry#onOrderFormConfigure", onDispose="class:.oe.OrderEntry#onOrderFormDispose" ]

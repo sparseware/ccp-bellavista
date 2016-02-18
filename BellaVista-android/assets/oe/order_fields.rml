@@ -35,7 +35,7 @@ GroupBox {
             wordWrap: true
           }
         }
-      } [ onAction="class:oe.OrderEntry#onFieldsTableAction" ]
+      } [ onAction="class:.oe.OrderEntry#onFieldsTableAction" ]
     }
     {
       CheckBox {
@@ -47,7 +47,7 @@ GroupBox {
         }
         value: "{resource:bv.oe.text.show_required_only}"
         iconPosition: right
-      } [ onAction="class:oe.OrderEntry#onShowRequiredOnlyAction" ]
+      } [ onAction="class:.oe.OrderEntry#onShowRequiredOnlyAction" ]
     }
     {
       GroupBox {
@@ -109,4 +109,4 @@ GroupBox {
       }
     }
   }
-} [ onConfigure="class:oe.OrderEntry#onOrderFieldsConfigure", onShown="class:oe.OrderEntry#onOrderFieldsShown" ]
+} [ onConfigure="class:.oe.OrderEntry#onOrderFieldsConfigure", onShown="class:.oe.OrderEntry#onOrderFieldsShown" ]

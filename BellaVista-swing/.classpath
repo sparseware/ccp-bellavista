@@ -6,7 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/appnativa.spot.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/appnativa.util.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/j2objc_annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jfxrt.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jlayer.jar"/>
 	<classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/js.jar"/>
   <classpathentry exported="true" kind="lib" path="../../../sdk/lib/swing/jcommon.jar"/>

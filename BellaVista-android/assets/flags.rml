@@ -1,4 +1,7 @@
 Form {
+  bounds {
+    height: "20ln"
+  }
   layout: forms
   rows: "2dluY,d,2dluY,f:d,d,f:d:g,2dluY,d,2dluY"
   columns: "2dluX,d:g,2dluX"
@@ -14,6 +17,7 @@ Form {
           y: "3"
         }
         visibleRowCount: 3
+        autoSizeRowsToFit: true
         showDividerLine: true
         singleClickActionEnabled: true
       } [ onAction="class:MainEventHandler#onFlagsListAction" ]
@@ -22,13 +26,12 @@ Form {
       Browser {
         name: "flagText"
         borders {
-          line 
+          line
         }
         bounds {
           x: "1"
           y: "5"
-          width: "60ch"
-          height: "15ln"
+          width: "40ch"
         }
         templateName: "bv.browser"
       }
@@ -53,7 +56,7 @@ Form {
         }
         layout: forms
         rows: "d"
-        columns: "d:g,2dluX,d"
+        columns: "d:g"
         widgets {
           {
             Label {
@@ -72,28 +75,19 @@ Form {
               value: "{resource:bv.text.patient_flagged}"
             }
           }
-          {
-            PushButton {
-              bounds {
-                x: "2"
-                y: "0"
-              }
-              templateName: "bv.pushbutton.fullscreen"
-            }
-          }
         }
       }
     }
     {
       PushButton {
-      	name: "okButton"
+        name: "okButton"
         bounds {
           x: "1"
           y: "7"
           width: "7ch"
         }
         value: "{resource:Rare.text.ok}"
-      }[ onAction="class:MainEventHandler#onCloseWindow" ]
+      } [ onAction="class:MainEventHandler#onCloseWindow" ]
     }
   }
-} [ onCreated="class:MainEventHandler#onCreatedFlagsPopup", onConfigure="class:MainEventHandler#onConfigureFlagsPopup" ]
+} [ onConfigure="class:MainEventHandler#onConfigureFlagsPopup" ]

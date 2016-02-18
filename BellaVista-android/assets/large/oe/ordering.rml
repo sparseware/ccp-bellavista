@@ -45,7 +45,7 @@ SplitPane {
                     name: "bv.action.order_discontinue"
                   }
                 } [ onAction="class:Orders#onPopupMenu", cancelButtonText="{%value[%contextMenuRow,1]}"]
-              } [ onCreated="class:oe.Ordering#onTableCreated", onAction="class:oe.Ordering#onTableAction" ]
+              } [ onCreated="class:.oe.Ordering#onTableCreated", onAction="class:.oe.Ordering#onTableAction" ]
             }
             {
               ToolBar {
@@ -122,4 +122,4 @@ SplitPane {
       dataURL: "/oe/new_order.rml"
     }
   }
-} [ onConfigure="class:oe.Ordering#onConfigure", onDispose="class:oe.Ordering#onDispose" ]
+} [ onConfigure="class:.oe.Ordering#onConfigure", onDispose="class:.oe.Ordering#onDispose" ]

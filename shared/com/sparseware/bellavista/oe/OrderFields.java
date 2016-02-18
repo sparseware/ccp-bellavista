@@ -59,6 +59,8 @@ public class OrderFields {
   public static String FIELD_TYPE            = "_ftype";
   public static String WIDGET_COUNT          = "_widgetCount";
   public static String INPUT_FILTER          = "_inputFilter";
+  public static String SEARCHFIELD_NAME      = "search_field_name";
+  public static String SEARCHFIELD_EMPTYTEX  = "search_field_emptytext";
   static ObjectCache   orderingFields;
   static ObjectCache   cachedLists;
   String               id;
@@ -518,7 +520,7 @@ public class OrderFields {
   }
 
   public static enum FieldType {
-    BOOLEAN, TEXTFIELD, TEXTAREA, RICHTEXT, PASSWORD, INTEGER, DECIMAL, LIST, DATE, DATE_TIME, TIME, LABEL, LINE, GROUP
+    BOOLEAN, TEXTFIELD, TEXTAREA, RICHTEXT, PASSWORD, INTEGER, DECIMAL, LIST, DATE, DATE_TIME, TIME, LABEL, LINE, GROUP,SEARCHLIST
   }
 
   public static enum GroupType {

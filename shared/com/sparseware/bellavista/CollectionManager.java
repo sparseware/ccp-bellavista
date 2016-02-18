@@ -16,12 +16,6 @@
 
 package com.sparseware.bellavista;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iDataCollection;
@@ -37,6 +31,13 @@ import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * This class tracks and updates a set of collections the needs to be updated
@@ -60,10 +61,10 @@ public class CollectionManager implements Runnable {
 
     iPlatformAppContext app = Platform.getAppContext();
     iDataCollection     dc;
-    WindowViewer        w    = Platform.getWindowViewer();
-    JSONObject pinfo = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
-    JSONObject          info = (JSONObject) app.getData("collectionsInfo");
-    JSONArray           list = info.getJSONArray("collections");
+    WindowViewer        w     = Platform.getWindowViewer();
+    JSONObject          pinfo = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
+    JSONObject          info  = (JSONObject) app.getData("collectionsInfo");
+    JSONArray           list  = info.getJSONArray("collections");
 
     updateInterval = Math.max(info.optInt("updateInterval", 60) * 1000, 5000);
 
@@ -94,16 +95,17 @@ public class CollectionManager implements Runnable {
       JSONObject o          = list.getJSONObject(i);
       String     name       = o.getString("name");
       boolean    autoUpdate = o.optBoolean("autoUpdate", true);
-      if(name.equals("flags") && !pinfo.optBoolean("hasPatientFlags", true)) {
-        autoUpdate=false;
+
+      if (name.equals("flags") &&!pinfo.optBoolean("hasPatientFlags", true)) {
+        autoUpdate = false;
         o.put("noDataText", Platform.getResourceAsString("bv.text.no_support_for_flags"));
-      }
-      else if(name.equals("alerts") && !pinfo.optBoolean("hasPatientFlags", true)) {
-        autoUpdate=false;
+      } else if (name.equals("alerts") &&!pinfo.optBoolean("hasPatientFlags", true)) {
+        autoUpdate = false;
         o.put("noDataText", Platform.getResourceAsString("bv.text.no_support_for_alerts"));
       }
-      String     url        = o.getString("url");
-      ActionLink link       = Utils.createLink(w, url, false);
+
+      String     url  = o.getString("url");
+      ActionLink link = Utils.createLink(w, url, true);
 
       if (autoUpdate &&!Utils.isDemo()) {
         link.setAttributes(attributes);
@@ -307,16 +309,25 @@ public class CollectionManager implements Runnable {
 
     o.put("_lc", len);
 
+    if (len == 1) {
+      Collection                   c    = dc.getCollection(w);
+      Iterator<RenderableDataItem> it   = c.iterator();
+      RenderableDataItem           item = it.next();
+
+      if (!item.isEnabled()) {
+        len = 0;
+      }
+    }
+
     String action = o.optString("action", null);
 
     if (action != null) {
       UIAction a = w.getAction(action);
 
       if (a != null) {
-        if(a.getActionName().equals("bv.action.alerts")) {
+        if (a.getActionName().equals("bv.action.alerts")) {
           Alerts.updateAlertsIcon();
-        }
-        else {
+        } else {
           a.setEnabled(len > 0);
         }
       }

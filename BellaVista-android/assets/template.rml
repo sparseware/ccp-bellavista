@@ -55,16 +55,16 @@ TemplateContext {
     {
       Label {
         borders {
-         // matte [ insets="0,0,1,0", color="#999999" ]
+          // matte [ insets="0,0,1,0", color="#999999" ]
           empty [ insets="4,0,4,0" ]
+        }
+        font {
+          underlined: true
         }
         fgColor: "summaryHeaderForeground"
         bgColor: "lightBackground"
         bounds {
           height: "-1" [ min="1.5ln" ]
-        }
-        font {
-         underlined: true
         }
         templateName: "bv.label.trendPanelHeader"
         textHAlignment: center
@@ -95,8 +95,8 @@ TemplateContext {
           line [ cornerArc="6", color="transparent" ]
           empty [ insets="4,4,4,4" ]
         }
-        templateName: "bv.button"
         bgColor: "defaultBackground-10"
+        templateName: "bv.button"
         pressedPainter {
           bgColor: "defaultBackground-20"
         }
@@ -147,6 +147,51 @@ TemplateContext {
         alternatingHighlightColor: "rowHilite"
         alternatingHighlightType: row
         autoSizeRowsToFit: true
+        scrollPane {
+          columnFooter {
+            GroupBox {
+              name: "_nextPreviousPanel"
+              visible: false
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "4"
+              }
+              layout: forms
+              rows: "d"
+              columns: "d:g,4dluX,d:g"
+              widgets {
+                {
+                  PushButton {
+                    name: "_nextPage"
+                    bounds {
+                      x: "2"
+                      y: "0"
+                    }
+                    enabled: false
+                    value: "{resource:bv.text.paging_next}"
+                    icon: "resource:bv.icon.paging_next"
+                    iconPosition: right
+                    buttonStyle: toolbar
+                  } [ onAction="class:MainEventHandler#onNextOrPreviousPage" ]
+                }
+                {
+                  PushButton {
+                    name: "_previousPage"
+                    bounds {
+                      x: "0"
+                      y: "0"
+                    }
+                    enabled: false
+                    value: "{resource:bv.text.paging_previous}"
+                    icon: "resource:bv.icon.paging_previous"
+                    buttonStyle: toolbar
+                  } [ onAction="class:MainEventHandler#onNextOrPreviousPage" ]
+                }
+              }
+            }
+          }
+        }
         columns {
           {
             title: " "
@@ -190,6 +235,7 @@ TemplateContext {
         local: false
         selectionMode: single
         columnSortingAllowed: false
+        singleClickActionEnabled: false
         gridLineType: horizontal_lines
         gridLineColor: "tableGridLineColor"
         alternatingHighlightColor: "rowHilite"
@@ -197,7 +243,6 @@ TemplateContext {
         autoSizeRowsToFit: true
         rowHeight: "2ln"
         showStandardColumnHeader: false
-        singleClickActionEnabled: false
         columns {
           {
             title: "Photo"
@@ -232,6 +277,7 @@ TemplateContext {
         templateName: "bv.table.summary"
         columnSortingAllowed: false
         singleClickActionEnabled: true
+        boldColumnHeaders: true
         gridLineType: horizontal_lines
         gridLineColor: "white"
         headerFgColor: "summaryHeaderForeground"
@@ -239,7 +285,6 @@ TemplateContext {
         headerSeparatorColor: "transparent"
         headerBottomSeparatorColor: "darkBackground"
         autoSizeRowsToFit: true
-        boldColumnHeaders: true
         rowHeight: "1.25ln"
       }
     }
@@ -264,7 +309,7 @@ TemplateContext {
         headerFgColor: "summaryHeaderForeground"
         headerBgColor: "white"
         headerSeparatorColor: "transparent"
-        headerBottomSeparatorColor: "darkBackground"
+        headerBottomSeparatorColor: "themeBlue"
         autoSizeRowsToFit: true
         rowHeight: "1.25ln"
       }
@@ -440,8 +485,8 @@ TemplateContext {
             gridCell {
               bgColor: "defaultBackground^10"
             }
-            headerHorizontalAlign: center
             headerWordWrap: true
+            headerHorizontalAlign: center
           }
         }
       }
@@ -544,7 +589,7 @@ TemplateContext {
     {
       Browser {
         templateName: "bv.browser"
-        customProperties: "autoInsertMetaContent=true;android:hardwareAccelerated=false"
+        customProperties: "autoInsertMetaContent=true;android:hardwareAccelerated=false;useRuntimeToLoadContent=true"
       }
     }
     {
@@ -864,12 +909,12 @@ TemplateContext {
           {
             Label {
               name: "messageBox"
+              borders {
+                empty [ insets="0,4,0,4" ]
+                matte [ insets="0,0,1,0" ]
+              }
               font {
                 size: "-1"
-              }
-              borders {
-              	empty [ insets="0,4,0,4"]
-              	matte [insets="0,0,1,0"]
               }
               bounds {
                 x: "1"
@@ -914,35 +959,38 @@ TemplateContext {
     }
     {
       Form {
+        borders {
+          group_box
+        }
         verticalAlign: full
         horizontalAlign: full
         templateName: "bv.oe.date_time_field"
         layout: forms
-        rows: "2dlu,d,2dlu,d,2dlu,f:d"
-        columns: "2dlu,6dlu,c:d,8dlu,d,6dlu,4dlu,d,2dlu"
+        rows: "2dluY,d,2dluY,d,2dluY"
+        columns: "2dluX,d,2dluX,c:d,8dluX,d,6dluX,2dluX,d,2dluX"
         submitValue: viewer_value
         widgets {
           {
             PushButton {
               name: "now"
               bounds {
-                x: "2"
+                x: "3"
                 y: "3"
                 width: "6ch"
               }
               value: "{resource:bv.text.now}"
-            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+            } [ onAction="class:.oe.OrderEntry#onFieldValueForDateChanged" ]
           }
           {
             PushButton {
               name: "clear"
               bounds {
-                x: "4"
+                x: "5"
                 y: "3"
                 width: "6ch"
               }
               value: "{resource:bv.text.clear}"
-            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+            } [ onAction="class:.oe.OrderEntry#onFieldValueForDateChanged" ]
           }
           {
             DateChooser {
@@ -952,37 +1000,142 @@ TemplateContext {
               }
               bgColor: "buttonBackground"
               bounds {
-                x: "7"
+                x: "8"
                 y: "1"
               }
               displayType: button
               showPopupButton: true [ pressedPainter="selectionColor" ]
               showTime: true
-            } [ onChange="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+            } [ onChange="class:.oe.OrderEntry#onFieldValueForDateChanged" ]
           }
           {
             TextField {
               name: "valueField"
-              columnSpan: 5
+              columnSpan: 4
               bounds {
-                x: "1"
+                x: "3"
                 y: "1"
                 width: "10ch"
               }
               customProperties: "android:layout=''"
-            } [ onAction="class:oe.OrderEntry#onFieldValueForDateChanged" ]
+            } [ onAction="class:.oe.OrderEntry#onFieldValueForDateChanged" ]
           }
           {
-            Label {
-              columnSpan: -1
+            PushButton {
               bounds {
                 x: "1"
-                y: "5"
+                y: "1"
               }
-              value: "{resource:bv.oe.text.date_time_help}"
-              textVAlignment: top
-              wordWrap: true
+              icon: "resource:bv_icon_fieldhelp"
+              buttonStyle: toolbar
+            } [ onAction="class:MainEventHandler#showHelp?resource:bv.oe.text.date_time_help" ]
+          }
+        }
+      }
+    }
+    {
+      Form {
+        templateName: "bv.search_list"
+        local: false
+        layout: forms
+        rows: "d,2dluY,f:d:g,f:d"
+        columns: "d:g"
+        widgets {
+          {
+            ListBox {
+              name: "list"
+              verticalAlign: full
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "2"
+              }
+              contentPadding {
+                top: "2"
+                right: "4"
+                bottom: "2"
+                left: "14"
+              }
+              defaultContextMenu: false
+              templateName: "bv.oe.list_field.listbox"
+              handleFirstFocusSelection: false
+              visibleRowCount: 4
+              alternatingHighlightColor: "rowHilite"
+              singleClickActionEnabled: true
+            } [ onCreated="class:ListSearcher#onListCreated", onFinishedLoading="class:.oe.OrderEntry#onListFieldFinishedLoading" ]
+          }
+          {
+            GroupBox {
+              name: "buttonPanel"
+              borders {
+                matte [ insets="1,0,0,0" ]
+              }
+              horizontalAlign: full
+              bounds {
+                x: "0"
+                y: "3"
+              }
+              layout: forms
+              rows: "d,2dlu"
+              columns: "d:g,2dluX,d:g,d"
+              columnGrouping {
+                "0,2"
+              }
+              widgets {
+                {
+                  PushButton {
+                    name: "_nextPage"
+                    bounds {
+                      x: "2"
+                      y: "0"
+                    }
+                    enabled: false
+                    value: "{resource:bv.text.paging_next}"
+                    icon: "resource:bv.icon.paging_next"
+                    iconPosition: right
+                    buttonStyle: toolbar
+                  } [ onAction="class:ListSearcher#onNextOrPreviousPage" ]
+                }
+                {
+                  PushButton {
+                    name: "_previousPage"
+                    bounds {
+                      x: "0"
+                      y: "0"
+                    }
+                    enabled: false
+                    value: "{resource:bv.text.paging_previous}"
+                    icon: "resource:bv.icon.paging_previous"
+                    buttonStyle: toolbar
+                  } [ onAction="class:ListSearcher#onNextOrPreviousPage" ]
+                }
+              }
             }
+          }
+          {
+            TextField {
+              name: "search"
+              borders {
+                line [ cornerArc="6" ]
+                icon [ icon=",,,resource:bv.icon.search", insets="4,4,4,4" ]
+                empty [ insets="0,0,0,4" ]
+              }
+              bgColor: "white"
+              bounds {
+                x: "0"
+                y: "0"
+              }
+              emptyText {
+                value: "{resource:bv.text.search}"
+                font {
+                  style: italic
+                }
+                fgColor: "#999999"
+              }
+              allowDefaultSuggestions: false
+              keyboardType: default_type [ autoCapatilize="none", autoCorrect="false", spellCheck="false" ]
+              keyboardReturnButtonType: search_type
+            } [ onAction="class:ListSearcher#onSearchFieldAction" ]
           }
         }
       }
@@ -1026,7 +1179,7 @@ TemplateContext {
         verticalAlign: top
         horizontalAlign: full
         templateName: "bv.oe.list_field.combobox"
-      } [ onFinishedLoading="class:oe.OrderEntry#onListFieldFinishedLoading" ]
+      } [ onFinishedLoading="class:.oe.OrderEntry#onListFieldFinishedLoading" ]
     }
     {
       ListBox {
@@ -1043,7 +1196,7 @@ TemplateContext {
         handleFirstFocusSelection: false
         alternatingHighlightColor: "rowHilite"
         singleClickActionEnabled: true
-      } [ onFinishedLoading="class:oe.OrderEntry#onListFieldFinishedLoading" ]
+      } [ onFinishedLoading="class:.oe.OrderEntry#onListFieldFinishedLoading" ]
     }
     {
       TextField {

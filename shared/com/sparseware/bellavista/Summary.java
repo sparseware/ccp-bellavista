@@ -170,11 +170,12 @@ public class Summary extends aEventHandler {
 
       vr.addValue(date, row.get(VALUE_COLUMN_POSITION).toString());
     }
-
-    updateForm(fv, vitals, beg, end, chartVitals);
-
-    if (chart != null) {
-      chart.refreshItems();
+    if(beg!=null && end!=null) {
+      updateForm(fv, vitals, beg, end, chartVitals);
+  
+      if (chart != null) {
+        chart.refreshItems();
+      }
     }
   }
 

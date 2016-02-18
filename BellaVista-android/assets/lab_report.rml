@@ -1,168 +1,245 @@
-GridPane {
-  name: "labReport"
-  rows: 3
-  rowSpacing: 0
-  regions {
+StackPane {
+  name: "documentStack"
+  transitionAnimator: "SlideAnimation"
+  actAsFormViewer: true
+  viewers {
     {
-      x: "0"
-      y: "0"
-      verticalFill: preferred
-      viewer {
-        ToolBar {
-          borders {
-            empty [ insets="2,0,1,0" ]
-            matte [ insets="0,0,1,0" ]
+      GridPane {
+        name: "labReport"
+        rows: 3
+        rowSpacing: 0
+        actAsFormViewer: false
+        regions {
+          {
+            x: "0"
+            y: "0"
+            verticalFill: preferred
+            viewer {
+              ToolBar {
+                borders {
+                  empty [ insets="2,0,1,0" ]
+                  matte [ insets="0,0,1,0" ]
+                }
+                columnSpan: -1
+                actAsFormViewer: false
+                widgets {
+                  {
+                    Label {
+                      name: "documentTitle"
+                      horizontalAlign: full
+                      font {
+                        size: "+2"
+                      }
+                      bounds {
+                        x: "3"
+                        y: "0"
+                      }
+                      value: "Note Title"
+                      textHAlignment: center
+                      wordWrap: true
+                    } [ onConfigure="class:MainEventHandler#onMakeExpander", onShown="class:MainEventHandler#onMakeWindowDragger" ]
+                  }
+                  {
+                    Bean {
+                      name: "Rare.bean.separator"
+                    }
+                  }
+                  {
+                    PushButton {
+                      templateName: "bv.pushbutton.fullscreen"
+                    }
+                  }
+                }
+              }
+            }
           }
-          columnSpan: -1
-          actAsFormViewer: false
-          widgets {
-            {
-              Label {
-                name: "documentTitle"
+          {
+            x: "0"
+            y: "1"
+            verticalFill: preferred
+            viewer {
+              GroupBox {
+                borders {
+                  matte [ insets="0,0,1,0" ]
+                }
+                verticalAlign: full
                 horizontalAlign: full
-                font {
-                  size: "+2"
+                bgColor: "white"
+                layout: forms
+                rows: "2dluY,d,d"
+                columns: "d,c:d:g,d"
+                widgets {
+                  {
+                    Navigator {
+                      name: "navigator"
+                      borders {
+                        line [ padForArc="false", noBottom="true", cornerArc="4" ]
+                      }
+                      verticalAlign: bottom
+                      horizontalAlign: center
+                      bounds {
+                        x: "1"
+                        y: "2"
+                      }
+                      type: toggle
+                      selectedIndex: 0
+                      //buttonsSameSize: true
+                      pressedPainter {
+                        bgColor: "defaultBackground-30,defaultBackground-15,defaultBackground,defaultBackground-30" [ magnitude="200" ]
+                      }
+                      actions {
+                        {
+                          name: "report"
+                          value: "{resource:bv.text.report}"
+                        } [ onAction="class:Labs#onReportNavigatorChange" ]
+                        {
+                          name: "susceptibilities"
+                          value: "{resource:bv.text.susceptibility}"
+                        } [ onAction="class:Labs#onReportNavigatorChange" ]
+                        {
+                          name: "stains"
+                          value: "{resource:bv.text.stains}"
+                        } [ onAction="class:Labs#onReportNavigatorChange" ]
+                      }
+                    }
+                  }
+                  {
+                    Label {
+                      name: "extraHeaderDetail"
+                      borders {
+                        empty [ insets="0,0,4,0" ]
+                      }
+                      bounds {
+                        x: "1"
+                        y: "1"
+                      }
+                      value: "<html><font color='{$color('clinicalPrompt')}'>{resource:bv.text.specimen}</font>: %s</html>"
+                    }
+                  }
                 }
-                bounds {
-                  x: "3"
-                  y: "0"
-                }
-                value: "Note Title"
-                textHAlignment: center
-                wordWrap: true
-              } [ onShown="class:MainEventHandler#onMakeWindowDragger", onConfigure="class:MainEventHandler#onMakeExpander" ]
-            }
-            {
-              Bean {
-                name: "Rare.bean.separator"
-              }
-            }
-            {
-              PushButton {
-                templateName: "bv.pushbutton.fullscreen"
               }
             }
           }
-        }
-      }
-    }
-    {
-      x: "0"
-      y: "1"
-      verticalFill: preferred
-      viewer {
-        GroupBox {
-          borders {
-            matte [ insets="0,0,1,0" ]
-          }
-          verticalAlign: full
-          horizontalAlign: full
-          bgColor: "white"
-          layout: forms
-          rows: "2dluY,d,d"
-          columns: "d,c:d:g,d"
-          widgets {
-            {
-              Navigator {
-                name: "navigator"
-                borders {
-                  line [ padForArc="false", noBottom="true", cornerArc="4" ]
-                }
-                verticalAlign: bottom
-                horizontalAlign: center
-                bounds {
-                  x: "1"
-                  y: "2"
-                }
-                type: toggle
+          {
+            x: "0"
+            y: "2"
+            viewer {
+              StackPane {
+                name: "reportStack"
+                verticalAlign: full
+                horizontalAlign: full
+                bgColor: "white"
                 selectedIndex: 0
-                //buttonsSameSize: true
-                pressedPainter {
-                  bgColor: "defaultBackground-30,defaultBackground-15,defaultBackground,defaultBackground-30" [ magnitude="200" ]
-                }
-                actions {
+                actAsFormViewer: false
+                viewers {
                   {
-                    name: "report"
-                    value: "{resource:bv.text.report}"
-                  } [ onAction="class:Labs#onReportNavigatorChange" ]
+                    SplitPane {
+                      bgColor: "defaultBackground+5"
+                      splitOrientation: top_to_bottom
+                      actAsFormViewer: false
+                      splitProportions {
+                        .7
+                      }
+                      regions {
+                        {
+                          x: "0"
+                          y: "0"
+                          viewer {
+                            Browser {
+                              name: "documentDetail"
+                              templateName: "bv.browser"
+                            }
+                          }
+                        }
+                        {
+                          x: "0"
+                          y: "1"
+                          visible: false
+                          viewer {
+                            CollapsiblePane {
+                              name: "attachments"
+                              title: "{resource:bv.text.attachments_none}"
+                              verticalAlign: full
+                              widget {
+                                Table {
+                                  name: "attachmentsTable"
+                                  bounds {
+                                    height: "6ln"
+                                  }
+                                  templateName: "bv.table"
+                                  columnSortingAllowed: false
+                                  singleClickActionEnabled: true
+                                  headerHeight: "1ln"
+                                  columns {
+                                    {
+                                      renderDetail: icon_only
+                                      width: "28!"
+                                      icon: "resource:bv.icon.document"
+                                    }
+                                    {
+                                      title: "{resource:bv.text.title}"
+                                    }
+                                    {
+                                      title: "{resource:bv.text.date}"
+                                      valueType: date_time_type
+                                      valueContext: "|MM/dd/yy"
+                                      width: "8ch"
+                                    }
+                                  }
+                                }
+                              }
+                              collapsibleInfo {
+                                initiallyCollapsed: false
+                                titleCell {
+                                  borders {
+                                    matte [ insets="1, 0, 0, 0" ]
+                                    empty [ insets="4, 0, 4, 4" ]
+                                  }
+                                }
+                                userControllable: false
+                                opaqueTitleBar: false
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                   {
-                    name: "susceptibilities"
-                    value: "{resource:bv.text.susceptibility}"
-                  } [ onAction="class:Labs#onReportNavigatorChange" ]
+                    TreeTable {
+                      borders {
+                        none
+                      }
+                      autoResizeMode: none
+                      selectionMode: none
+                      columnSortingAllowed: false
+                      autoSizeRowsToFit: true
+                      columns {
+                        {
+                          title: " "
+                          renderDetail: icon_only
+                          width: "22!"
+                        }
+                        {
+                          title: " "
+                          width: "10ch!"
+                        }
+                      }
+                      expandAll: true
+                    }
+                  }
                   {
-                    name: "stains"
-                    value: "{resource:bv.text.stains}"
-                  } [ onAction="class:Labs#onReportNavigatorChange" ]
+                    Browser {
+                      name: "stains"
+                      templateName: "bv.browser"
+                    }
+                  }
                 }
-              }
-            }
-            {
-              Label {
-                name: "extraHeaderDetail"
-                borders {
-                  empty [ insets="0,0,4,0" ]
-                }
-                bounds {
-                  x: "1"
-                  y: "1"
-                }
-                value: "<html><font color='{$color('clinicalPrompt')}'>{resource:bv.text.specimen}</font>: %s</html>"
               }
             }
           }
         }
-      }
-    }
-    {
-      x: "0"
-      y: "2"
-      viewer {
-        StackPane {
-          name: "reportStack"
-          verticalAlign: full
-          horizontalAlign: full
-          bgColor: "white"
-          selectedIndex: 0
-          actAsFormViewer: false
-          viewers {
-            {
-              Browser {
-                name: "documentDetail"
-                templateName: "bv.browser"
-              }
-            }
-            {
-              TreeTable {
-                borders {
-                  none
-                }
-                autoResizeMode: none
-                selectionMode: none
-                columnSortingAllowed: false
-                autoSizeRowsToFit: true
-                columns {
-                  {
-                    title: " "
-                    renderDetail: icon_only
-                    width: "22!"
-                  }
-                  {
-                    title: " "
-                    width: "10ch!"
-                  }
-                }
-                expandAll: true
-              }
-            }
-            {
-              Browser {
-                name: "stains"
-                templateName: "bv.browser"
-              }
-            }
-          }
-        }
-      }
+      } 
     }
   }
-} [ onLoad="class:Labs#onLabReportLoad" ]
+}[ onLoad="class:Labs#onLabReportLoad" ]

@@ -16,14 +16,38 @@
 
 package com.sparseware.bellavista;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.ClosedChannelException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.appnativa.rare.CallbackFunctionCallback;
+import com.appnativa.rare.ErrorInformation;
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aFunctionCallback;
 import com.appnativa.rare.aWorkerTask;
-import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.iPlatformAppContext;
+import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.net.ActionLink.RequestEncoding;
 import com.appnativa.rare.net.HTTPException;
@@ -33,7 +57,9 @@ import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.GridPane;
 import com.appnativa.rare.spot.Viewer;
 import com.appnativa.rare.ui.ActionBar;
+import com.appnativa.rare.ui.AlertPanel;
 import com.appnativa.rare.ui.FontUtils;
+import com.appnativa.rare.ui.LinearPanel;
 import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.UIAction;
 import com.appnativa.rare.ui.UICompoundIcon;
@@ -41,14 +67,16 @@ import com.appnativa.rare.ui.UIFont;
 import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.ViewerCreator;
 import com.appnativa.rare.ui.aPlatformIcon;
+import com.appnativa.rare.ui.iPlatformGraphics;
+import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.effects.PullBackAnimation;
 import com.appnativa.rare.ui.effects.ShakeAnimation;
 import com.appnativa.rare.ui.effects.SlideAnimation;
 import com.appnativa.rare.ui.effects.TransitionAnimator;
 import com.appnativa.rare.ui.effects.iAnimator.Direction;
 import com.appnativa.rare.ui.effects.iTransitionAnimator;
-import com.appnativa.rare.ui.iPlatformGraphics;
-import com.appnativa.rare.ui.iPlatformIcon;
+import com.appnativa.rare.ui.event.ActionEvent;
+import com.appnativa.rare.ui.event.iActionListener;
 import com.appnativa.rare.util.Grouper;
 import com.appnativa.rare.util.SubItemComparator;
 import com.appnativa.rare.viewer.GridPaneViewer;
@@ -62,19 +90,18 @@ import com.appnativa.rare.viewer.aContainer;
 import com.appnativa.rare.viewer.iContainer;
 import com.appnativa.rare.viewer.iTarget;
 import com.appnativa.rare.viewer.iViewer;
+import com.appnativa.rare.widget.PushButtonWidget;
 import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
+import com.appnativa.util.CharScanner;
 import com.appnativa.util.Helper;
 import com.appnativa.util.IdentityArrayList;
 import com.appnativa.util.ObjectHolder;
 import com.appnativa.util.SNumber;
 import com.appnativa.util.iFilterableList;
 import com.appnativa.util.json.JSONObject;
-
 import com.google.j2objc.annotations.Weak;
-
 import com.sparseware.bellavista.ActionPath.iActionPathSupporter;
-import com.sparseware.bellavista.Document.DocumentItemType;
 import com.sparseware.bellavista.Settings.AppPreferences;
 import com.sparseware.bellavista.Settings.Server;
 import com.sparseware.bellavista.external.aAttachmentHandler;
@@ -82,31 +109,6 @@ import com.sparseware.bellavista.external.aCommunicationHandler;
 import com.sparseware.bellavista.external.aCommunicationHandler.Status;
 import com.sparseware.bellavista.external.aProtocolHandler;
 import com.sparseware.bellavista.service.StreamHandlerFactory;
-
-import java.io.IOException;
-
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.URLStreamHandler;
-
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.ClosedChannelException;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class Utils {
   public static char                             colSeparator                   = '^';
@@ -147,6 +149,11 @@ public class Utils {
   static HashMap<String, aProtocolHandler> protocolHandlers;
   static DefaultProtocolHandler            defaultProtocolHandler;
   private static boolean                   locking;
+  private static String                    styleSheet;
+  static Server                            dataServer;
+  static aProtocolHandler                  protocolHandler;
+  private static String serverHost;
+  static HashSet<String >imageAttachmentTypes;
 
   /**
    * This provides generic utilities used throughout the application. It is also
@@ -204,6 +211,51 @@ public class Utils {
     }
   }
 
+  public static void applicationInitialized() {
+    cardStack = UIScreen.isSmallScreen();
+
+    /**
+     * Check for protocol handlers
+     */
+    if (protocolHandlers == null) {    //check only once
+      JSONObject ph = (JSONObject) Platform.getAppContext().getData("protocolHandlers");
+
+      if ((ph != null) &&!ph.isEmpty()) {
+        Iterator<Entry> it = ph.getObjectMap().entrySet().iterator();
+
+        protocolHandlers = new HashMap<String, aProtocolHandler>(2);
+
+        while(it.hasNext()) {
+          Entry            e        = it.next();
+          String           prototol = (String) e.getKey();
+          String           cls      = (String) e.getValue();
+          aProtocolHandler h        = (aProtocolHandler) Platform.createObject(cls);
+
+          if (ph == null) {
+            Platform.debugLog("unable to create protocol handler:" + cls);
+          } else {
+            protocolHandlers.put(prototol, h);
+            protocolHandlers.put(prototol + "s", h);
+          }
+        }
+
+        if (protocolHandlers.isEmpty()) {
+          protocolHandlers = null;
+        } else {
+          defaultProtocolHandler = new DefaultProtocolHandler();
+          URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
+        }
+      }
+    }
+
+    WindowViewer w  = Platform.getWindowViewer();
+    ActionBar    ab = w.getActionBar();
+
+    actionbarIcon = new BackIcon(ab.getTitleComponent().getIcon());
+    ab.setTitleIcon(actionbarIcon);
+    ab.setTitleAction(w.getAction("bv.action.back"));
+  }
+
   /**
    * Called when the application is paused. We will show the timed out screen
    * but we will not log the user out from the server and we will not remove the
@@ -211,10 +263,12 @@ public class Utils {
    * be relied upon)
    */
   public static void applicationPaused() {
-    Platform.getAppContext().closePopupWindows(true);
+    if (!ignorePausing && getUserID()!=null) {
+      Platform.getAppContext().closePopupWindows(true);
 
-    if (!ignorePausing && (getUserID() != null)) {
-      lockApplication(ApplicationLockType.PAUSED, false);
+      if ((getUserID() != null)) {
+        lockApplication(ApplicationLockType.PAUSED, false);
+      }
     }
   }
 
@@ -225,6 +279,7 @@ public class Utils {
    * will force the user to re-enter thier password
    */
   public static void applicationResumed() {
+    ignorePausing=false;
     if ((applicationLock == null) || (applicationLock.viewer == null)) {
       return;
     }
@@ -496,6 +551,25 @@ public class Utils {
   }
 
   /**
+   * Clears the viewer stack
+   *
+   * @return true if the stack was cleared false if a viewer prevented the stack from being cleared
+   */
+  public static boolean clearViewerStack() {
+    int vsize = Utils.getViewerStackSize();
+
+    while(vsize > 0) {
+      if (!Utils.popViewerStack()) {
+        return false;
+      }
+
+      vsize = Utils.getViewerStackSize();
+    }
+
+    return true;
+  }
+
+  /**
    * Returns whether or not polling for updates should continue
    *
    * @return true to continue; false toe stop
@@ -572,16 +646,6 @@ public class Utils {
     }
   }
 
-  public static URLStreamHandler createURLStreamHandler(String protocol) {
-    aProtocolHandler ph = (protocolHandlers == null)
-                          ? null
-                          : protocolHandlers.get(protocol);
-
-    return (ph == null)
-           ? null
-           : ph.createURLStreamHandler(protocol);
-  }
-
   public static ActionLink createLink(iWidget context, URL url) {
     if (protocolHandlers != null) {
       return getProtocolHelper(url).createLink(context, url);
@@ -640,6 +704,16 @@ public class Utils {
     }
 
     return new ActionLink(Functions.format(s, id));
+  }
+
+  public static URLStreamHandler createURLStreamHandler(String protocol) {
+    aProtocolHandler ph = (protocolHandlers == null)
+                          ? null
+                          : protocolHandlers.get(protocol);
+
+    return (ph == null)
+           ? null
+           : ph.createURLStreamHandler(protocol);
   }
 
   /**
@@ -728,6 +802,69 @@ public class Utils {
       wasClosing = true;
       Platform.getAppContext().exit();
     }
+  }
+
+  /**
+   * Expands a template that uses curly braces to denote template fields
+   * @param template the template to be expanded
+   * @param data the map of data for the template
+   * @return the expanded tamplate
+   * @throws IOException
+   */
+  @SuppressWarnings("resource")
+  public static String expandTemplate(String template, Map data) throws IOException {
+    int n = template.indexOf('{');
+
+    if (n == -1) {
+      return template;
+    }
+
+    char         a[]    = template.toCharArray();
+    int          len    = a.length;
+    CharScanner  sc     = new CharScanner();
+    StringWriter writer = new StringWriter(template.length());
+
+    sc.reset(a, 0, len, false);
+
+    String s;
+    Object o;
+    int    p = 0;
+
+    do {
+      n = n - p;
+      writer.write(a, p, n);
+      sc.consume(n + 1);
+      p = sc.getPosition();
+      n = sc.indexOf('}', true, true);
+
+      if (n == -1) {
+        break;
+      }
+
+      n = n - p;
+      s = sc.getString(p, n);
+      o = data.get(s);
+      sc.reset(a, 0, len, false);    // reset because getAttribute() can reuse the
+      // scanned
+      sc.consume(p);
+
+      if (o != null) {
+        s = o.toString();
+        writer.write(s);
+      }
+
+      sc.consume(n + 1);
+      p = sc.getPosition();
+      n = sc.indexOf('{', false, false);
+    } while(n != -1);
+
+    n = sc.getLength();
+
+    if (n > 0) {
+      writer.write(a, sc.getRelPosition(), n);
+    }
+
+    return writer.toString();
   }
 
   /**
@@ -834,8 +971,9 @@ public class Utils {
     return p;
   }
 
-  public static aAttachmentHandler getAttachmentHandler(Document.DocumentItemType type) {
-    String s = type.name().toLowerCase(Locale.US);
+  public static aAttachmentHandler getAttachmentHandler(String type) {
+    type=type.toLowerCase(Locale.US);
+    String s = type;
 
     if (attachmentHandlers == null) {
       attachmentHandlers = (JSONObject) Platform.getAppContext().getData("attachmentHandlers");
@@ -848,7 +986,15 @@ public class Utils {
     s = attachmentHandlers.optString(s);
 
     if ((s == null) || (s.length() == 0) || s.equals("default")) {
-      if (type == DocumentItemType.IMAGE) {
+      if(imageAttachmentTypes==null) {
+        imageAttachmentTypes=new HashSet<String>();
+        imageAttachmentTypes.add("image");
+        imageAttachmentTypes.add("image_slides");
+        imageAttachmentTypes.add("image/png");
+        imageAttachmentTypes.add("image/jpg");
+        imageAttachmentTypes.add("image/gif");
+      }
+      if (imageAttachmentTypes.contains(type)) {
         return new DefaultImageViewer();
       }
     }
@@ -864,6 +1010,34 @@ public class Utils {
     }
 
     return (aAttachmentHandler) Platform.createObject(s);
+  }
+
+  /**
+   * Returns the data from the specified url as a SJON object.
+   * This method will throw an exception if called from the UI thread
+   *
+   * @param url the url
+   * @param data data to send (can be null)
+   * @param sendAsJSON true to send form data as JSON; false otherwise
+   * @return the JSON object representing the data
+   * @throws Exception
+   */
+  public static JSONObject getContentAsJSON(String url, Map data, boolean sendAsJSON) throws Exception {
+    if (Platform.isUIThread()) {
+      throw new ApplicationException("This method must only be called from a background thread");
+    }
+
+    ActionLink l = new ActionLink(url);
+
+    if ((data != null) && sendAsJSON) {
+      l.setRequestEncoding(RequestEncoding.JSON);
+    }
+
+    String s = (data == null)
+               ? l.getContentAsString()
+               : l.sendFormData(Platform.getWindowViewer(), data);
+
+    return new JSONObject(s);
   }
 
   public static Server getDefaultServer() {
@@ -932,6 +1106,17 @@ public class Utils {
   }
 
   /**
+   * Gets the protocol handler for the specified protocol
+   *
+   * @param protocol
+   *          the the URL protocol
+   * @return the protocol handler for the specified protocol or null if there isn't one installed
+   */
+  public static aProtocolHandler getProtocolHandler(String protocol) {
+    return protocolHandlers.get(protocol);
+  }
+
+  /**
    * Get the split pane viewer at the top of the widgets hierarchy. Only a split
    * pane that is is a the direct child of a tab pane viewer will be returned.
    *
@@ -987,6 +1172,18 @@ public class Utils {
     return statusIcons;
   }
 
+  /**
+   * Gets the contents of a style sheet to use for client side generated content
+   * @return
+   */
+  public static String getStyleSheet() {
+    return styleSheet;
+  }
+
+  public static JSONObject getUser() {
+    return (JSONObject) Platform.getAppContext().getData("user");
+  }
+
   public static String getUserDisplayName() {
     JSONObject map = (JSONObject) Platform.getAppContext().getData("user");
 
@@ -1007,22 +1204,14 @@ public class Utils {
   }
 
   /**
-   * Clears the viewer stack
+   * Gets the current viewer on the stack
    *
-   * @return true if the stack was cleared false if a viewer prevented the stack from being cleared
+   * @return the current viewer on the stack
    */
-  public static boolean clearViewerStack() {
-    int vsize = Utils.getViewerStackSize();
-
-    while(vsize > 0) {
-      if (!Utils.popViewerStack()) {
-        return false;
-      }
-
-      vsize = Utils.getViewerStackSize();
-    }
-
-    return true;
+  public static iViewer getCurrentViewerOnStack() {
+    return stack.isEmpty()
+           ? null
+           : stack.get(stack.size() - 1).viewer;
   }
 
   public static List<RenderableDataItem> groupByDate(TableViewer widget, List<RenderableDataItem> rows) {
@@ -1112,7 +1301,7 @@ public class Utils {
           return;
         }
 
-        if (e instanceof MessageException) {
+        if (e instanceof MessageException && !((MessageException)e).isFatal()) {
           w.alert(((MessageException) e).getMessage());
 
           return;
@@ -1132,12 +1321,17 @@ public class Utils {
         }
 
         if (e instanceof HTTPException) {
+          String        msg;
           HTTPException he   = (HTTPException) e;
           int           code = he.getStatusCode();
 
           switch(code) {
             case 401 :    // unauthorized
             case 504 :    // gateway timed out
+              if (Utils.getUserID() == null) {
+                break;
+              }
+
               // if orders are pending make sure they are preserved
               lockApplication(true);
 
@@ -1154,11 +1348,24 @@ public class Utils {
 
               return;
 
-            case 303 :     // forbidden
-              String msg = he.getMessageBody();
+            case 303 :     // see other, used for messages from the server
+              msg = he.getMessageBody();
 
               if (msg.length() > 0) {
                 w.alert(msg);
+
+                return;
+              }
+
+              return;
+
+            case 420 :     // for non-fatal method failure 
+              msg = he.getMessageBody();
+
+              if (msg.length() > 0) {
+                ErrorPanel p = new ErrorPanel(Platform.getWindowViewer(), he.getStatus(), msg, true);
+
+                p.showDialog(null);
 
                 return;
               }
@@ -1174,9 +1381,25 @@ public class Utils {
         }
 
         Platform.ignoreException(null, e);
-        alert(e, !demo);
+
+        boolean debug = demo;
+
+        if ((dataServer != null) && dataServer.optBoolean("debug")) {
+          debug = true;
+        }
+
+        ErrorInformation ei  = new ErrorInformation(e);
+        String           msg = ei.toAlertPanelString();
+        WindowViewer     w   = Platform.getWindowViewer();
+        ErrorPanel       p   = new ErrorPanel(w, msg, debug);
+
+        p.showDialog(null);
       }
     });
+  }
+
+  public static Server getServer() {
+    return dataServer;
   }
 
   public static void handleStatusObject(JSONObject status) {}
@@ -1192,25 +1415,6 @@ public class Utils {
 
   public static boolean isCardStack() {
     return cardStack;
-  }
-
-  /**
-   * Gets whether the client supports the specified server protocol
-   *
-   * @param protocol
-   *          the the URL protocol
-   * @return true if it does; false otherwise
-   */
-  public static boolean isServerProtocolSupported(String protocol) {
-    if (protocol.equals("https") || protocol.equals("http")) {
-      return true;
-    }
-
-    if (protocolHandlers != null) {
-      return protocolHandlers.get(protocol) != null;
-    }
-
-    return false;
   }
 
   /**
@@ -1245,10 +1449,28 @@ public class Utils {
     return googleGlass;
   }
 
+  public static boolean isLocking() {
+    return locking;
+  }
+
   public static boolean isLoggingOff() {
     return (loginManager != null) && loginManager.loggingOff;
   }
-
+  public static boolean isSameServer(URL u1, URL u2) {
+    if(u1==null || u2==null) {
+      return u1==u2;
+    }
+    if(u1==u2) {
+      return true;
+    }
+    if(!u1.getProtocol().equals(u2.getProtocol())) {
+      return false;
+    }
+    if(!u1.getHost().equals(u2.getHost())) {
+      return false;
+    }
+    return true;
+  }
   public static boolean isReloggingIn() {
     return (loginManager != null) && loginManager.reloggingIn;
   }
@@ -1257,12 +1479,27 @@ public class Utils {
     return reverseFling;
   }
 
-  public static boolean isShuttingDown() {
-    return shuttingDown || Platform.isShuttingDown();
+  /**
+   * Gets whether the client supports the specified server protocol
+   *
+   * @param protocol
+   *          the the URL protocol
+   * @return true if it does; false otherwise
+   */
+  public static boolean isServerProtocolSupported(String protocol) {
+    if (protocol.equals("https") || protocol.equals("http")) {
+      return true;
+    }
+
+    if (protocolHandlers != null) {
+      return protocolHandlers.get(protocol) != null;
+    }
+
+    return false;
   }
 
-  public static boolean isLocking() {
-    return locking;
+  public static boolean isShuttingDown() {
+    return shuttingDown || Platform.isShuttingDown();
   }
 
   /**
@@ -1276,6 +1513,63 @@ public class Utils {
     lockApplication(timedout
                     ? ApplicationLockType.TIMEOUT
                     : ApplicationLockType.PAUSED, true);
+  }
+
+  public static Date parseDate(String value) {
+    try {
+      value = value.trim();
+
+      if (value.length() == 0) {
+        return null;
+      }
+
+      int n = value.indexOf(',');
+
+      if (n != -1) {
+        DateFormat df = Platform.getAppContext().getDefaultDateTimeContext().getDisplayFormat();
+
+        return df.parse(value);
+      }
+
+      if (Character.isDigit(value.charAt(0))) {
+        Calendar cal = Calendar.getInstance();
+        if(Helper.setDateTime(value, cal, true)) {
+          return cal.getTime();
+        }
+        else {
+          return null;
+        }
+      }
+
+      if (value.startsWith("@")) {
+        value = "T" + "value";
+      }
+
+      return Helper.createDate(value);
+    } catch(ParseException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Performs a callback
+   *
+   * @param cb
+   *          the call back to invoke
+   * @param canceled
+   *          the canceled value
+   * @param returnValue
+   *          the return value
+   */
+  public static void performCallback(final iFunctionCallback cb, final boolean canceled, final Object returnValue) {
+    if (cb != null) {
+      Platform.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          cb.finished(canceled, returnValue);
+        }
+      });
+    }
   }
 
   /**
@@ -1360,67 +1654,6 @@ public class Utils {
   }
 
   /**
-   * Displays a new viewer in the workspace while saving the previous viewer
-   *
-   * @param v
-   *          the viewer
-   */
-  public static void pushWorkspaceViewer(iViewer v) {
-    pushWorkspaceViewer(v, false, null);
-  }
-
-  /**
-   * Performs a callback
-   *
-   * @param cb
-   *          the call back to invoke
-   * @param canceled
-   *          the canceled value
-   * @param returnValue
-   *          the return value
-   */
-  public static void performCallback(final iFunctionCallback cb, final boolean canceled, final Object returnValue) {
-    if (cb != null) {
-      Platform.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          cb.finished(canceled, returnValue);
-        }
-      });
-    }
-  }
-
-  /**
-   * Displays a new viewer in the workspace while saving the previous viewer
-   *
-   * @param v
-   *          the viewer
-   * @param disposible
-   *          true if the specified can be disposed when not being displayed;
-   *          false otherwise
-   */
-  public static void pushWorkspaceViewer(iViewer v, boolean disposible) {
-    pushWorkspaceViewer(v, disposible, null);
-  }
-
-  /**
-   * Displays a new viewer in the workspace while saving the previous viewer
-   *
-   * @param v
-   *          the viewer
-   * @param disposible
-   *          true if the specified can be disposed when not being displayed;
-   *          false otherwise
-   *
-   * @param popRunner a runner to call to pop the viewer off the stack
-   */
-  public static void pushWorkspaceViewer(iViewer v, boolean disposible, Runnable popRunner) {
-    iTarget t = Platform.getWindowViewer().getTarget(iTarget.TARGET_WORKSPACE);
-
-    pushViewer(v, t, disposible, popRunner);
-  }
-
-  /**
    * Displays a new viewer in the specified target while saving the previous viewer
    *
    * @param v
@@ -1469,6 +1702,46 @@ public class Utils {
 
     t.setViewer(v);
     ab.revalidate();
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   *
+   * @param v
+   *          the viewer
+   */
+  public static void pushWorkspaceViewer(iViewer v) {
+    pushWorkspaceViewer(v, false, null);
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   *
+   * @param v
+   *          the viewer
+   * @param disposible
+   *          true if the specified can be disposed when not being displayed;
+   *          false otherwise
+   */
+  public static void pushWorkspaceViewer(iViewer v, boolean disposible) {
+    pushWorkspaceViewer(v, disposible, null);
+  }
+
+  /**
+   * Displays a new viewer in the workspace while saving the previous viewer
+   *
+   * @param v
+   *          the viewer
+   * @param disposible
+   *          true if the specified can be disposed when not being displayed;
+   *          false otherwise
+   *
+   * @param popRunner a runner to call to pop the viewer off the stack
+   */
+  public static void pushWorkspaceViewer(iViewer v, boolean disposible, Runnable popRunner) {
+    iTarget t = Platform.getWindowViewer().getTarget(iTarget.TARGET_WORKSPACE);
+
+    pushViewer(v, t, disposible, popRunner);
   }
 
   /**
@@ -1535,6 +1808,23 @@ public class Utils {
   }
 
   public static void resignIn(final iWidget context, String password) {
+    if ((protocolHandler != null) && dataServer.hasCustomLogin()) {
+      protocolHandler.relogin(new iFunctionCallback() {
+        @Override
+        public void finished(boolean canceled, Object returnValue) {
+          clearViewerStack();
+
+          if (!canceled) {
+            loginManager.relogin(context, null);
+          } else if (returnValue instanceof Throwable) {
+            handleError((Throwable) returnValue);
+          }
+        }
+      });
+
+      return;
+    }
+
     loginManager.relogin(context, password);
   }
 
@@ -1821,7 +2111,7 @@ public class Utils {
       username = username.trim();
     }
 
-    String href = server.serverURL;
+    String href = server.getURL();
 
     if (!href.endsWith("/")) {
       href += "/";
@@ -1848,16 +2138,18 @@ public class Utils {
 
     if ((href != null) && (href.length() > 0) &&!href.startsWith("file:") &&!"local/".equalsIgnoreCase(href)) {
       if (!href.contains("/demo") &&!href.contains("/BellaVista-android/assets/")) {
-        if ((password == null) || (password.length() < 4)) {
-          w.alert(w.getString("bv.text.missing_password"));
+        if (server.isRestricted()) {
+          if ((password == null) || (password.length() < 4)) {
+            w.alert(w.getString("bv.text.missing_password"));
 
-          return;
-        }
+            return;
+          }
 
-        if ((username == null) || (username.length() < 4)) {
-          w.alert(w.getString("bv.text.missing_username"));
+          if ((username == null) || (username.length() < 4)) {
+            w.alert(w.getString("bv.text.missing_username"));
 
-          return;
+            return;
+          }
         }
       } else {
         demo = true;
@@ -1875,7 +2167,7 @@ public class Utils {
         }
         //root is root path for the server (e.g. if the url was https://ccp/mydomain/cerner the root would be cerner)
       } catch(Exception e) {
-        w.alert(w.getString("bv.text.invalid_server"));
+        w.alert(w.getString("bv.format.invalid_server", href, ApplicationException.getMessageEx(e)));
 
         return;
       }
@@ -1884,6 +2176,30 @@ public class Utils {
     }
 
     loginManager = new LoginManager(context, url, root, server, title);
+
+    if ((protocolHandlers != null) && server.hasCustomLogin()) {
+      aProtocolHandler ph = protocolHandlers.get(url.getProtocol());
+
+      if (ph != null) {
+        w.showWaitCursor();
+        ph.customLogin(server, new iFunctionCallback() {
+          @Override
+          public void finished(boolean canceled, Object returnValue) {
+            clearViewerStack();
+
+            if (!canceled) {
+              loginManager.login(null, null);
+            } else if (returnValue instanceof Throwable) {
+              w.hideWaitCursor(true);
+              handleError((Throwable) returnValue);
+            }
+          }
+        });
+
+        return;
+      }
+    }
+
     loginManager.login(username, password);
   }
 
@@ -1994,7 +2310,6 @@ public class Utils {
         Platform.setUseFullScreen(true);
       }
 
-
       iTarget t = w.getTarget("patient_info");
 
       if (t != null) {    //can be null if we have another viewer loaded in the workspace
@@ -2012,7 +2327,6 @@ public class Utils {
       if (t != null) {
         t.setVisible(true);
       }
-
     }
 
     fullscreenMode = full;
@@ -2083,6 +2397,7 @@ public class Utils {
 
     try {
       WindowViewer w = Platform.getWindowViewer();
+
       OrderManager.lockingApplication();
       while(popViewerStack(true));
       applicationLock = new ApplicationLock(type);
@@ -2093,7 +2408,6 @@ public class Utils {
       if (a != null) {
         a.setEnabled(false);
       }
-
 
       if (logout) {
         PatientSelect.clearoutPatientCentricInfo();
@@ -2329,9 +2643,173 @@ public class Utils {
 
   enum ApplicationLockType { TIMEOUT, PAUSED, UNAVAILABLE }
 
+  static class BackIcon extends aPlatformIcon {
+    iPlatformIcon appIcon;
+    iPlatformIcon patientIcon;
+    iPlatformIcon icon;
+    iPlatformIcon backIcon;
+    int           backs;
+    int           iconHeight;
+    int           iconWidth;
+    int           backIconWidth;
+    int           backIconHeight;
+
+    public BackIcon(iPlatformIcon icon) {
+      super();
+      this.icon      = icon;
+      this.appIcon   = icon;
+      this.backIcon  = Platform.getResourceAsIcon("bv.icon.back_thin");
+      iconWidth      = icon.getIconWidth();
+      iconHeight     = icon.getIconHeight();
+      backIconWidth  = backIcon.getIconWidth();
+      backIconHeight = backIcon.getIconHeight();
+    }
+
+    public void decrement() {
+      backs--;
+
+      if (backs < 0) {
+        backs = 0;
+      }
+    }
+
+    public int getBacks() {
+      return backs;
+    }
+
+    @Override
+    public iPlatformIcon getDisabledVersion() {
+      return this;
+    }
+
+    @Override
+    public int getIconHeight() {
+      return Math.max(backIconHeight, iconHeight);
+    }
+
+    @Override
+    public int getIconWidth() {
+      return iconWidth + (backs * backIconWidth);
+    }
+
+    public void increment() {
+      backs++;
+    }
+
+    @Override
+    public void paint(iPlatformGraphics g, float x, float y, float width, float height) {
+      float yy = (height - backIconHeight) / 2;
+
+      for (int i = 0; i < backs; i++) {
+        backIcon.paint(g, x, yy, width, height);
+        x     += backIconWidth;
+        width -= backIconWidth;
+      }
+
+      yy = (height - iconHeight) / 2;
+      icon.paint(g, x, yy, width, height);
+    }
+
+    public void setIcon(iPlatformIcon icon) {
+      this.icon = icon;
+    }
+
+    public void showPatientIcon(boolean show) {
+      if (show) {
+        icon = patientIcon;
+      } else {
+        icon = appIcon;
+      }
+
+      if (icon == null) {
+        icon = appIcon;
+      }
+
+      iconWidth  = icon.getIconWidth();
+      iconHeight = icon.getIconHeight();
+    }
+  }
+
+
   static class DefaultProtocolHandler extends aProtocolHandler {
     @Override
+    public void customLogin(Server server, iFunctionCallback cb) {}
+
+    @Override
     public void initialize(Server server) throws Exception {}
+  }
+
+
+  static class ErrorPanel extends AlertPanel {
+    String  message;
+    String  email;
+    String  subject;
+    boolean debug;
+
+    public ErrorPanel(iWidget context, String message, boolean debug) {
+      this(context, Platform.getResourceAsString("bv.text.application_error"), message, debug);
+    }
+
+    public ErrorPanel(iWidget context, String title, String message, boolean debug) {
+      super(context, title, message, Platform.getResourceAsIcon("bv.icon.alert_error"), true);
+      this.message = message;
+      email        = (String) Platform.getAppContext().getData("support_email");
+      subject      = (String) Platform.getAppContext().getData("support_email_sumject");
+      this.debug   = debug;
+      setRightAlignButtons(true);
+    }
+
+    protected int addOtherButtonsBefore(LinearPanel buttonPanel) {
+      PushButtonWidget b = createButton(Platform.getResourceAsString("Rare.action.copy"), null, new iActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Platform.getWindowViewer().copyToClipboard(message);
+          e.getComponent().setEnabled(false);
+        }
+      });
+      int count = 1;
+
+      buttonPanel.addComponent(b.getContainerComponent());
+
+      if (email != null) {
+        count++;
+        b = createButton(Platform.getResourceAsString("bv.text.email"), getButtonTemplate(null), new iActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            if (subject == null) {
+              subject = Platform.getResourceAsString("bv.text.bv_application_error");
+            }
+
+            Platform.getWindowViewer().mailTo(email, subject, message);
+          }
+        });
+        buttonPanel.addComponent(b.getContainerComponent());
+      }
+
+      b = createButton(Platform.getResourceAsString("bv.text.exit"), getButtonTemplate(null), new iActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          cancel();
+          exitEx();
+        }
+      });
+      yesButton = b;
+
+      if (debug) {
+        count++;
+        buttonPanel.addComponent(yesButton.getContainerComponent());
+        b = createButton(Platform.getResourceAsString("bv.text.continue"), getButtonTemplate(null),
+                         new iActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            cancel();
+          }
+        });
+        yesButton = b;
+      }
+
+      return count;
+    }
   }
 
 
@@ -2443,21 +2921,26 @@ public class Utils {
         String s;
 
         if (!demo) {
-          if (protocolHandlers != null) {
+          if ((protocolHandler == null) && (protocolHandlers != null)) {
             aProtocolHandler ph = protocolHandlers.get(l.getURL(window).getProtocol());
 
             if (ph != null) {
               ph.initialize(server);
+              protocolHandler = ph;
             }
           }
 
-          Map map = new HashMap();
+          if (server.isRestricted()) {
+            Map map = new HashMap();
 
-          map.put("username", username);
-          map.put("password", Functions.base64(password));
-          map.put("size", UIScreen.getRelativeScreenSizeName());
-          map.put("base64", "true");
-          s = l.sendFormData(contextWidget, map);
+            map.put("username", username);
+            map.put("password", Functions.base64(password));
+            map.put("size", UIScreen.getRelativeScreenSizeName());
+            map.put("base64", "true");
+            s = l.sendFormData(contextWidget, map);
+          } else {
+            s = l.getContentAsString();
+          }
         } else {
           s = l.getContentAsString();
         }
@@ -2466,100 +2949,108 @@ public class Utils {
 
         result = user;
 
-        if (server.isContextServer()) {    //serves up UI content
+          if (server.isContextServer()) {    //serves up UI content
+            if (url != null) {
+
+              /**
+               * In multi-screen mode the server automatically sets the context
+               * url to the a URL relative to the screen size name. We need to do
+               * this also in order to preserve the multi-screen functionality
+               * (trailing slash required)
+               */
+              app.setContextURL(new URL(url, UIScreen.getRelativeScreenSizeName() + "/"), root);
+            }
+          }
+
           if (url != null) {
 
             /**
-             * In multi-screen mode the server automatically sets the context
-             * url to the a URL relative to the screen size name. We need to do
-             * this also in order to preserve the multi-screen functionality
-             * (trailing slash required)
+             * Make sure the /hub/ urls route to this server
              */
-            app.setContextURL(new URL(url, UIScreen.getRelativeScreenSizeName() + "/"), root);
-          }
-        }
+            s = server.getURL();
 
-        if (url != null) {
+            if (s.endsWith("/")) {
+              s += "hub/";
+            } else {
+              s += "/hub/";
+            }
+
+            app.addURLPrefixMapping("/hub/", s);
+          }
 
           /**
-           * Make sure the /hub/ urls route to this server
+           * Check to see if the server want to overwrite the application
+           * attributes
            */
-          s = server.serverURL;
+          JSONObject csp = user.optJSONObject("site_parameters");
 
-          if (s.endsWith("/")) {
-            s += "hub/";
-          } else {
-            s += "/hub/";
+          s = (csp == null)
+              ? null
+              : csp.optString("attributesURL", null);
+
+          if ((s != null) && (s.length() > 0)) {    //the server wants to overwrite the attributes loaded at startup
+            l = window.createActionLink(window, s);
+
+            JSONObject att = new JSONObject(l.getContentAsString());
+
+            window.getAppContext().putData(att, true);
+          } else if (csp != null) {
+            window.getAppContext().putData(csp, false);
           }
 
-          app.addURLPrefixMapping("/hub/", s);
-        }
+          s = (csp == null)
+              ? null
+              : csp.optString("resourceStringsURL", null);
 
-        /**
-         * Check to see if the server want to overwrite the application
-         * attributes
-         */
-        JSONObject csp = user.optJSONObject("site_parameters");
+          if ((s != null) && (s.length() > 0)) {    //the server wants to overwrite the strings loaded at startup
+            l = window.createActionLink(window, s);
+            Platform.loadResourceStrings(app, app.getResourceStrings(), l, false);
+          }
 
-        s = (csp == null)
-            ? null
-            : csp.optString("attributesURL", null);
+          /**
+           * create the re-login configuration object so that we can quickly
+           * create the viewer. We create it after we have set the context so that
+           * relogin screen can come from the server (if it was a context server)
+           */
+          reloginConfig = (Viewer) window.createConfigurationObject(new ActionLink(window, "relogin.rml"));
 
-        if ((s != null) && (s.length() > 0)) {    //the server wants to overwrite the attributes loaded at startup
-          l = window.createActionLink(window, s);
+          /**
+           * Create the generic container configuration to use to create a generic
+           * container on the fly
+           */
+          genericContainerCfg = (GridPane) window.createConfigurationObject(new ActionLink(window,
+                  "/generic_container.rml"));
 
-          JSONObject att = new JSONObject(l.getContentAsString());
+          if (cardStack) {
+            final Viewer cfg = (Viewer) window.createConfigurationObject(new ActionLink(window, "infobar.rml"));
+            Runnable     r   = new Runnable() {
+              @Override
+              public void run() {
+                titleWidget = (iContainer) window.createWidget(cfg);
+              }
+            };
 
-          window.getAppContext().putData(att, true);
-        } else if (csp != null) {
-          window.getAppContext().putData(csp, false);
-        }
+            Platform.invokeLater(r);
+          }
 
-        s = (csp == null)
-            ? null
-            : csp.optString("resourceStringsURL", null);
+          try {
+            l          = new ActionLink("/data/stylesheet.css");
+            styleSheet = l.getContentAsString();
+          } catch(Exception ignore) {}
 
-        if ((s != null) && (s.length() > 0)) {    //the server wants to overwrite the strings loaded at startup
-          l = window.createActionLink(window, s);
-          Platform.loadResourceStrings(app, app.getResourceStrings(), l, false);
-        }
-
-        /**
-         * create the re-login configuration object so that we can quickly
-         * create the viewer. We create it after we have set the context so that
-         * relogin screen can come from the server (if it was a context server)
-         */
-        reloginConfig = (Viewer) window.createConfigurationObject(new ActionLink(window, "relogin.rml"));
-
-        /**
-         * Create the generic container configuration to use to create a generic
-         * container on the fly
-         */
-        genericContainerCfg = (GridPane) window.createConfigurationObject(new ActionLink(window,
-                "/generic_container.rml"));
-
-        if (cardStack) {
-          final Viewer cfg = (Viewer) window.createConfigurationObject(new ActionLink(window, "infobar.rml"));
-          Runnable     r   = new Runnable() {
-            @Override
-            public void run() {
-              titleWidget = (iContainer) window.createWidget(cfg);
-            }
-          };
-
-          Platform.invokeLater(r);
-        }
-
-        /**
-         * Set a handle to be called when there is an error opening a link
-         */
-        ActionLink.setGlobalErrorHandler(new LinkErrorHandler());
+          /**
+           * Set a handle to be called when there is an error opening a link
+           */
+          ActionLink.setGlobalErrorHandler(new LinkErrorHandler());
+        
       } catch(Exception e) {
         result = e;
       }
 
       password = null;
-
+      if(protocolHandler!=null) {
+        Platform.setMaxBackgroundThreadCount(5);
+      }
       return result;
     }
 
@@ -2569,13 +3060,13 @@ public class Utils {
     public void finish(Object result) {
       WindowViewer w = Platform.getWindowViewer();
 
-      w.hideProgressPopup();
-
       if (contextWidget.isDisposed()) {
+        w.hideWaitCursor(true);
         return;
       }
 
       if (result instanceof Exception) {
+        w.hideWaitCursor(true);
         if (result instanceof HTTPException) {
           HTTPException he = (HTTPException) result;
 
@@ -2609,13 +3100,18 @@ public class Utils {
 
         return;
       }
-
-      preferences = settingsHandler.getAppPreferences(username);
+      try {
 
       iPlatformAppContext app  = Platform.getAppContext();
       JSONObject          user = (JSONObject) result;
 
       app.putData("user", user);
+
+      if (username == null) {
+        username = user.optString("username", "unknown");
+      }
+
+      preferences = settingsHandler.getAppPreferences(username);
       app.putData("username", username);
       app.putData("userDisplayName", user.optString("name", username));
 
@@ -2639,10 +3135,9 @@ public class Utils {
         // screen
       }
 
-      try {
-//        if (isDemo()) {
-//          actionPath = new ActionPath("2");
-//        }
+        if (isDemo()) {
+//          actionPath = new ActionPath("2", "orders");
+        }
 
         if (applicationLock != null) {    //we are re-logging in 
           actionPath      = applicationLock.actionPath;
@@ -2673,16 +3168,31 @@ public class Utils {
 
         Orders.setupEnvironment(w);
 
+        if (!server.canChangePatient()) {
+          ActionBar ab = Platform.getWindowViewer().getActionBar();
+
+          ab.remove("bv.action.change_patient");
+        }
+
+        if (server.hasCustomLogin()) {
+          ActionBar ab = Platform.getWindowViewer().getActionBar();
+
+          ab.remove("bv.action.lock");
+        }
+
         if (!Orders.hasOrderEntrySupport) {
           ActionBar ab = Platform.getWindowViewer().getActionBar();
 
           ab.remove("bv.action.new_orders");
         }
-
+        dataServer = server;
+        w.hideWaitCursor(true);
         PatientSelect.changePatient(w, actionPath);
       } catch(Exception ex) {
+        w.hideWaitCursor(true);
         handleError(ex);
       }
+     
 
       contextWidget = null;
     }
@@ -2811,202 +3321,17 @@ public class Utils {
   }
 
 
-  public static void applicationInitialized() {
-    cardStack = UIScreen.isSmallScreen();
-
-    /**
-     * Check for protocol handlers
-     */
-    if (protocolHandlers == null) {    //check only once
-      JSONObject ph = (JSONObject) Platform.getAppContext().getData("protocolHandlers");
-
-      if ((ph != null) &&!ph.isEmpty()) {
-        Iterator<Entry> it = ph.getObjectMap().entrySet().iterator();
-
-        protocolHandlers = new HashMap<String, aProtocolHandler>(2);
-
-        while(it.hasNext()) {
-          Entry  e        = it.next();
-          String prototol = (String) e.getKey();
-          String cls      = (String) e.getValue();
-
-          if (cls.indexOf('.') == -1) {
-            cls = Utils.class.getPackage().getName() + ".external." + cls;
-          }
-
-          aProtocolHandler h = (aProtocolHandler) Platform.createObject(cls);
-
-          if (ph == null) {
-            Platform.debugLog("unable to create protocol handler:" + cls);
-          } else {
-            protocolHandlers.put(prototol, h);
-            protocolHandlers.put(prototol + "s", h);
-          }
-        }
-
-        if (protocolHandlers.isEmpty()) {
-          protocolHandlers = null;
-        } else {
-          defaultProtocolHandler = new DefaultProtocolHandler();
-          URL.setURLStreamHandlerFactory(new StreamHandlerFactory());
-        }
+  public static String getServerHost() {
+    if(serverHost==null) {
+      try {
+        serverHost=Platform.getWindowViewer().getURL("/hub/main/").getHost();
+      } catch (MalformedURLException e) {
+        Platform.ignoreException(e);
+      }
+      if(serverHost==null) {
+        serverHost="";
       }
     }
-
-    WindowViewer w  = Platform.getWindowViewer();
-    ActionBar    ab = w.getActionBar();
-
-    actionbarIcon = new BackIcon(ab.getTitleComponent().getIcon());
-    ab.setTitleIcon(actionbarIcon);
-    ab.setTitleAction(w.getAction("bv.action.back"));
-  }
-
-  /**
-   * Returns the data from the specified url as a SJON object.
-   * This method will throw an exception if called from the UI thread
-   *
-   * @param url the url
-   * @param data data to send (can be null)
-   * @param sendAsJSON true to send form data as JSON; false otherwise
-   * @return the JSON object representing the data
-   * @throws Exception
-   */
-  public static JSONObject getContentAsJSON(String url, Map data, boolean sendAsJSON) throws Exception {
-    if (Platform.isUIThread()) {
-      throw new ApplicationException("This method must only be called from a background thread");
-    }
-
-    ActionLink l = new ActionLink(url);
-
-    if ((data != null) && sendAsJSON) {
-      l.setRequestEncoding(RequestEncoding.JSON);
-    }
-
-    String s = (data == null)
-               ? l.getContentAsString()
-               : l.sendFormData(Platform.getWindowViewer(), data);
-
-    return new JSONObject(s);
-  }
-
-  public static Date parseDate(String value) {
-    try {
-      value = value.trim();
-
-      if (value.length() == 0) {
-        return null;
-      }
-
-      int n = value.indexOf(',');
-
-      if (n != -1) {
-        DateFormat df = Platform.getAppContext().getDefaultDateTimeContext().getDisplayFormat();
-
-        return df.parse(value);
-      }
-
-      if (Character.isDigit(value.charAt(0))) {
-        Calendar cal = Calendar.getInstance();
-
-        Helper.setDateTime(value, cal, true);
-
-        return cal.getTime();
-      }
-
-      if (value.startsWith("@")) {
-        value = "T" + "value";
-      }
-
-      return Helper.createDate(value);
-    } catch(ParseException e) {
-      return null;
-    }
-  }
-
-  static class BackIcon extends aPlatformIcon {
-    iPlatformIcon appIcon;
-    iPlatformIcon patientIcon;
-    iPlatformIcon icon;
-    iPlatformIcon backIcon;
-    int           backs;
-    int           iconHeight;
-    int           iconWidth;
-    int           backIconWidth;
-    int           backIconHeight;
-
-    public BackIcon(iPlatformIcon icon) {
-      super();
-      this.icon      = icon;
-      this.appIcon   = icon;
-      this.backIcon  = Platform.getResourceAsIcon("bv.icon.back_thin");
-      iconWidth      = icon.getIconWidth();
-      iconHeight     = icon.getIconHeight();
-      backIconWidth  = backIcon.getIconWidth();
-      backIconHeight = backIcon.getIconHeight();
-    }
-
-    public int getBacks() {
-      return backs;
-    }
-
-    @Override
-    public int getIconHeight() {
-      return Math.max(backIconHeight, iconHeight);
-    }
-
-    @Override
-    public int getIconWidth() {
-      return iconWidth + (backs * backIconWidth);
-    }
-
-    public void setIcon(iPlatformIcon icon) {
-      this.icon = icon;
-    }
-
-    public void showPatientIcon(boolean show) {
-      if (show) {
-        icon = patientIcon;
-      } else {
-        icon = appIcon;
-      }
-
-      if (icon == null) {
-        icon = appIcon;
-      }
-
-      iconWidth  = icon.getIconWidth();
-      iconHeight = icon.getIconHeight();
-    }
-
-    @Override
-    public iPlatformIcon getDisabledVersion() {
-      return this;
-    }
-
-    @Override
-    public void paint(iPlatformGraphics g, float x, float y, float width, float height) {
-      float yy = (height - backIconHeight) / 2;
-
-      for (int i = 0; i < backs; i++) {
-        backIcon.paint(g, x, yy, width, height);
-        x     += backIconWidth;
-        width -= backIconWidth;
-      }
-
-      yy = (height - iconHeight) / 2;
-      icon.paint(g, x, yy, width, height);
-    }
-
-    public void increment() {
-      backs++;
-    }
-
-    public void decrement() {
-      backs--;
-
-      if (backs < 0) {
-        backs = 0;
-      }
-    }
+    return serverHost;
   }
 }

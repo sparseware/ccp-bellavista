@@ -16,16 +16,6 @@
 
 package com.sparseware.bellavista;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.Label;
@@ -51,6 +41,17 @@ import com.appnativa.util.SNumber;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * This class manages the trending
  *
@@ -64,9 +65,9 @@ public class TrendPanel {
   Map<String, Trend>                      trends;
   Map<String, String>                     peers;
   boolean                                 reverseChronologicalOrder;
-  static RenderableDataItem               dateLabel   = new RenderableDataItem();
-  static RenderableDataItem               valueLabel  = new RenderableDataItem();
-  static RenderableDataItem               trendLabel  = new RenderableDataItem();
+  static RenderableDataItem               dateLabel  = new RenderableDataItem();
+  static RenderableDataItem               valueLabel = new RenderableDataItem();
+  static RenderableDataItem               trendLabel = new RenderableDataItem();
   static UIFont                           nameFont;
   static UIFont                           timePeriodFont;
   static int                              timePeriodFontHeight;
@@ -187,6 +188,9 @@ public class TrendPanel {
     return true;
   }
 
+  /**
+   * Clears the panel
+   */
   public void clear() {
     if (trends != null) {
       trends.clear();

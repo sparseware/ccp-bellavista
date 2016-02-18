@@ -120,6 +120,7 @@ GroupBox {
           height: "2ln"
         }
         customProperties: "android:focusable=true"
+        wordWrap: true
         value: "{resource:bv.text.enter_patient_identifier}"
       } [ onShown="class:PatientSelect#onIdentifierLabelShown" ]
     }

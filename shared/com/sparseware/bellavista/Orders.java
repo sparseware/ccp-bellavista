@@ -17,6 +17,7 @@
 package com.sparseware.bellavista;
 
 import com.appnativa.rare.Platform;
+import com.appnativa.rare.aWorkerTask;
 import com.appnativa.rare.iPlatformAppContext;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.ui.Column;
@@ -45,6 +46,7 @@ import com.appnativa.rare.widget.PushButtonWidget;
 import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.CharArray;
+import com.appnativa.util.IntList;
 import com.appnativa.util.StringCache;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
@@ -67,13 +69,13 @@ import java.util.Map;
  * @author Don DeCoteau
  */
 public class Orders extends aResultsManager implements iActionListener {
-  public static final int            CATEGORY_NAME_POSITION     = 13;
-  public static final int            CLINICAL_CATEGORY_POSITION = 14;
-  public static int                  SIG_COLUMN                 = 10;
+  public static final int            CATEGORY_NAME_POSITION     = 11;
+  public static final int            CLINICAL_CATEGORY_POSITION = 12;
+  public static int                  SIG_COLUMN                 = 9;
   public static int                  STATUS_COLUMN              = 8;
   public static int                  SUMMARY_STATUS_COLUMN      = 1;
-  public static int                  SIGNED_COLUMN              = 16;
-  public static int                  FLAGGED_COLUMN             = 17;
+  public static int                  SIGNED_COLUMN              = 14;
+  public static int                  FLAGGED_COLUMN             = 15;
   public static final byte           FLAGGED_FLAG               = 0x01;
   public static final byte           UNSIGNED_FLAG              = 0x02;
   public static final byte           HOLDABLE_FLAG              = 0x04;
@@ -126,6 +128,8 @@ public class Orders extends aResultsManager implements iActionListener {
   protected String                   categorizedMedsTitle;
   protected String                   missingClinicalCategoryTitle;
   protected String                   missingCategoryTitle;
+  protected String                   medicationsTitle;
+  protected String                   ivsTitle;
   protected String                   ivsCategoryID;
   protected String                   medsCategoryID;
   protected String                   cmedsCategoryID = "_c_meds_";
@@ -153,6 +157,17 @@ public class Orders extends aResultsManager implements iActionListener {
     missingCategoryTitle         = info.optString("missingCategoryTitle", "Misc. Orders");
     medsCategoryID               = info.optString("medsCategoryID", "meds");
     ivsCategoryID                = info.optString("ivsCategoryID", "ivs");
+    medicationsTitle             = info.optString("medicationsTitle", null);
+
+    if (medicationsTitle == null) {
+      medicationsTitle = Platform.getResourceAsString("bv.text.medications");
+    }
+
+    ivsTitle = info.optString("ivsTitle", null);
+
+    if (ivsTitle == null) {
+      ivsTitle = Platform.getResourceAsString("bv.text.iv_solutions");
+    }
   }
 
   public static void setupEnvironment(WindowViewer w) {
@@ -238,7 +253,6 @@ public class Orders extends aResultsManager implements iActionListener {
       holdItem.setName(s);
       unholdItem = new UIMenuItem(app.getAction(s = "bv.action.order_unhold"));
       unholdItem.setName(s);
-      
       holdItem.setDisposable(false);
       unholdItem.setDisposable(false);
     }
@@ -260,7 +274,6 @@ public class Orders extends aResultsManager implements iActionListener {
       flagItem.setName(s);
       unflagItem = new UIMenuItem(app.getAction(s = "bv.action.order_unflag"));
       unflagItem.setName(s);
-      
       flagItem.setDisposable(false);
       unflagItem.setDisposable(false);
     }
@@ -282,9 +295,92 @@ public class Orders extends aResultsManager implements iActionListener {
     }
 
     if (item != null) {
-      final String cat = (String) item.getLinkedData();
+      if (item.isEditable()) {
+        loadOrderCategory(cw, item);
+      } else {
+        filterTable(dataTable, (String) item.getLinkedData());
+      }
+    }
+  }
 
-      filterTable(dataTable, cat);
+  protected void loadOrderCategory(final iWidget cw, final RenderableDataItem item) {
+    final TableViewer  table = dataTable;
+    final WindowViewer w     = Platform.getWindowViewer();
+    final String       cat   = (String) item.getLinkedData();
+
+    item.setEditable(false);
+    item.setIcon(Platform.getResourceAsIcon("bv.icon.dash"));
+    if(cw instanceof ComboBoxWidget) {
+      ((ComboBoxWidget)cw).rowChanged(item);
+    }
+    final ActionLink link = Utils.createLink(table, "/hub/main/orders/category/" + cat, false);
+
+    try {
+      aWorkerTask task = new aWorkerTask() {
+        @Override
+        public void finish(Object result) {
+          try {
+            if (result instanceof Throwable) {
+              Utils.handleError((Throwable) result);
+
+              return;
+            }
+
+            List<RenderableDataItem> rows = (List<RenderableDataItem>) result;
+
+            if (table.isDisposed()) {
+              return;
+            }
+
+            if (rows != null) {
+              processDataEx(table, rows);
+            }
+
+            if ((rows == null) || rows.isEmpty()) {
+              if (rows == null) {
+                rows = new ArrayList<RenderableDataItem>(1);
+              }
+
+              String msg = Platform.getWindowViewer().getString("bv.format.no_orders_found_for_category",
+                             item.toString());
+              RenderableDataItem row;
+
+              rows.add(row = createNoDataRow(table, msg));
+              row.get(0).setValue(cat);
+              row.addMissingColumns(CATEGORY_NAME_POSITION + 1);
+              row.get(CATEGORY_NAME_POSITION).setValue(item.getValue());
+            }
+
+            rows = Utils.groupRows(table, rows, CATEGORY_NAME_POSITION, -1, false);
+            allOrders.addAll(rows);
+            table.unfilter();
+            table.setAll(allOrders);
+            filterTable(table, cat);
+            cw.update();
+          } finally {
+            w.hideWaitCursor();
+          }
+        }
+        @Override
+        public Object compute() {
+          try {
+            List<RenderableDataItem> rows = table.isDisposed()
+                                            ? null
+                                            : table.parseDataLink(link, true);
+
+            if (!table.isDisposed()) {}
+
+            return rows;
+          } catch(Exception e) {
+            return e;
+          }
+        }
+      };
+
+      w.showProgressPopup(w.getString("bv.text.loading"));
+      w.spawn(task);
+    } catch(Exception e) {
+      Utils.handleError(e);
     }
   }
 
@@ -348,14 +444,17 @@ public class Orders extends aResultsManager implements iActionListener {
    * the card when using a cardstack UI.
    */
   public void onFinishedLoading(String eventName, iWidget widget, EventObject event) {
+    TableViewer table = (TableViewer) widget;
     if (Utils.isCardStack()) {
-      TableViewer table = (TableViewer) widget;
       iFormViewer fv    = table.getFormViewer();
 
       populateCardStack(fv, table);
       CardStackUtils.setViewerAction(fv, new OrdersStackActionListener(), true);
       CardStackUtils.switchToViewer(table.getParent());
       CardStackUtils.updateTitle(fv, false);
+    }
+    else {
+      table.pageHome();
     }
   }
 
@@ -444,7 +543,7 @@ public class Orders extends aResultsManager implements iActionListener {
                                      : (String) row.get(0).getLinkedData();
     iFormViewer              fv    = widget.getFormViewer();
 
-    if (id == null) {
+    if ((id == null) || (id.length() == 0)) {
       iContainer dv = (iContainer) fv.getWidget("documentViewer");
 
       clearForm((dv == null)
@@ -522,14 +621,14 @@ public class Orders extends aResultsManager implements iActionListener {
   }
 
   @Override
-  protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
+  protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, final ActionLink link) {
     originalRows = rows;
+    tableDataLoaded(link);
 
     final TableViewer table = (TableViewer) widget;
 
     appendDirections = (table.getColumnCount() < 3)
                        || (table.getColumn(2).getRenderDetail() == Column.RenderDetail.ICON_ONLY);
-    table.setWidgetDataLink(link);
     hasNoData       = false;
     categorizedMeds = null;
 
@@ -542,17 +641,31 @@ public class Orders extends aResultsManager implements iActionListener {
       } else {
         updateCategories(table.getFormViewer(), null, -1);
       }
-
       return;
     }
 
-    Platform.getWindowViewer().showWaitCursor();
-    Platform.getAppContext().executeBackgroundTask(new Runnable() {
+    final WindowViewer w = Platform.getWindowViewer();
+
+    w.spawn(new aWorkerTask() {
       @Override
-      public void run() {
-        processData(table, rows);
+      public void finish(Object result) {
+        w.hideWaitCursor();
+
+        if (result != null) {
+          Utils.handleError((Throwable) result);
+        }
+      }
+      @Override
+      public Object compute() {
+        try {
+          processData(table, rows);
+          return null;
+        } catch(Exception e) {
+          return e;
+        }
       }
     });
+    w.showWaitCursor();
   }
 
   /**
@@ -636,8 +749,9 @@ public class Orders extends aResultsManager implements iActionListener {
 
   @SuppressWarnings("resource")
   protected void processData(final TableViewer table, List<RenderableDataItem> rows) {
-    final ActionPath   path = Utils.getActionPath(true);
-    final WindowViewer w    = Platform.getWindowViewer();
+    final ActionPath   path     = Utils.getActionPath(true);
+    final WindowViewer w        = Platform.getWindowViewer();
+    IntList            toDelete = new IntList();
 
     if (categorizedMeds != null) {
       categorizedMeds.clear();
@@ -651,303 +765,492 @@ public class Orders extends aResultsManager implements iActionListener {
     allOrders             = null;
     categorizedMedsLoaded = false;
 
-    try {
-      if (table.isDisposed()) {
-        return;
+    if (table.isDisposed()) {
+      return;
+    }
+
+    int                            len = rows.size();
+    RenderableDataItem             row, category;
+    CharArray                      ca   = new CharArray();
+    String                         name = null;
+    String                         statusColor;
+    String                         s;
+    final List<RenderableDataItem> categories    = new ArrayList<RenderableDataItem>();
+    HashSet                        categorySet   = new HashSet();
+    iPlatformIcon                  icon          = Platform.getResourceAsIcon("bv.icon.dash");
+    Map                            orderStatuses = OrderManager.getOrderStatuses(false);
+    boolean                        hasCC         = hasClinicalCategories;
+    boolean                        hasMeds       = false;
+    UIFont                         strikeThrough = null;
+    boolean                        cardstack     = Utils.isCardStack();
+    int                            rowSize;
+    int                            istatus;
+    JSONObject                     order;
+    JSONObject                     demo = OrderManager.getDemoOrderObject(false);
+
+    for (int i = 0; i < len; i++) {
+      row         = rows.get(i);
+      rowSize     = row.size();
+      statusColor = null;
+      istatus     = -1;
+      RenderableDataItem item0 = row.get(0);    //date
+      RenderableDataItem item1 = row.get(1);    //name
+      RenderableDataItem item2 = row.get(2);    //start date; we will replace with the SIG
+      String             sig   = "";
+
+      if (rowSize > SIG_COLUMN) {
+        sig = (String) row.get(SIG_COLUMN).getValue();
       }
 
-      int                            len = rows.size();
-      RenderableDataItem             row, category;
-      CharArray                      ca   = new CharArray();
-      String                         name = null;
-      String                         statusColor;
-      String                         s;
-      final List<RenderableDataItem> categories    = new ArrayList<RenderableDataItem>();
-      HashSet                        categorySet   = new HashSet();
-      iPlatformIcon                  icon          = Platform.getResourceAsIcon("bv.icon.dash");
-      Map                            orderStatuses = OrderManager.getOrderStatuses(false);
-      boolean                        hasCC         = hasClinicalCategories;
-      boolean                        hasMeds       = false;
-      UIFont                         strikeThrough = null;
-      boolean                        cardstack     = Utils.isCardStack();
-      int                            rowSize;
-      int                            istatus;
-      JSONObject                     order;
-      JSONObject                     demo = OrderManager.getDemoOrderObject(false);
+      item2.setValue(sig);
 
-      for (int i = 0; i < len; i++) {
-        row         = rows.get(i);
-        rowSize     = row.size();
-        statusColor = null;
-        istatus     = -1;
+      String orderID = (String) item0.getLinkedData();
+      String status  = null;
 
-        RenderableDataItem item0   = row.get(0);
-        RenderableDataItem item1   = row.get(1);
-        RenderableDataItem item2   = row.get(2);
-        String             orderID = (String) item0.getLinkedData();
-        String             status  = null;
+      order = (demo == null)
+              ? null
+              : demo.getJSONObject(orderID);
 
-        order = (demo == null)
-                ? null
-                : demo.getJSONObject(orderID);
+      if ((row.size() > Orders.STATUS_COLUMN)) {
+        s = row.get(Orders.STATUS_COLUMN).toString();
 
-        if ((row.size() > Orders.STATUS_COLUMN)) {
-          s = row.get(Orders.STATUS_COLUMN).toString();
-
-          if ((s != null) && (statusColors != null)) {
-            statusColor = statusColors.optString(s, null);
-          }
-
-          status = s;
+        if ((s != null) && (statusColors != null)) {
+          statusColor = statusColors.optString(s, null);
         }
 
-        if (!cardstack) {
-          if (order != null) {
-            istatus = OrderManager.getDemoOrderStatus(order);
-          }
+        status = s;
+      }
 
-          if (istatus == -1) {
-            istatus = 0;
+      if (!cardstack) {
+        if (order != null) {
+          istatus = OrderManager.getDemoOrderStatus(order);
+        }
 
-            if ((rowSize > SIGNED_COLUMN) && "false".equals(row.get(SIGNED_COLUMN).toString())) {
-              istatus |= UNSIGNED_FLAG;
+        if (istatus == -1) {
+          istatus = 0;
 
-              if ((statusColor == null) && (statusColors != null)) {
-                statusColor = statusColors.optString("Unsigned", null);
-              }
-            }
+          if ((rowSize > SIGNED_COLUMN) && "false".equals(row.get(SIGNED_COLUMN).toString())) {
+            istatus |= UNSIGNED_FLAG;
 
-            if ((rowSize > FLAGGED_COLUMN) && "true".equals(row.get(FLAGGED_COLUMN).toString())) {
-              istatus |= FLAGGED_FLAG;
-
-              if ((statusColor == null) && (statusColors != null)) {
-                statusColor = statusColors.optString("Flagged", null);
-              }
-            }
-
-            if (status != null) {
-              if (holdableStatus.indexOf(status) != -1) {
-                if ((istatus & UNSIGNED_FLAG) == 0 || (holdableStatus.indexOf("Unsigned") != -1)) {
-                  istatus |= HOLDABLE_FLAG;
-                }
-              }
-
-              if (stopableStatus.indexOf(status) != -1) {
-                istatus |= STOPABLE_FLAG;
-              }
-
-              if (status.equals(holdableStatus)) {
-                istatus |= ONHOLD_FLAG;
-              }
+            if ((statusColor == null) && (statusColors != null)) {
+              statusColor = statusColors.optString("Unsigned", null);
             }
           }
 
-          updateStatusIcon(row, item0, istatus);
-        }
+          if ((rowSize > FLAGGED_COLUMN) && "true".equals(row.get(FLAGGED_COLUMN).toString())) {
+            istatus |= FLAGGED_FLAG;
 
-        String sig = (String) item2.getValue();
-
-        if (((sig == null) || (sig.length() == 0)) && (rowSize > SIG_COLUMN)) {
-          sig = (String) row.get(SIG_COLUMN).getValue();
-          item2.setValue(sig);
-        }
-
-        name = item1.toString();
-
-        if (appendDirections) {
-          ca._length = 0;
-          ca.append("<html>");
-
-          if (statusColor != null) {
-            ca.append("<font color='").append(statusColor).append("'>");
-          }
-
-          ca.append(name);
-          ca.append((statusColor == null)
-                    ? startHtml
-                    : startHtmlSC);
-          ca.append(sig);
-          ca.append((statusColor == null)
-                    ? endHtml
-                    : endHtmlSC);
-
-          if (statusColor != null) {
-            ca.append("</font>");
-          }
-
-          ca.append("</html>");
-
-          if (cardstack) {
-            CardStackUtils.setItemText(row, ca.toString());
-          } else {
-            item1.setValue(ca.toString());
-          }
-        }
-
-        String type = item0.toString();
-
-        if (!cardstack) {
-          if (hasCC) {
-            RenderableDataItem cc = row.get(CLINICAL_CATEGORY_POSITION);
-
-            s = cc.toString();
-
-            if (s.length() == 0) {
-              if (medsCategoryID.equals(type)) {
-                cc.setValue(missingClinicalCategoryTitle);
-              }
+            if ((statusColor == null) && (statusColors != null)) {
+              statusColor = statusColors.optString("Flagged", null);
             }
           }
 
-          s = row.get(CATEGORY_NAME_POSITION).toString();
-
-          if (s.length() == 0) {
-            s = missingCategoryTitle;
-            row.get(CATEGORY_NAME_POSITION).setValue(s);
-          }
-
-          if (!categorySet.contains(s)) {
-            categories.add(category = new RenderableDataItem(s, type, icon));
-            category.setActionListener(this);
-            categorySet.add(s);
-          }
-
-          // check for orders that were discontinued by this user but not yet submitted and strike them through
-          if (orderStatuses != null) {
-            if (OrderManager.isDiscontinued(orderID, orderStatuses)) {
-              if (strikeThrough == null) {
-                strikeThrough = table.getFont().deriveItalic().deriveStrikethrough();
+          if (status != null) {
+            if (holdableStatus.indexOf(status) != -1) {
+              if ((istatus & UNSIGNED_FLAG) == 0 || (holdableStatus.indexOf("Unsigned") != -1)) {
+                istatus |= HOLDABLE_FLAG;
               }
+            }
 
-              istatus |= STOPPED_FLAG;
-              row.setFont(strikeThrough);
+            if (stopableStatus.indexOf(status) != -1) {
+              istatus |= STOPABLE_FLAG;
+            }
 
-              String c = statusColors.optString("Discontinued", null);
-
-              if (c == null) {
-                c = statusColors.optString("Stopped", null);
-              }
-
-              if (c != null) {
-                statusColor = c;
-              }
+            if (status.equals(holdableStatus)) {
+              istatus |= ONHOLD_FLAG;
             }
           }
         }
 
-        row.setUserStateFlag((byte) istatus);
+        updateStatusIcon(row, item0, istatus);
+      }
+
+      name = item1.toString();
+
+      if (appendDirections) {
+        ca._length = 0;
+        ca.append("<html>");
 
         if (statusColor != null) {
-          row.setForeground(w.getColor(statusColor));
+          ca.append("<font color='").append(statusColor).append("'>");
+        }
+
+        ca.append(name);
+        ca.append((statusColor == null)
+                  ? startHtml
+                  : startHtmlSC);
+        ca.append(sig);
+        ca.append((statusColor == null)
+                  ? endHtml
+                  : endHtmlSC);
+
+        if (statusColor != null) {
+          ca.append("</font>");
+        }
+
+        ca.append("</html>");
+
+        if (cardstack) {
+          CardStackUtils.setItemText(row, ca.toString());
+        } else {
+          item1.setValue(ca.toString());
         }
       }
 
-      if (cardstack) {
-        dataLoaded = true;
-        allOrders  = rows;
-        Platform.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            updateTable(table, allOrders);
-          }
-        });
-      } else {
-        Collections.sort(categories);
-        allOrders = rows = Utils.groupRows(table, rows, CATEGORY_NAME_POSITION, -1, false);
+      String type = item0.toString();
 
-        if (hasClinicalCategories) {
-          RenderableDataItem ivs  = null;
-          RenderableDataItem meds = null;
+      if (!cardstack) {
+        if (hasCC) {
+          RenderableDataItem cc = row.get(CLINICAL_CATEGORY_POSITION);
 
-          len = rows.size();
+          s = cc.toString();
 
-          for (int i = 0; i < len; i++) {
-            row = rows.get(i);                         // group item
-
-            RenderableDataItem item = row.get(0);      // first column contains the list is children
-
-            item = item.get(0);                        // first row
-            s    = (String) item.get(0).getValue();    // value from first column
-
-            if (s.equals(ivsCategoryID)) {
-              ivs = row;
-            } else if (s.equals(medsCategoryID)) {
-              meds = row.get(0);
+          if (s.length() == 0) {
+            if (medsCategoryID.equals(type)) {
+              cc.setValue(missingClinicalCategoryTitle);
             }
-          }
-
-          if (meds != null) {
-            categorizedMeds = Utils.groupRows(table, meds.getItems(), CLINICAL_CATEGORY_POSITION, -1, false);
-
-            SubItemComparator c = new SubItemComparator();
-
-            c.setOptions(0, false);
-            Collections.sort(categorizedMeds, c);
-          }
-
-          if (ivs != null) {
-            if (categorizedMeds != null) {
-              categorizedMeds.add(0, ivs);
-            } else {
-              categorizedMeds = new ArrayList<RenderableDataItem>(1);
-              categorizedMeds.add(ivs);
-            }
-          }
-
-          if ((categorizedMeds != null) && categorizedMeds.isEmpty()) {
-            categorizedMeds = null;
-          }
-
-          if (categorizedMeds != null) {
-            categories.add(0, category = new RenderableDataItem(categorizedMedsTitle, cmedsCategoryID, icon));
-            category.setActionListener(this);
-          }
-        } else {
-          int pos = RenderableDataItem.findLinkedObjectIndex(categories, medsCategoryID);
-
-          if (pos != -1) {
-            category = categories.remove(pos);
-            categories.add(0, category);
-            hasMeds = true;
           }
         }
 
+        s = row.get(CATEGORY_NAME_POSITION).toString();
+
+        if (s.length() == 0) {
+          if (medsCategoryID.equals(type)) {
+            s = medicationsTitle;
+          } else if (ivsCategoryID.equals(type)) {
+            s = ivsTitle;
+          } else {
+            s = missingCategoryTitle;
+          }
+
+          row.get(CATEGORY_NAME_POSITION).setValue(s);
+        }
+
+        if (!categorySet.contains(s)) {
+          categories.add(category = new RenderableDataItem(s, type, icon));
+          category.setActionListener(this);
+          categorySet.add(s);
+
+          if (orderID.length() == 0) {
+            category.setIcon(Platform.getResourceAsIcon("bv.icon.download"));
+            category.setEditable(true);
+            toDelete.add(i);
+          }
+        }
+
+        // check for orders that were discontinued by this user but not yet submitted and strike them through
+        if (orderStatuses != null) {
+          if (OrderManager.isDiscontinued(orderID, orderStatuses)) {
+            if (strikeThrough == null) {
+              strikeThrough = table.getFont().deriveItalic().deriveStrikethrough();
+            }
+
+            istatus |= STOPPED_FLAG;
+            row.setFont(strikeThrough);
+
+            String c = statusColors.optString("Discontinued", null);
+
+            if (c == null) {
+              c = statusColors.optString("Stopped", null);
+            }
+
+            if (c != null) {
+              statusColor = c;
+            }
+          }
+        }
+      }
+
+      row.setUserStateFlag((byte) istatus);
+
+      if (statusColor != null) {
+        row.setForeground(w.getColor(statusColor));
+      }
+    }
+
+    boolean hasUnloadedCategories = toDelete._length > 0;
+
+    if (hasUnloadedCategories) {
+      for (int i = toDelete._length - 1; i > -1; i--) {
+        rows.remove(toDelete.get(i));
+      }
+    }
+
+    if (cardstack) {
+      dataLoaded = true;
+      allOrders  = rows;
+      Platform.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          updateTable(table, allOrders);
+        }
+      });
+    } else {
+      Collections.sort(categories);
+      allOrders = rows = Utils.groupRows(table, rows, CATEGORY_NAME_POSITION, -1, false);
+
+      if (hasClinicalCategories) {
+        RenderableDataItem ivs  = null;
+        RenderableDataItem meds = null;
+
+        len = rows.size();
+
+        for (int i = 0; i < len; i++) {
+          row = rows.get(i);                         // group item
+
+          RenderableDataItem item = row.get(0);      // first column contains the list is children
+
+          item = item.get(0);                        // first row
+          s    = (String) item.get(0).getValue();    // value from first column
+
+          if (s.equals(ivsCategoryID)) {
+            ivs = row;
+          } else if (s.equals(medsCategoryID)) {
+            meds = row.get(0);
+          }
+        }
+
+        if (meds != null) {
+          categorizedMeds = Utils.groupRows(table, meds.getItems(), CLINICAL_CATEGORY_POSITION, -1, false);
+
+          SubItemComparator c = new SubItemComparator();
+
+          c.setOptions(0, false);
+          Collections.sort(categorizedMeds, c);
+        }
+
+        if (ivs != null) {
+          if (categorizedMeds != null) {
+            categorizedMeds.add(0, ivs);
+          } else {
+            categorizedMeds = new ArrayList<RenderableDataItem>(1);
+            categorizedMeds.add(ivs);
+          }
+        }
+
+        if ((categorizedMeds != null) && categorizedMeds.isEmpty()) {
+          categorizedMeds = null;
+        }
+
+        if (categorizedMeds != null) {
+          categories.add(0, category = new RenderableDataItem(categorizedMedsTitle, cmedsCategoryID, icon));
+          category.setActionListener(this);
+        }
+      } else {
+        int pos = RenderableDataItem.findLinkedObjectIndex(categories, medsCategoryID);
+
+        if (pos != -1) {
+          category = categories.remove(pos);
+          categories.add(0, category);
+          hasMeds = true;
+        }
+      }
+
+      if (!hasUnloadedCategories) {
         categories.add(0, category = new RenderableDataItem(w.getString("bv.text.all_orders"), null, icon));
         category.setActionListener(this);
+      }
 
-        final int selectedIndex;
+      if (!hasMeds) {
+        int pos = RenderableDataItem.findLinkedObjectIndex(categories, medsCategoryID);
 
-        if ((categorizedMeds != null) || hasMeds) {
-          selectedIndex = 1;
+        if (pos == -1) {
+          categories.add(0, category = new RenderableDataItem(medicationsTitle, medsCategoryID, icon));
+          category.setActionListener(this);
         } else {
-          selectedIndex = 0;
+          category = categories.get(pos);
+        }
+        allOrders.addAll(createNotDataForCategory(table, category));
+      }
+
+      final int selectedIndex;
+
+      if ((categorizedMeds != null) || hasMeds) {
+        selectedIndex = hasUnloadedCategories
+                        ? 0
+                        : 1;
+      } else {
+        selectedIndex = 0;
+      }
+
+      dataLoaded = true;
+      Platform.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          if (!table.isDisposed()) {
+            updateCategories(table.getFormViewer(), categories, selectedIndex);
+          }
+
+          final String key = (path == null)
+                             ? null
+                             : path.shift();
+
+          if (key != null) {
+            handlePathKey(table, key, 0, true);
+          }
+        }
+      });
+    }
+  }
+
+  @SuppressWarnings("resource")
+  protected void processDataEx(iWidget context, List<RenderableDataItem> rows) {
+    int                len = rows.size();
+    RenderableDataItem row;
+    CharArray          ca   = new CharArray();
+    String             name = null;
+    String             statusColor;
+    String             s;
+    Map                orderStatuses = OrderManager.getOrderStatuses(false);
+    UIFont             strikeThrough = null;
+    int                rowSize;
+    int                istatus;
+    JSONObject         order;
+    JSONObject         demo = OrderManager.getDemoOrderObject(false);
+
+    for (int i = 0; i < len; i++) {
+      row         = rows.get(i);
+      rowSize     = row.size();
+      statusColor = null;
+      istatus     = -1;
+
+      RenderableDataItem item0   = row.get(0);
+      RenderableDataItem item1   = row.get(1);
+      RenderableDataItem item2   = row.get(2);
+      String             orderID = (String) item0.getLinkedData();
+      String             status  = null;
+
+      order = (demo == null)
+              ? null
+              : demo.getJSONObject(orderID);
+
+      if ((row.size() > Orders.STATUS_COLUMN)) {
+        s = row.get(Orders.STATUS_COLUMN).toString();
+
+        if ((s != null) && (statusColors != null)) {
+          statusColor = statusColors.optString(s, null);
         }
 
-        dataLoaded = true;
-        Platform.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            if (!table.isDisposed()) {
-              filterTable(table, (categorizedMeds != null)
-                                 ? cmedsCategoryID
-                                 : medsCategoryID);
-              updateCategories(table.getFormViewer(), categories, selectedIndex);
-            }
+        status = s;
+      }
+      s = row.get(CATEGORY_NAME_POSITION).toString();
+      String type = item0.toString();
 
-            final String key = (path == null)
-                               ? null
-                               : path.shift();
+      if (s.length() == 0) {
+        if (medsCategoryID.equals(type)) {
+          s = medicationsTitle;
+        } else if (ivsCategoryID.equals(type)) {
+          s = ivsTitle;
+        } else {
+          s = missingCategoryTitle;
+        }
 
-            if (key != null) {
-              handlePathKey(table, key, 0, true);
+        row.get(CATEGORY_NAME_POSITION).setValue(s);
+      }
+
+      if (order != null) {
+        istatus = OrderManager.getDemoOrderStatus(order);
+      }
+
+      if (istatus == -1) {
+        istatus = 0;
+
+        if ((rowSize > SIGNED_COLUMN) && "false".equals(row.get(SIGNED_COLUMN).toString())) {
+          istatus |= UNSIGNED_FLAG;
+
+          if ((statusColor == null) && (statusColors != null)) {
+            statusColor = statusColors.optString("Unsigned", null);
+          }
+        }
+
+        if ((rowSize > FLAGGED_COLUMN) && "true".equals(row.get(FLAGGED_COLUMN).toString())) {
+          istatus |= FLAGGED_FLAG;
+
+          if ((statusColor == null) && (statusColors != null)) {
+            statusColor = statusColors.optString("Flagged", null);
+          }
+        }
+
+        if (status != null) {
+          if (holdableStatus.indexOf(status) != -1) {
+            if ((istatus & UNSIGNED_FLAG) == 0 || (holdableStatus.indexOf("Unsigned") != -1)) {
+              istatus |= HOLDABLE_FLAG;
             }
           }
-        });
+
+          if (stopableStatus.indexOf(status) != -1) {
+            istatus |= STOPABLE_FLAG;
+          }
+
+          if (status.equals(holdableStatus)) {
+            istatus |= ONHOLD_FLAG;
+          }
+        }
       }
-    } catch(final Exception e) {
-      Utils.handleError(e);
-    } finally {
-      w.hideWaitCursor();
+
+      updateStatusIcon(row, item0, istatus);
+
+      String sig = (String) item2.getValue();
+
+      if (((sig == null) || (sig.length() == 0)) && (rowSize > SIG_COLUMN)) {
+        sig = (String) row.get(SIG_COLUMN).getValue();
+        item2.setValue(sig);
+      }
+
+      name = item1.toString();
+
+      if (appendDirections) {
+        ca._length = 0;
+        ca.append("<html>");
+
+        if (statusColor != null) {
+          ca.append("<font color='").append(statusColor).append("'>");
+        }
+
+        ca.append(name);
+        ca.append((statusColor == null)
+                  ? startHtml
+                  : startHtmlSC);
+        ca.append(sig);
+        ca.append((statusColor == null)
+                  ? endHtml
+                  : endHtmlSC);
+
+        if (statusColor != null) {
+          ca.append("</font>");
+        }
+
+        ca.append("</html>");
+        item1.setValue(ca.toString());
+      }
+
+      // check for orders that were discontinued by this user but not yet submitted and strike them through
+      if (orderStatuses != null) {
+        if (OrderManager.isDiscontinued(orderID, orderStatuses)) {
+          if (strikeThrough == null) {
+            strikeThrough = context.getFont().deriveItalic().deriveStrikethrough();
+          }
+
+          istatus |= STOPPED_FLAG;
+          row.setFont(strikeThrough);
+
+          String c = statusColors.optString("Discontinued", null);
+
+          if (c == null) {
+            c = statusColors.optString("Stopped", null);
+          }
+
+          if (c != null) {
+            statusColor = c;
+          }
+        }
+      }
+
+      row.setUserStateFlag((byte) istatus);
+
+      if (statusColor != null) {
+        row.setForeground(UIColorHelper.getColor(statusColor));
+      }
     }
   }
 
@@ -1026,6 +1329,23 @@ public class Orders extends aResultsManager implements iActionListener {
     table.clear();
     table.handleGroupedCollection(rows, true);
     table.finishedLoading();
+  }
+
+  protected List<RenderableDataItem> createNotDataForCategory(TableViewer table, RenderableDataItem item) {
+    List<RenderableDataItem> rows = new ArrayList<RenderableDataItem>(1);
+    String                   cat  = (String) item.getLinkedData();
+    String                   name = item.toString();
+    String                   msg  = Platform.getWindowViewer().getString("bv.format.no_orders_found_for_category",
+                                      name);
+    RenderableDataItem       row;
+
+    rows.add(row = createNoDataRow(table, msg));
+    row.get(0).setValue(cat);
+    row.addMissingColumns(CATEGORY_NAME_POSITION + 1);
+    row.get(CATEGORY_NAME_POSITION).setValue(item.getValue());
+    rows = Utils.groupRows(table, rows, CATEGORY_NAME_POSITION, -1, false);
+
+    return rows;
   }
 
   public static String getOrderDirections(RenderableDataItem orderItem) {

@@ -29,6 +29,7 @@ Application {
     trendBackground=Color|white
 	defaultGradient=Color|defaultBackground+10,defaultBackground-10 
 	abnormal=Color|red-10
+	badData=Color|#990099
 	error=Color|red
 	orderPendingColor=Color|blue
 	orderHoldColor=Color|#555555
@@ -201,17 +202,17 @@ Application {
       name: "bv.action.audio_chat"
       icon: "resource:bv.icon.audio_chat"
       enabled: false
-    } [ onAction="class:Actions#onAudioChat" ]
+    } 
     {
       name: "bv.action.video_chat"
       icon: "resource:bv.icon.video_chat"
       enabled: false
-    } [ onAction="class:Actions#onVideoChat" ]
+    }
     {
       name: "bv.action.text_chat"
       icon: "resource:bv.icon.text_chat"
       enabled: false
-    } [ onAction="class:Actions#onTextChat" ]
+    } 
     {
       name: "bv.action.fullscreen"
       icon: "resource:bv.icon.fullscreen"
@@ -220,7 +221,7 @@ Application {
       name: "bv.action.scan_barcode"
       value: "{resource:bv.action.scan_barcode}"
       icon: "resource:bv.icon.barcode"
-    } [ onAction="class:Actions#onScanBarCode" ]
+    } [ onAction="class:PatientSelect#onScanBarCode" ]
     {
       name: "bv.action.orders_cart"
       value: "{resource:bv.action.orders_cart}"
@@ -251,12 +252,12 @@ Application {
   attributesURL: "attributes.json"
   defaultItemDateTimeFormat: "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ;yyyy-MM-dd'T'HH:mm;yyyy-MM-dd'T'HH:mmzzz"
   defaultDisplayDateTimeFormat: "MMM dd, yyyy'@'HH:mm"
-  defaultDisplayDateFormat: "MMM dd, yyyy"
+  defaultDisplayDateFormat: "MMM dd, yyyy" [ yearMonthFormat="MMM yyyy"]
   defaultDisplayTimeFormat: "HH:mm"
   autoAdjustFontSize: true
   overlapAutoToolTips: true
   viewersLocalByDefault: true
-  ignoreFormatExceptions: true
+  ignoreFormatExceptions: true 
   allTextFieldsDraggable: true
   selectionPainter {
     bgColor: "textHighlight+30,textHighlight+25"

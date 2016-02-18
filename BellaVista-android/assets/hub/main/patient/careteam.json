@@ -1,0 +1,65 @@
+{
+  "_columns": [
+    "id",
+    "xmpp_alias",
+    "name",
+    "dob",
+    "gender",
+    "role",
+    "is_provider",
+    "email",
+    "office_number",
+    "mobile_number",
+    "fax_number",
+    "street",
+    "city",
+    "state_or_province",
+    "zip_code",
+    "country",
+    "photo"
+  ],
+  "_rows": [
+    {
+      "id": "1",
+      "is_provider": "false",
+      "name": "DeCoteau, Don",
+      "role": "Pharmacist",
+      "xmpp_alias": "25858"
+    },
+    {
+      "id": "3",
+      "is_provider": "true",
+      "name": "Craft, Adam M.D.",
+      "role": "Referring Physician",
+      "xmpp_alias": "57"
+    },
+    {
+      "id": "7",
+      "is_provider": "true",
+      "name": "Small, Karen M.D.",
+      "role": "Admitting Physician",
+      "xmpp_alias": "19941"
+    },
+    {
+      "id": "8",
+      "is_provider": "true",
+      "name": "Physcian, Ben M.D.",
+      "role": "Attending Physician",
+      "xmpp_alias": "20341"
+    },
+    {
+      "id": "2",
+      "is_provider": "false",
+      "name": "User, Physician",
+      "role": "Primary Physician",
+      "xmpp_alias": "25858"
+    },
+    {
+      "id": "9",
+      "is_provider": "false",
+      "name": "Portale, Orlando",
+      "role": "Hospital Administrator",
+      "xmpp_alias": "21056"
+    }
+  ]
+}

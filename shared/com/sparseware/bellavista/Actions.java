@@ -36,8 +36,12 @@ import com.appnativa.util.json.JSONObject;
 import java.util.EventObject;
 
 /**
- * This class handles the actions on the action bar and some instances of the
- * fullscreen button
+ * This class handles the actions on the action bar, some instances of the
+ * fullscreen button, and other buttons that use a global action.
+ * <p>
+ * Globals actions are used when  multiple buttons can invoke the same action.
+ * In those instances the program will operate on the action (e.g. set enabled/disabled states) instead of the button.
+ * </p>
  *
  * @author Don DeCoteau
  *
@@ -48,10 +52,17 @@ public class Actions implements iEventHandler {
   @Override
   public void onEvent(String eventName, iWidget widget, EventObject event) {}
 
+  /**
+   * Called by a back button to go back to the previous
+   * screen.
+   */
   public void onGoBack(String eventName, iWidget widget, EventObject event) {
     Utils.popViewerStack();
   }
-
+  
+/**
+ * Called by the exit button to exit the application
+ */
   public void onExit(String eventName, iWidget widget, EventObject event) {
     if (event instanceof WindowEvent) {
       ((WindowEvent) event).consume();
@@ -65,31 +76,40 @@ public class Actions implements iEventHandler {
       Utils.exit();
     }
   }
-
+/**
+ * Called by the preferences/settings button to show the preferences dialog s dialog
+ */
   public void onPreferences(String eventName, iWidget widget, EventObject event) {
     Utils.showDialog("/settings.rml", true, true);
   }
-
+  /**
+   * Called by the lock button to lock the application
+   */
   public void onLock(String eventName, iWidget widget, EventObject event) {
     Utils.lockApplication(false);
   }
 
+  /**
+   * Called by the change patient button to select a new patient
+   */
   public void onChangePatient(String eventName, iWidget widget, EventObject event) {
     PatientSelect.changePatient(widget, null);
   }
 
+  /**
+   * Called by the lock flags button to display the patient flags
+   */
   public void onFlags(String eventName, iWidget widget, EventObject event) {
     try {
-      if (UIScreen.isLargeScreen()) {
-        Platform.getWindowViewer().openDialog("/flags.rml");
-      } else {
-        Utils.pushWorkspaceViewer("/flags.rml");
-      }
+      Platform.getWindowViewer().openDialog("/flags.rml");
     } catch(Exception e) {
       Utils.handleError(e);
     }
   }
 
+  /**
+   * Called to configure a full screen button
+   */
   public void onConfigureFullscreenButton(String eventName, iWidget widget, EventObject event) {
     if (!UIScreen.isLargeScreen()) {
       widget.setVisible(false);
@@ -101,6 +121,13 @@ public class Actions implements iEventHandler {
     }
   }
 
+  /**
+   * Called when the full screen button is shown.
+   * This sets the context of the action to be the button widget being shown.
+   * When the the event handler for the full screen action is invoke it will be whit this widget.
+   * See the {@link #onFullscreen} method to see how this is used
+   * 
+   */
   public void onShownFullscreenButton(String eventName, iWidget widget, EventObject event) {
     if (UIScreen.isLargeScreen()) {
       UIAction action = Platform.getWindowViewer().getAction("bv.action.fullscreen");
@@ -109,12 +136,16 @@ public class Actions implements iEventHandler {
     }
   }
 
-  public void onScanBarCode(String eventName, iWidget widget, EventObject event) {}
-
+  /**
+   * Called by the order cart button to show the cart
+   */
   public void onShowCart(String eventName, iWidget widget, EventObject event) {
     OrderManager.showCart();
   }
 
+  /**
+   * Called by order discontinue menu action to discontinue an order
+   */
   public void onOrderDiscontinue(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -122,6 +153,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderDiscontinue(table, index);
   }
 
+  /**
+   * Called by order renew and discontinue menu action to renew and discontinue an order
+   */
   public void onOrderRenewAndDiscontinue(String eventName, iWidget widget, EventObject event) {
     TableViewer        table     = (TableViewer) widget;
     int                index     = table.getContextMenuIndex();
@@ -133,6 +167,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderRenewAndDiscontinue(type, orderItem, (String) order.getLinkedData());
   }
 
+  /**
+   * Called by order sign button to sign an order
+   */
   public void onOrderSign(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -140,6 +177,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderSign(table, index);
   }
 
+  /**
+   * Called by order rewrite menu action to rewrite an order
+   */
   public void onOrderRewrite(String eventName, iWidget widget, EventObject event) {
     TableViewer        table     = (TableViewer) widget;
     int                index     = table.getContextMenuIndex();
@@ -150,6 +190,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderRenew(type, orderItem);
   }
 
+  /**
+   * Called by new order button/menu action to write a new order
+   */
   public void onOrderNew(String eventName, iWidget widget, EventObject event) {
     if(!Utils.clearViewerStack()) {
       return;
@@ -178,6 +221,9 @@ public class Actions implements iEventHandler {
     }
   }
 
+  /**
+   * Called by order hold menu action to hold an order
+   */
   public void onOrderHold(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -185,6 +231,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderChangeHoldStatus(table, index, true);
   }
 
+  /**
+   * Called by un-hold rewrite menu action to un-hold an order
+   */
   public void onOrderUnHold(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -192,6 +241,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderChangeHoldStatus(table, index, false);
   }
 
+  /**
+   * Called by order flag menu action to flag an order
+   */
   public void onOrderFlag(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -199,6 +251,9 @@ public class Actions implements iEventHandler {
     OrderManager.orderChangeFlagStatus(table, index, true);
   }
 
+  /**
+   * Called by order un-flag menu action to un-flag an order
+   */
   public void onOrderUnFlag(String eventName, iWidget widget, EventObject event) {
     TableViewer table = (TableViewer) widget;
     int         index = table.getContextMenuIndex();
@@ -206,6 +261,20 @@ public class Actions implements iEventHandler {
     OrderManager.orderChangeFlagStatus(table, index, false);
   }
 
+  /**
+   * Called when a full screen button is pressed.
+   * If the the button has an action listener set as its linked data
+   * then that listener is invoked.
+   * <p>If were are running on a large screen, then the visibility of the first 
+   * region of the {@link SplitPaneViewer} that contains the widget is toggled</p>
+   * <p>
+   * When not in running on a large screen then the full screen button just acts as a back button.
+   * Normally, this should never be the case as the button is hidden by the {@link #onConfigureFullscreenButton} method
+   * </p>
+   * @param eventName
+   * @param widget
+   * @param event
+   */
   public void onFullscreen(String eventName, iWidget widget, EventObject event) {
     Object l = widget.getLinkedData();
 
@@ -240,9 +309,16 @@ public class Actions implements iEventHandler {
     }
   }
 
+  /**
+   * Called in the case here we are is pseudo full screen mode.
+   * This is use in cases where the platform has a back button.
+   * If is those then the pressing the back button will exit the mode.
+   * 
+   * @return true if we were in pseudo full screen mode and were able to exit it; false otherwise
+   */
   public static boolean handledPseudoFullScreenMode() {
     WindowViewer w      = Platform.getWindowViewer();
-    UIAction     action = w.getAction("bv.action.fullscreen");    //use the action so that all fullscreen buttons are changed
+    UIAction     action = w.getAction("bv.action.fullscreen");
 
     if ((action != null)) {
       PushButtonWidget pb = (PushButtonWidget) action.getContext();

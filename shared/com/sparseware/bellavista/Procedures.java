@@ -16,9 +16,6 @@
 
 package com.sparseware.bellavista;
 
-import java.util.EventObject;
-import java.util.List;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.ui.RenderableDataItem;
 import com.appnativa.rare.ui.event.ActionEvent;
@@ -31,6 +28,9 @@ import com.appnativa.rare.widget.LabelWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.StringCache;
 import com.appnativa.util.json.JSONObject;
+
+import java.util.EventObject;
+import java.util.List;
 
 public class Procedures extends Notes {
   protected static int STATUS_COLUMN = 3;
@@ -46,10 +46,13 @@ public class Procedures extends Notes {
     documentPath     = "/hub/main/procedures/procedure/";
   }
 
+  /**
+   * Event handler for when the procedures UI is created
+   */
   public void onCreated(String eventName, iWidget widget, EventObject event) {}
 
   /**
-   * Called when the procedures data has been loaded into the table. We populate
+   * Event handler for when the procedures data has been loaded into the table. We populate
    * the the card when using a cardstack UI.
    */
   public void onFinishedLoading(String eventName, iWidget widget, EventObject event) {

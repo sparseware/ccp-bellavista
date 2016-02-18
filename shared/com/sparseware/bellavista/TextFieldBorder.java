@@ -5,7 +5,12 @@ import com.appnativa.rare.ui.UIInsets;
 import com.appnativa.rare.ui.UIStroke;
 import com.appnativa.rare.ui.border.UILineBorder;
 import com.appnativa.rare.ui.iPlatformGraphics;
-
+/**
+ * A custom border for text fields.
+ * The border will look the same on all platforms.
+ * 
+ * @author Don DeCoteau
+ */
 public class TextFieldBorder extends UILineBorder {
   public TextFieldBorder() {
     super(UILineBorder.getDefaultLineColor());

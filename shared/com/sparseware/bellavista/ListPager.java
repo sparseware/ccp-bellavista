@@ -16,10 +16,13 @@
 
 package com.sparseware.bellavista;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import com.appnativa.rare.Platform;
+import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
-import com.appnativa.util.CharScanner;
+import com.appnativa.rare.viewer.WindowViewer;
 
 /**
  * This provides a simple manager for managing paging
@@ -81,25 +84,16 @@ public class ListPager {
    * @return
    */
   public static ActionLink createPagingLink(ActionLink source, String href) {
-    ActionLink l = (ActionLink) source.clone();
-
-    if (href.indexOf(':') == -1) {
-      l.getAttributes().putAll(CharScanner.parseOptionString(href, (href.indexOf('^') != -1)
-              ? '^'
-              : '&'));
-    } else {
-      l.getAttributes().clear();
-
-      int n = href.indexOf('?');
-
-      if (n != -1) {
-        l.getAttributes().putAll(CharScanner.parseOptionString(href.substring(n + 1), '&'));
-        href = href.substring(0, n);
+    ActionLink l=new ActionLink(href);
+    WindowViewer w = Platform.getWindowViewer();
+    try {
+      if(!Utils.isSameServer(source.getURL(w),l.getURL(w))){
+        String server=l.getURL(w).toString();
+        throw new MessageException(Platform.getWindowViewer().getString("bv.text.redirect_error",server),true);
       }
-
-      l.getAttributes().put("href", href);
+    } catch (MalformedURLException e) {
+      throw new ApplicationException(e);
     }
-
     return l;
   }
 

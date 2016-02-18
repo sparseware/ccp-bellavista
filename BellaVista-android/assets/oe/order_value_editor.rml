@@ -47,13 +47,13 @@ Form {
             PushButton {
               templateName: "bv.button"
               value: "{resource:bv.oe.text.clear_field}"
-            } [ onAction="class:oe.OrderEntry#onClearValueAction" ]
+            } [ onAction="class:.oe.OrderEntry#onClearValueAction" ]
           }
           {
             PushButton {
               templateName: "bv.button"
               value: "{resource:bv.oe.text.reset_to_default}"
-            } [ onAction="class:oe.OrderEntry#onResetToDefaultAction" ]
+            } [ onAction="class:.oe.OrderEntry#onResetToDefaultAction" ]
           }
         }
       }
@@ -78,7 +78,7 @@ Form {
                 y: "0"
               }
               value: "{resource:bv.oe.text.required_only}"
-            } [ onAction="class:oe.OrderEntry#onNavigateToXOnlyAction" ]
+            } [ onAction="class:.oe.OrderEntry#onNavigateToXOnlyAction" ]
           }
           {
             CheckBox {
@@ -89,7 +89,7 @@ Form {
                 y: "0"
               }
               value: "{resource:bv.oe.text.empty_only}"
-            } [ onAction="class:oe.OrderEntry#onNavigateToXOnlyAction" ]
+            } [ onAction="class:.oe.OrderEntry#onNavigateToXOnlyAction" ]
           }
           {
             PushButton {
@@ -104,7 +104,7 @@ Form {
               icon: "resource:bv.icon.paging_previous"
               textHAlignment: left
               buttonStyle: toolbar
-            } [ onAction="class:oe.OrderEntry#onNextOrPreviousField" ]
+            } [ onAction="class:.oe.OrderEntry#onNextOrPreviousField" ]
           }
           {
             PushButton {
@@ -119,10 +119,10 @@ Form {
               textHAlignment: right
               iconPosition: right
               buttonStyle: toolbar
-            } [ onAction="class:oe.OrderEntry#onNextOrPreviousField" ]
+            } [ onAction="class:.oe.OrderEntry#onNextOrPreviousField" ]
           }
         }
       }
     }
   }
-} [ onConfigure="class:oe.OrderEntry#onOrderValueEditorConfigure", onLoad="class:oe.OrderEntry#onOrderValueEditorLoad"  ]
+} [ onConfigure="class:.oe.OrderEntry#onOrderValueEditorConfigure", onLoad="class:.oe.OrderEntry#onOrderValueEditorLoad"  ]

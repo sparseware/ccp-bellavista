@@ -97,7 +97,6 @@ public abstract class aEventHandler implements iEventHandler {
     final WindowViewer w    = Platform.getWindowViewer();
     iWorkerTask        task = new aWorkerTask() {
       public Object compute() {
-        w.hideWaitCursor();
 
         try {
           if (widget.isDisposed()) {
@@ -131,6 +130,7 @@ public abstract class aEventHandler implements iEventHandler {
     };
 
     w.getAppContext().executeWorkerTask(task);
+    w.showWaitCursor();
   }
 
   /**

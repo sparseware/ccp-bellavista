@@ -16,6 +16,7 @@ Form {
         }
         value: "{resource:bv.text.identifier}:"
         textHAlignment: right
+        wordWrap: true
         customProperties: "android:focusable=true"
       }[ onShown="class:PatientSelect#onIdentifierLabelShown" ]
     }

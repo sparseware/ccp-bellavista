@@ -16,18 +16,6 @@
 
 package com.sparseware.bellavista;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aWorkerTask;
 import com.appnativa.rare.iFunctionCallback;
@@ -47,10 +35,10 @@ import com.appnativa.rare.ui.UIColor;
 import com.appnativa.rare.ui.UIFont;
 import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.ViewerCreator;
-import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.event.ActionEvent;
 import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.iActionListener;
+import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.renderer.UIFormsLayoutRenderer;
 import com.appnativa.rare.util.DataItemParserHandler;
 import com.appnativa.rare.viewer.GridPaneViewer;
@@ -60,6 +48,7 @@ import com.appnativa.rare.viewer.TableViewer;
 import com.appnativa.rare.viewer.ToolBarViewer;
 import com.appnativa.rare.viewer.WindowViewer;
 import com.appnativa.rare.viewer.iContainer;
+import com.appnativa.rare.viewer.iFormViewer;
 import com.appnativa.rare.viewer.iTarget;
 import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.ComboBoxWidget;
@@ -75,7 +64,21 @@ import com.appnativa.util.SimpleDateFormatEx;
 import com.appnativa.util.iFilter;
 import com.appnativa.util.iStringConverter;
 import com.appnativa.util.json.JSONObject;
+
 import com.sparseware.bellavista.Document.DocumentItem;
+
+import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class handles lab values. The data is assumed to be returned is reverse
@@ -114,6 +117,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   HashMap<Date, RenderableDataItem>                 collectionInfoMap;
   boolean                                           showUnits;
   StringBuilder                                     temp = new StringBuilder();
+
   public Labs() {
     super("labs", "Labs");
     trendMap = new LinkedHashMap<String, Map<String, String>>(4);
@@ -260,10 +264,15 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       if (UIScreen.isLargeScreen()) {
         clearCharts(table);
       }
-      final List<String> fkeys=chartableItemsManager==null ? null : chartableItemsManager.filteredChartableKeys;
-      if(fkeys!=null) {
+
+      final List<String> fkeys = (chartableItemsManager == null)
+                                 ? null
+                                 : chartableItemsManager.filteredChartableKeys;
+
+      if (fkeys != null) {
         fkeys.clear();
       }
+
       if (all) {
         table.unfilter();
 
@@ -275,29 +284,33 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
           @Override
           public boolean passes(Object value, iStringConverter converter) {
             RenderableDataItem row = (RenderableDataItem) value;
-            boolean pass;
-            String key=null;
+            boolean            pass;
+            String             key = null;
+
             if (currentView == ResultsView.SPREADSHEET) {
-              pass= cat.equals(row.getLinkedData());
-              if(pass) {
+              pass = cat.equals(row.getLinkedData());
+
+              if (pass) {
                 key = (String) row.get(0).getLinkedData();
               }
             } else {
               RenderableDataItem item = row.getItemEx(CATEGORY_NAME_POSITION);
 
-              pass= (item == null)
+              pass = (item == null)
                      ? false
                      : item.valueEquals(cat);
-              if(pass) {
+
+              if (pass) {
                 key = (String) row.get(NAME_POSITION).getLinkedData();
               }
-             }
-            if(pass && fkeys!=null) {
-              if(key!=null && chartableItemsManager.isChartable(key)) {
+            }
+
+            if (pass && (fkeys != null)) {
+              if ((key != null) && chartableItemsManager.isChartable(key)) {
                 fkeys.add(key);
               }
-              
             }
+
             return pass;
           }
         });
@@ -459,71 +472,74 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
    * categories that was sent with the data
    */
   public void onFinishedLoading(String eventName, iWidget widget, EventObject event) {
+    ToolBarViewer tb = (ToolBarViewer) widget.getParent().getWidget("tableToolbar");
+    iWidget       sb = (tb == null)
+                       ? null
+                       : tb.getWidget("spreadsheet");
+
+    if (sb != null) {
+      sb.setEnabled(!hasNoData);
+    }
+
+    aWidget cw = (aWidget) ((tb == null)
+                 ? null
+                 : tb.getWidget("categories"));
+
+    if (cw != null) {
+      cw.setEnabled(!hasNoData);
+    }
+
     if (hasNoData) {
-      ToolBarViewer tb = (ToolBarViewer) widget.getParent().getWidget("tableToolbar");
-      iWidget       cw = (tb == null)
-                         ? null
-                         : tb.getWidget("spreadsheet");
+      return;
+    }
 
-      if (cw != null) {
-        cw.setEnabled(false);
+    WindowViewer w     = Platform.getWindowViewer();
+    TableViewer  table = (TableViewer) widget;
+    table.pageHome();
+
+    if (cw!=null) {
+      cw.clear();
+      RenderableDataItem all   = new RenderableDataItem(w.getString("bv.text.all_labs"));
+      RenderableDataItem other = new RenderableDataItem(w.getString("bv.text.other_labs_category"), "zzzzzzzzzzz",
+                                   null);
+      List<RenderableDataItem> list = Utils.categorize(table, CATEGORY_NAME_POSITION, other,
+                                        sortCategoriesOnLinkedData);
+
+      list.add(0, all);
+
+      int           len  = list.size();
+      iPlatformIcon icon = Platform.getResourceAsIcon("bv.icon.dash");
+
+      for (int i = 0; i < len; i++) {
+        RenderableDataItem item = list.get(i);
+
+        item.setIcon(icon);
+        item.setActionListener(this);
       }
 
-      cw = (tb == null)
-           ? null
-           : tb.getWidget("categories");
+      cw.addAll(list);
 
-      if (cw != null) {
-        cw.setEnabled(false);
-      }
-    } else {
-      WindowViewer w     = Platform.getWindowViewer();
-      TableViewer  table = (TableViewer) widget;
-      iWidget      cw    = table.getFormViewer().getWidget("categories");
-
-      if (cw instanceof aWidget) {
-        RenderableDataItem all   = new RenderableDataItem(w.getString("bv.text.all_labs"));
-        RenderableDataItem other = new RenderableDataItem(w.getString("bv.text.other_labs_category"), "zzzzzzzzzzz",
-                                     null);
-        List<RenderableDataItem> list = Utils.categorize(table, CATEGORY_NAME_POSITION, other,
-                                          sortCategoriesOnLinkedData);
-
-        list.add(0, all);
-
-        int           len  = list.size();
-        iPlatformIcon icon = Platform.getResourceAsIcon("bv.icon.dash");
-
-        for (int i = 0; i < len; i++) {
-          RenderableDataItem item = list.get(i);
-
-          item.setIcon(icon);
-          item.setActionListener(this);
-        }
-
-        ((aWidget) cw).addAll(list);
-
-        if (cw instanceof PushButtonWidget) {
-          ((PushButtonWidget) cw).setPopupScrollable(true);
-        }
-
-        cw.update();
+      if (cw instanceof PushButtonWidget) {
+        ((PushButtonWidget) cw).setPopupScrollable(true);
       }
 
-      Utils.sortTable(table, SORT_ORDER_POSITION);
-      chartableItemsManager.createList(table, NAME_POSITION);
+      cw.update();
+    }
 
-      if (Utils.isCardStack()) {
-        if ((trendPanels != null) && (trendPanels.length > 0)) {
-          iContainer fv    = (iContainer) table.getFormViewer().getWidget("trends");
-          TrendPanel panel = trendPanels[0];
+    Utils.sortTable(table, SORT_ORDER_POSITION);
+    chartableItemsManager.createList(table, NAME_POSITION);
 
-          panel.removePeers();
+    if (Utils.isCardStack()) {
+      if ((trendPanels != null) && (trendPanels.length > 0)) {
+        iContainer fv    = (iContainer) table.getFormViewer().getWidget("trends");
+        TrendPanel panel = trendPanels[0];
 
-          String text = panel.popuplateForm(fv);
+        panel.removePeers();
 
-          CardStackUtils.switchToViewer(table.getParent());
-          updateCardStackTitle(panel.title, text);
-        }
+        String text = panel.popuplateForm(fv);
+
+        CardStackUtils.switchToViewer(table.getParent());
+        updateCardStackTitle(panel.title, text);
       }
     }
   }
@@ -536,8 +552,9 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
    * @param event
    */
   public void onLabReportLoad(String eventName, iWidget widget, EventObject event) {
-    GridPaneViewer gp  = (GridPaneViewer) widget;
-    Document       doc = (Document) gp.getLinkedData();    // calling
+    iFormViewer    fv  = widget.getFormViewer();
+    GridPaneViewer gp  = (GridPaneViewer) fv.getWidget("labReport");
+    Document       doc = (Document) fv.getLinkedData();    // calling
     // Document.proplateViewer(ActionLink)
     // will set this value
 
@@ -716,7 +733,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
 
         link.setTargetName(t.getName());
 
-        Document doc = new Document(table, new ActionLink(url), id);
+        Document doc = new LabDocument(table, new ActionLink(url), id);
 
         loadedDocument = doc;
         doc.setLinkedData(Boolean.FALSE);
@@ -823,14 +840,14 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   }
 
   @Override
-  protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, ActionLink link) {
+  protected void dataParsed(iWidget widget, final List<RenderableDataItem> rows, final ActionLink link) {
     originalRows = rows;
+    tableDataLoaded(link);
     bunFound     = bunValue == null;
     creatFound   = creatinineValue == null;
 
     final TableViewer table = (TableViewer) widget;
 
-    table.setWidgetDataLink(link);
     isSummary = "summaryLabs".equals(widget.getName());
 
     if (!isSummary) {
@@ -845,6 +862,15 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
       for (TrendPanel p : trendPanels) {
         p.clear();
       }
+    }
+    chartableItemsManager.reset();
+
+    if (itemCounts != null) {
+      itemCounts.clear();
+    }
+
+    if (itemDatesSet != null) {
+      itemDatesSet.clear();
     }
 
     if (checkAndHandleNoData(table, rows)) {
@@ -872,15 +898,19 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
         if (result instanceof Throwable) {
           Utils.handleError((Throwable) result);
         } else {
+
           if (overViewLoaded && (trendPanels != null)) {
-            iContainer  c      = (iContainer) Platform.getWindowViewer().getViewer("labsOverview");
-            TableViewer ttable = (TableViewer) c.getWidget("trendsTable");
+            iContainer c = (iContainer) Platform.getWindowViewer().getViewer("labsOverview");
 
-            for (TrendPanel p : trendPanels) {
-              p.popuplateTable(ttable, trendsLayout);
+            if (c != null) {
+              TableViewer ttable = (TableViewer) c.getWidget("trendsTable");
+
+              for (TrendPanel p : trendPanels) {
+                p.popuplateTable(ttable, trendsLayout);
+              }
+
+              ttable.refreshItems();
             }
-
-            ttable.refreshItems();
           } else {
             final String key = (path == null)
                                ? null
@@ -993,50 +1023,28 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   }
 
   protected void loadStains(WindowViewer w, Document doc, iWidget browser) {
-    int     len   = doc.getAttachmentCount();
-    boolean error = false;
+    DocumentItem di = ((LabDocument) doc).stains;
 
-    for (int i = 0; i < len; i++) {
-      DocumentItem di = doc.getAttachment(i);
-
-      if (!"stains".equals(di.customItemType)) {
-        continue;
-      }
-
-      try {
-        browser.setValue(di.itemBody);
-      } catch(Exception e) {
-        e.printStackTrace();
-        w.alert(w.getString("bv.text.labs_stains_error"));
-      }
-
-      break;
-    }
-
-    if (error) {
-      Platform.getWindowViewer().alert(Platform.getWindowViewer().getString("bv.text.labs_susceptibilities_error"));
+    try {
+      browser.setValue(di.itemBody);
+    } catch(Exception e) {
+      e.printStackTrace();
+      w.alert(w.getString("bv.text.labs_stains_error"));
     }
   }
 
   protected void loadSusceptibilities(WindowViewer w, Document doc, TableViewer table) {
-    boolean error = false;
-    int     len   = doc.getAttachmentCount();
+    boolean      error = false;
+    DocumentItem di    = ((LabDocument) doc).susceptibilities;
 
-    for (int i = 0; i < len; i++) {
-      DocumentItem di = doc.getAttachment(i);
-
-      if (!"susceptibilities".equals(di.customItemType)) {
-        continue;
-      }
-
+    do {
       try {
         ActionLink link = new ActionLink(di.itemBody, di.mimeType);
 
         link.setContext(table);
 
         List<RenderableDataItem> list = DataItemParserHandler.parse(table, link, -1);
-
-        len = list.size();
+        int                      len  = list.size();
 
         if (len < 2) {
           error = true;
@@ -1074,9 +1082,7 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
         e.printStackTrace();
         error = true;
       }
-
-      break;
-    }
+    } while(false);
 
     if (error) {
       w.alert(w.getString("bv.text.labs_susceptibilities_error"));
@@ -1134,28 +1140,16 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
   }
 
   protected boolean reportHasStains(Document doc) {
-    int len = doc.getAttachmentCount();
-
-    for (int i = 0; i < len; i++) {
-      DocumentItem di = doc.getAttachment(i);
-
-      if ("stains".equalsIgnoreCase(di.customItemType)) {
-        return true;
-      }
+    if (doc instanceof LabDocument) {
+      return ((LabDocument) doc).stains != null;
     }
 
     return false;
   }
 
   protected boolean reportHasSusceptibilities(Document doc) {
-    int len = doc.getAttachmentCount();
-
-    for (int i = 0; i < len; i++) {
-      DocumentItem di = doc.getAttachment(i);
-
-      if ("susceptibilities".equalsIgnoreCase(di.customItemType)) {
-        return true;
-      }
+    if (doc instanceof LabDocument) {
+      return ((LabDocument) doc).susceptibilities != null;
     }
 
     return false;
@@ -1171,6 +1165,51 @@ public class Labs extends aResultsManager implements iActionListener, iValueChec
 
     overViewLoaded = false;
   }
+
+  static class LabDocument extends Document {
+    DocumentItem susceptibilities;
+    DocumentItem stains;
+
+    public LabDocument(iWidget widget, ActionLink link, String id) {
+      super(widget, link, id);
+    }
+
+    @Override
+    public DocumentItem addAttachment(DocumentItemType type, Date date, String title, String mimeType, String body,
+                                      String href) {
+      DocumentItem di = super.addAttachment(type, date, title, mimeType, body, href);
+
+      if ("susceptibilities".equalsIgnoreCase(di.customItemType)) {
+        susceptibilities = di;
+        docAttachments.remove(di);
+      } else if ("stains".equalsIgnoreCase(di.customItemType)) {
+        stains = di;
+        docAttachments.remove(di);
+      }
+
+      return di;
+    }
+
+    @Override
+    protected DocumentItem processDocumentRow(DocumentItem doc, RenderableDataItem row) {
+      DocumentItem di = super.processDocumentRow(doc, row);
+
+      if (di != null) {
+        if ("susceptibilities".equalsIgnoreCase(di.customItemType)) {
+          susceptibilities = di;
+
+          return null;
+        } else if ("stains".equalsIgnoreCase(di.customItemType)) {
+          stains = di;
+
+          return null;
+        }
+      }
+
+      return di;
+    }
+  }
+
 
   class ChartHandler extends aChartHandler {
     public ChartHandler(JSONObject chartsInfo) {

@@ -1,4 +1,5 @@
 #BellaVista
+
 The BellVista client is an implementation of a Native, Multi-Platform Clinical Client that is EMR agnostic. It is part of a new open source Clinical Client Platform (CCP). This platform provides a framework and an implementation of a Native, Multi-Platform Clinical Client that is EMR agnostic. The client provides core clinical results reporting functionality and a framework for integrating external functionality like:
 
 * QR code and Bluetooth Beacon based patient identification
@@ -14,9 +15,23 @@ Currently the client is runs natively on iOS, Android, and on any desktop enviro
 
 The client has a demo mode which allows you to tests out its UI and functionality without having to talk to any back end systems.
 
+##Latest News
+###17 Feb 2016
+* Support for direct access to FHIR servers added, see the FHIR section in the [Working with the Client](Configuring) page
+* Documented how to test the Bluetooth Beacon support, see the Bluetooth Beacons section in the [Working with the Client](Configuring) page
+* Experimental Order Entry workflow added, log into the 'Local Demo' server, choose a patient and then click on the 'New Orders' button on the action bar
+* iOS version available for testing for the next 60 days via Apple's beta testing program. Send an email to <bvbeta1@sparseware.com> to get a copy. This version includes the real-time vital signs (numerics and waveforms) functionality, demonstrating how integration would work in the real world.
+
+
 ##Screenshots & Design
 
 Please see the [WiKi](https://github.com/sparseware/ccp-bellavista/wiki) for screenshots and design information
+
+##Binaries
+* iOS - You can compile your own version from the repo or you can send an email to <bvbeta1@sparseware.com> and if there is currently a version available via Apple's TestFlight beta testing program, you will be added as a tester. You need iOS version 8 or later to participate in the beta testing program, version 7+ if you compile the application yourself. 
+* Android - Available in the repo here. You need Android version 4.42 or later
+* Desktop - Available in the repo here. You need Java 1.8.0_72 (on you Mac or PC) or newer
+
 
 ##Development Requirements
 * Eclipse 4.3 or newer

@@ -644,7 +644,7 @@ public abstract class aChartHandler {
     String s = attrs.get("domainContext");
 
     cfg.domainAxis.valueContext.setValue((s == null)
-            ? "|M/d@HH:mm' '"
+            ? "|M/d/yy@HH:mm"
             : s);
     s = attrs.get("domain");
 

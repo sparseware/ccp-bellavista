@@ -19,7 +19,7 @@ Form {
         showDividerLine: true
         autoSizeRowsToFit: true
         dividerLineColor: white
-      } [ onAction="class:oe.Ordering#onItemsListAction" ]
+      } [ onAction="class:.oe.Ordering#onItemsListAction" ]
     }
     {
       GroupBox {
@@ -50,7 +50,7 @@ Form {
               textHAlignment: right
               iconPosition: right_justified
               buttonStyle: toolbar
-            } [ onAction="class:oe.Ordering#onFilterAction" ]
+            } [ onAction="class:.oe.Ordering#onFilterAction" ]
           }
           {
             TextField {
@@ -75,10 +75,10 @@ Form {
               keyboardReturnButtonType: search_type
               allowDefaultSuggestions: false
               keyboardType: default_type [ autoCorrect=false, autoCapatilize="none", spellCheck=false]
-            } [ onAction="class:oe.Ordering#onSearchFieldAction" ]
+            } [ onAction="class:.oe.Ordering#onSearchFieldAction" ]
           }
         }
       }
     }
   }
-} [ onShown="class:oe.Ordering#onShown" ]
+} [ onShown="class:.oe.Ordering#onShown" ]

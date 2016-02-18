@@ -47,6 +47,7 @@ MainWindow {
           widgets {
             {
               Label {
+                name: "usernameLabel"
                 bounds {
                   x: "1"
                   y: "5"
@@ -64,11 +65,12 @@ MainWindow {
                 }
                 visibleCharacters: 12
                 allowDefaultSuggestions: false
-                keyboardType: default_type [ autoCorrect=false, autoCapatilize="none", spellCheck=false]
-              }[ onAction="class:MainEventHandler#onLoginFormEnter" ]
+                keyboardType: default_type [ autoCapatilize="none", autoCorrect="false", spellCheck="false" ]
+              } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
             }
             {
               Label {
+                name: "passwordLabel"
                 bounds {
                   x: "1"
                   y: "7"
@@ -84,7 +86,7 @@ MainWindow {
                   x: "3"
                   y: "7"
                 }
-              }[ onAction="class:MainEventHandler#onLoginFormEnter" ]
+              } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
             }
             {
               ComboBox {
@@ -93,10 +95,11 @@ MainWindow {
                   x: "3"
                   y: "3"
                 }
-              } [ onConfigure="class:Settings#onConfigureLoginComboBox" ]
+              } [ onConfigure="class:Settings#onConfigureLoginComboBox", onAction="class:Settings#onActionLoginComboBox" ]
             }
             {
               PushButton {
+                name: "signin"
                 bounds {
                   x: "3"
                   y: "9"
@@ -130,8 +133,8 @@ MainWindow {
               }
             }
           }
-        } [ onShown="class:MainEventHandler#requestFocusIfKeyboardPresent?username"]
+        } [ onShown="class:Settings#onShownLoginForm" ]
       }
     }
   }
-}
+} [ onWillClose="class:Actions#onExit", onError="class:MainEventHandler#onError"]

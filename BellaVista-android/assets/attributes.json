@@ -1,4 +1,6 @@
 {
+  "support_email": "bvbeta1_0@sparseware.com",
+  "support_email_subject": "BellaVista Application Error",
   "careTeamInfo": {
     "communicationHandlerClass": "",
     "commIdPosition": 1,
@@ -12,6 +14,9 @@
   "facilities": [
     "({resource:bv.text.all_facilities})"
   ],
+  "protocolHandlers": {
+  	"fhir": ".external.fhir.FHIRServer"
+  },
   "loginInfo": {
     "sessionPinSupported": true,
     "pinSize": 4
@@ -59,13 +64,6 @@
         "noDataText": "{resource:bv.text.no_problems_found}",
         "hasDetail": false,
         "autoUpdate": false
-      },
-      {
-        "name": "careteam",
-        "url": "/hub/main/patient/careteam",
-        "alertSound": "",
-        "noDataText": "{resource:bv.text.no_careteam_found}",
-        "autoUpdate": false
       }
     ]
   },
@@ -74,7 +72,7 @@
     "hasPatientFlags": true,
     "autoShowFlags": true,
     "autoShowDefaultList": true,
-    "alwaysShowSearchFirst": false,
+    "alwaysShowSearchFirst": true,
     "searchPageSize": 100,
     "photosThumbnailsURL": "/data/photos/thumbs/%s",
     "photosURL": "/data/photos/%s",
@@ -123,10 +121,10 @@
         "name": "lc_clinics"
       },
       {
-        "title": "{resource:bv.text.by_speciality}",
+        "title": "{resource:bv.text.by_specialty}",
         "listPath": "specialities",
         "type": "category",
-        "patientsPath": "by_category/speciality",
+        "patientsPath": "by_category/specialty",
         "name": "lc_specialities"
       }
     ]
@@ -281,42 +279,23 @@
     "bodyOutOfBandText": "__BODY_OUT_OF_BAND__",
     "filters": [
       {
-        "text": "Last 100 Signed Notes",
+        "text": "All Notes for Encounter",
         "serverSide": true,
         "filter": ""
       },
       {
         "serverSide": true,
-        "text": "My Unsigned Notes",
-        "filter": "unsigned"
+        "text": "Notes By Date...",
+        "formUrl": "/hub/main/data/forms/select_date_range.json",
+        "category": "by_date",
+        "title": "Notes By Date"
       },
       {
         "serverSide": true,
-        "text": "All Unsigned Notes",
-        "filter": "unsigned_all"
-      },
-      {
-        "serverSide": false,
-        "text": "Signed Notes By Date...",
-        "url": "/select_date_range.rml",
-        "title": "Signed Notes By Date"
-      },
-      {
-        "serverSide": false,
-        "text": "Signed Notes By Author...",
-        "url": "/select_use.rml",
-        "title": "Signed Notes By Author"
-      },
-      {
-        "serverSide": false,
-        "text": "Unigned Notes By Author...",
-        "url": "/select_use.rml",
-        "title": "Signed Note By Author"
-      },
-      {
-        "serverSide": false,
-        "text": "Custom View...",
-        "url": "/custom_notes_view.rml"
+        "text": "Notes By Author...",
+        "formUrl": "/hub/main/data/forms/select_practitioner.json",
+        "category": "by_author",
+        "title": "Notes By Author"
       }
     ],
     "hasNoteDictationSupport": false
@@ -329,42 +308,37 @@
     ],
     "filters": [
       {
-        "text": "Recent Procedures",
+        "text": "All Procedures for Encounter",
         "serverSide": true,
         "filter": ""
       },
       {
         "serverSide": true,
-        "text": "My Unsigned Notes",
-        "filter": "unsigned"
+        "text": "Procedures By Service...",
+        "formUrl": "/hub/main/data/forms/select_service.json",
+        "category": "by_service",
+        "title": "Procedures By Service"
       },
       {
         "serverSide": true,
-        "text": "All Unsigned Notes",
-        "filter": "unsigned_all"
+        "text": "Procedures By Requestor...",
+        "formUrl": "/hub/main/data/forms/select_practitioner.json",
+        "category": "by_requestor",
+        "title": "Procedures By Requestor"
       },
       {
-        "serverSide": false,
-        "text": "Signed Notes By Date...",
-        "url": "/select_date_range.rml",
-        "title": "Signed Notes By Date"
+        "serverSide": true,
+        "text": "Procedures By Date...",
+        "formUrl": "/hub/main/data/forms/select_date_range.json",
+        "category": "by_date",
+        "title": "Procedures By Date"
       },
       {
-        "serverSide": false,
-        "text": "Procedures By Service...",
-        "url": "/select_procedure_service.rml",
-        "title": "Signed Notes By Author"
-      },
-      {
-        "serverSide": false,
-        "text": "Unigned Notes By Author...",
-        "url": "/select_use.rml",
-        "title": "Signed Note By Author"
-      },
-      {
-        "serverSide": false,
-        "text": "Custom View...",
-        "url": "/custom_notes_view.rml"
+        "serverSide": true,
+        "text": "Procedures By Author...",
+        "formUrl": "/hub/main/data/forms/select_practitioner.json",
+        "category": "by_author",
+        "title": "Procedures By Author"
       }
     ]
   },
@@ -580,7 +554,7 @@
       {
         "name": "hematology",
         "os": "large,medium",
-        "title": "{resource:bv.text.labs_hemotoloty_trends}",
+        "title": "{resource:bv.text.labs_hematology_trends}",
         "keys": [
           {
             "key": "885703",

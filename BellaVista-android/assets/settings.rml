@@ -1,21 +1,25 @@
 Form {
   title: "{resource:bv.text.settings}"
   layout: forms
-  rows: "2dluY,d,2dluY,d,2dluY"
+  rows: "2dluY,d:g,2dluY,d,2dluY"
   columns: "2dluX,d:g,2dluX"
+        bounds {
+          x: "1"
+          y: "1"
+          width: "30ch"
+          height: "24ln"
+        }
   widgets {
     {
       StackPane {
         name: "settingsStack"
         title: "{resource:bv.text.settings}"
+        transitionAnimator: "SlideAnimation"
+        actAsFormViewer: true
         bounds {
           x: "1"
           y: "1"
-          width: "-1"  [ min="20ch" ]
-          height: "-1" [ min="20ln" ]
         }
-        transitionAnimator: "SlideAnimation"
-        actAsFormViewer: true
         viewerURLs {
           "/basic_settings.rml" [ deferred="false" ]
           "/servers_settings.rml" [ deferred="false" ]
@@ -42,8 +46,8 @@ Form {
                 y: "0"
                 width: "7ch"
               }
-              value: "{resource:Rare.text.close}"
               templateName: "bv.button.alert"
+              value: "{resource:Rare.text.close}"
             } [ onAction="class:MainEventHandler#onCloseWindow" ]
           }
         }

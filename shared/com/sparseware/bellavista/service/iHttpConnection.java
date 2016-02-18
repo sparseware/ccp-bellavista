@@ -16,6 +16,7 @@
 
 package com.sparseware.bellavista.service;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
@@ -53,4 +54,11 @@ public interface iHttpConnection {
    * @return
    */
   ContentWriter getContentWriter();
+  
+  /**
+   * Sets a connection to pipe back to the client
+   * 
+   * @param connection the connection
+   */
+  void setConnectionPipe(HttpURLConnection connection);
 }

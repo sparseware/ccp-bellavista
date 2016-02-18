@@ -91,15 +91,15 @@ public class FieldValue implements Cloneable {
   public String valueToString() {
     switch(OrderFields.getFieldType(field)) {
       case DATE_TIME :
-        return Functions.convertDateTime(Platform.getWindowViewer(), value, false);
+        return Functions.convertDateTime( value, false);
 
       case DATE :
-        return Functions.convertDate(Platform.getWindowViewer(), value, false);
+        return Functions.convertDate(value, false);
 
       case TIME :
         SimpleDateFormat df = (SimpleDateFormat) Platform.getAppContext().getDefaultTimeContext().getItemFormat();
 
-        return Functions.convertDate(Platform.getWindowViewer(), value, df.toPattern());
+        return Functions.convertDate( value, df.toPattern());
 
       default :
         return (value == null)

@@ -37,6 +37,30 @@
 		162AC9861BAB18ED00B13D72 /* HttpHeaders.m in Sources */ = {isa = PBXBuildFile; fileRef = 162AC97A1BAB18ED00B13D72 /* HttpHeaders.m */; };
 		162AC9871BAB18ED00B13D72 /* iHttpConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 162AC97C1BAB18ED00B13D72 /* iHttpConnection.m */; };
 		162AC9881BAB18ED00B13D72 /* StreamHandlerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 162AC97E1BAB18ED00B13D72 /* StreamHandlerFactory.m */; };
+		162DCAB01C75296500437700 /* iDataPagingSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAAB1C75296500437700 /* iDataPagingSupport.m */; };
+		162DCAB11C75296500437700 /* ListSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAAD1C75296500437700 /* ListSearcher.m */; };
+		162DCAB21C75296500437700 /* SmartDateContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAAF1C75296500437700 /* SmartDateContext.m */; };
+		162DCAB51C75298400437700 /* NonFatalServiceException.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAB41C75298400437700 /* NonFatalServiceException.m */; };
+		162DCAB81C75299200437700 /* ActionLinkEx.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAB71C75299200437700 /* ActionLinkEx.m */; };
+		162DCAE21C7529A400437700 /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCABB1C7529A400437700 /* Account.m */; };
+		162DCAE31C7529A400437700 /* aFHIRemoteService.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCABD1C7529A400437700 /* aFHIRemoteService.m */; };
+		162DCAE41C7529A400437700 /* Composition.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCABF1C7529A400437700 /* Composition.m */; };
+		162DCAE51C7529A400437700 /* DiagnosticReport.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAC21C7529A400437700 /* DiagnosticReport.m */; };
+		162DCAE61C7529A400437700 /* Documents.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAC41C7529A400437700 /* Documents.m */; };
+		162DCAE71C7529A400437700 /* FHIRHttpURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAC61C7529A400437700 /* FHIRHttpURLConnection.m */; };
+		162DCAE81C7529A400437700 /* FHIRJSONWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAC81C7529A400437700 /* FHIRJSONWatcher.m */; };
+		162DCAE91C7529A400437700 /* FHIRServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCACA1C7529A400437700 /* FHIRServer.m */; };
+		162DCAEA1C7529A400437700 /* FHIRUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCACC1C7529A400437700 /* FHIRUtils.m */; };
+		162DCAEB1C7529A400437700 /* Imaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCACE1C7529A400437700 /* Imaging.m */; };
+		162DCAEC1C7529A400437700 /* Labs.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAD01C7529A400437700 /* Labs.m */; };
+		162DCAED1C7529A400437700 /* LinkWaiter.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAD21C7529A400437700 /* LinkWaiter.m */; };
+		162DCAEE1C7529A400437700 /* Orders.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAD41C7529A400437700 /* Orders.m */; };
+		162DCAEF1C7529A400437700 /* Patient.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAD61C7529A400437700 /* Patient.m */; };
+		162DCAF01C7529A400437700 /* Procedures.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAD81C7529A400437700 /* Procedures.m */; };
+		162DCAF11C7529A400437700 /* Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCADB1C7529A400437700 /* Lists.m */; };
+		162DCAF21C7529A400437700 /* Patients.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCADD1C7529A400437700 /* Patients.m */; };
+		162DCAF31C7529A400437700 /* Users.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCADF1C7529A400437700 /* Users.m */; };
+		162DCAF41C7529A400437700 /* Vitals.m in Sources */ = {isa = PBXBuildFile; fileRef = 162DCAE11C7529A400437700 /* Vitals.m */; };
 		163A81CD1A74276F002C5FB4 /* aResultsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 163A81BD1A74276F002C5FB4 /* aResultsManager.m */; };
 		163A81CE1A74276F002C5FB4 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 163A81BF1A74276F002C5FB4 /* Document.m */; };
 		163A81D11A74276F002C5FB4 /* Notes.m in Sources */ = {isa = PBXBuildFile; fileRef = 163A81C71A74276F002C5FB4 /* Notes.m */; };
@@ -154,6 +178,55 @@
 		162AC97C1BAB18ED00B13D72 /* iHttpConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iHttpConnection.m; sourceTree = "<group>"; };
 		162AC97D1BAB18ED00B13D72 /* StreamHandlerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamHandlerFactory.h; sourceTree = "<group>"; };
 		162AC97E1BAB18ED00B13D72 /* StreamHandlerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StreamHandlerFactory.m; sourceTree = "<group>"; };
+		162DCAAA1C75296500437700 /* iDataPagingSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iDataPagingSupport.h; sourceTree = "<group>"; };
+		162DCAAB1C75296500437700 /* iDataPagingSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iDataPagingSupport.m; sourceTree = "<group>"; };
+		162DCAAC1C75296500437700 /* ListSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSearcher.h; sourceTree = "<group>"; };
+		162DCAAD1C75296500437700 /* ListSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSearcher.m; sourceTree = "<group>"; };
+		162DCAAE1C75296500437700 /* SmartDateContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartDateContext.h; sourceTree = "<group>"; };
+		162DCAAF1C75296500437700 /* SmartDateContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartDateContext.m; sourceTree = "<group>"; };
+		162DCAB31C75298400437700 /* NonFatalServiceException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NonFatalServiceException.h; sourceTree = "<group>"; };
+		162DCAB41C75298400437700 /* NonFatalServiceException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NonFatalServiceException.m; sourceTree = "<group>"; };
+		162DCAB61C75299200437700 /* ActionLinkEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionLinkEx.h; sourceTree = "<group>"; };
+		162DCAB71C75299200437700 /* ActionLinkEx.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionLinkEx.m; sourceTree = "<group>"; };
+		162DCABA1C7529A400437700 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
+		162DCABB1C7529A400437700 /* Account.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
+		162DCABC1C7529A400437700 /* aFHIRemoteService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aFHIRemoteService.h; sourceTree = "<group>"; };
+		162DCABD1C7529A400437700 /* aFHIRemoteService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aFHIRemoteService.m; sourceTree = "<group>"; };
+		162DCABE1C7529A400437700 /* Composition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Composition.h; sourceTree = "<group>"; };
+		162DCABF1C7529A400437700 /* Composition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Composition.m; sourceTree = "<group>"; };
+		162DCAC01C7529A400437700 /* Consults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Consults.h; sourceTree = "<group>"; };
+		162DCAC11C7529A400437700 /* DiagnosticReport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticReport.h; sourceTree = "<group>"; };
+		162DCAC21C7529A400437700 /* DiagnosticReport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiagnosticReport.m; sourceTree = "<group>"; };
+		162DCAC31C7529A400437700 /* Documents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Documents.h; sourceTree = "<group>"; };
+		162DCAC41C7529A400437700 /* Documents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Documents.m; sourceTree = "<group>"; };
+		162DCAC51C7529A400437700 /* FHIRHttpURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHIRHttpURLConnection.h; sourceTree = "<group>"; };
+		162DCAC61C7529A400437700 /* FHIRHttpURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHIRHttpURLConnection.m; sourceTree = "<group>"; };
+		162DCAC71C7529A400437700 /* FHIRJSONWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHIRJSONWatcher.h; sourceTree = "<group>"; };
+		162DCAC81C7529A400437700 /* FHIRJSONWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHIRJSONWatcher.m; sourceTree = "<group>"; };
+		162DCAC91C7529A400437700 /* FHIRServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHIRServer.h; sourceTree = "<group>"; };
+		162DCACA1C7529A400437700 /* FHIRServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHIRServer.m; sourceTree = "<group>"; };
+		162DCACB1C7529A400437700 /* FHIRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHIRUtils.h; sourceTree = "<group>"; };
+		162DCACC1C7529A400437700 /* FHIRUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHIRUtils.m; sourceTree = "<group>"; };
+		162DCACD1C7529A400437700 /* Imaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Imaging.h; sourceTree = "<group>"; };
+		162DCACE1C7529A400437700 /* Imaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Imaging.m; sourceTree = "<group>"; };
+		162DCACF1C7529A400437700 /* Labs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Labs.h; sourceTree = "<group>"; };
+		162DCAD01C7529A400437700 /* Labs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Labs.m; sourceTree = "<group>"; };
+		162DCAD11C7529A400437700 /* LinkWaiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinkWaiter.h; sourceTree = "<group>"; };
+		162DCAD21C7529A400437700 /* LinkWaiter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinkWaiter.m; sourceTree = "<group>"; };
+		162DCAD31C7529A400437700 /* Orders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orders.h; sourceTree = "<group>"; };
+		162DCAD41C7529A400437700 /* Orders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Orders.m; sourceTree = "<group>"; };
+		162DCAD51C7529A400437700 /* Patient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Patient.h; sourceTree = "<group>"; };
+		162DCAD61C7529A400437700 /* Patient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Patient.m; sourceTree = "<group>"; };
+		162DCAD71C7529A400437700 /* Procedures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Procedures.h; sourceTree = "<group>"; };
+		162DCAD81C7529A400437700 /* Procedures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Procedures.m; sourceTree = "<group>"; };
+		162DCADA1C7529A400437700 /* Lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lists.h; sourceTree = "<group>"; };
+		162DCADB1C7529A400437700 /* Lists.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Lists.m; sourceTree = "<group>"; };
+		162DCADC1C7529A400437700 /* Patients.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Patients.h; sourceTree = "<group>"; };
+		162DCADD1C7529A400437700 /* Patients.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Patients.m; sourceTree = "<group>"; };
+		162DCADE1C7529A400437700 /* Users.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Users.h; sourceTree = "<group>"; };
+		162DCADF1C7529A400437700 /* Users.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Users.m; sourceTree = "<group>"; };
+		162DCAE01C7529A400437700 /* Vitals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vitals.h; sourceTree = "<group>"; };
+		162DCAE11C7529A400437700 /* Vitals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vitals.m; sourceTree = "<group>"; };
 		163A81BA1A74276F002C5FB4 /* ApplicationListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationListener.h; sourceTree = "<group>"; };
 		163A81BC1A74276F002C5FB4 /* aResultsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aResultsManager.h; sourceTree = "<group>"; };
 		163A81BD1A74276F002C5FB4 /* aResultsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = aResultsManager.m; sourceTree = "<group>"; };
@@ -273,6 +346,9 @@
 		161906471A84434D000C604E /* external */ = {
 			isa = PBXGroup;
 			children = (
+				162DCAB91C7529A400437700 /* fhir */,
+				162DCAB61C75299200437700 /* ActionLinkEx.h */,
+				162DCAB71C75299200437700 /* ActionLinkEx.m */,
 				162AC9671BAB18BF00B13D72 /* aProtocolHandler.h */,
 				162AC9681BAB18BF00B13D72 /* aProtocolHandler.m */,
 				161705D21AC100CE001CE3D8 /* aBeaconLocator.h */,
@@ -306,6 +382,8 @@
 		162AC96C1BAB18ED00B13D72 /* service */ = {
 			isa = PBXGroup;
 			children = (
+				162DCAB31C75298400437700 /* NonFatalServiceException.h */,
+				162DCAB41C75298400437700 /* NonFatalServiceException.m */,
 				162AC96D1BAB18ED00B13D72 /* aHttpURLConnection.h */,
 				162AC96E1BAB18ED00B13D72 /* aHttpURLConnection.m */,
 				162AC96F1BAB18ED00B13D72 /* aRemoteService.h */,
@@ -328,6 +406,60 @@
 			path = service;
 			sourceTree = "<group>";
 		};
+		162DCAB91C7529A400437700 /* fhir */ = {
+			isa = PBXGroup;
+			children = (
+				162DCABA1C7529A400437700 /* Account.h */,
+				162DCABB1C7529A400437700 /* Account.m */,
+				162DCABC1C7529A400437700 /* aFHIRemoteService.h */,
+				162DCABD1C7529A400437700 /* aFHIRemoteService.m */,
+				162DCABE1C7529A400437700 /* Composition.h */,
+				162DCABF1C7529A400437700 /* Composition.m */,
+				162DCAC01C7529A400437700 /* Consults.h */,
+				162DCAC11C7529A400437700 /* DiagnosticReport.h */,
+				162DCAC21C7529A400437700 /* DiagnosticReport.m */,
+				162DCAC31C7529A400437700 /* Documents.h */,
+				162DCAC41C7529A400437700 /* Documents.m */,
+				162DCAC51C7529A400437700 /* FHIRHttpURLConnection.h */,
+				162DCAC61C7529A400437700 /* FHIRHttpURLConnection.m */,
+				162DCAC71C7529A400437700 /* FHIRJSONWatcher.h */,
+				162DCAC81C7529A400437700 /* FHIRJSONWatcher.m */,
+				162DCAC91C7529A400437700 /* FHIRServer.h */,
+				162DCACA1C7529A400437700 /* FHIRServer.m */,
+				162DCACB1C7529A400437700 /* FHIRUtils.h */,
+				162DCACC1C7529A400437700 /* FHIRUtils.m */,
+				162DCACD1C7529A400437700 /* Imaging.h */,
+				162DCACE1C7529A400437700 /* Imaging.m */,
+				162DCACF1C7529A400437700 /* Labs.h */,
+				162DCAD01C7529A400437700 /* Labs.m */,
+				162DCAD11C7529A400437700 /* LinkWaiter.h */,
+				162DCAD21C7529A400437700 /* LinkWaiter.m */,
+				162DCAD31C7529A400437700 /* Orders.h */,
+				162DCAD41C7529A400437700 /* Orders.m */,
+				162DCAD51C7529A400437700 /* Patient.h */,
+				162DCAD61C7529A400437700 /* Patient.m */,
+				162DCAD71C7529A400437700 /* Procedures.h */,
+				162DCAD81C7529A400437700 /* Procedures.m */,
+				162DCAD91C7529A400437700 /* util */,
+				162DCAE01C7529A400437700 /* Vitals.h */,
+				162DCAE11C7529A400437700 /* Vitals.m */,
+			);
+			path = fhir;
+			sourceTree = "<group>";
+		};
+		162DCAD91C7529A400437700 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				162DCADA1C7529A400437700 /* Lists.h */,
+				162DCADB1C7529A400437700 /* Lists.m */,
+				162DCADC1C7529A400437700 /* Patients.h */,
+				162DCADD1C7529A400437700 /* Patients.m */,
+				162DCADE1C7529A400437700 /* Users.h */,
+				162DCADF1C7529A400437700 /* Users.m */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		16BC9C241A49F84100EAFFD1 /* sparseware */ = {
 			isa = PBXGroup;
 			children = (
@@ -340,6 +472,12 @@
 		16BC9C251A49F84100EAFFD1 /* bellavista */ = {
 			isa = PBXGroup;
 			children = (
+				162DCAAA1C75296500437700 /* iDataPagingSupport.h */,
+				162DCAAB1C75296500437700 /* iDataPagingSupport.m */,
+				162DCAAC1C75296500437700 /* ListSearcher.h */,
+				162DCAAD1C75296500437700 /* ListSearcher.m */,
+				162DCAAE1C75296500437700 /* SmartDateContext.h */,
+				162DCAAF1C75296500437700 /* SmartDateContext.m */,
 				16F7C7641C17B653007D715B /* Alerts.h */,
 				16F7C7651C17B653007D715B /* Alerts.m */,
 				16F7C7661C17B653007D715B /* oe */,
@@ -575,62 +713,85 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				162DCAEB1C7529A400437700 /* Imaging.m in Sources */,
 				1619065C1A84434D000C604E /* CollectionManager.m in Sources */,
 				162AC9871BAB18ED00B13D72 /* iHttpConnection.m in Sources */,
 				161705E81AC100EA001CE3D8 /* MessageException.m in Sources */,
+				162DCAE61C7529A400437700 /* Documents.m in Sources */,
+				162DCAB11C75296500437700 /* ListSearcher.m in Sources */,
 				16F7C7821C17B653007D715B /* Procedures.m in Sources */,
 				16BC9C3A1A49F84100EAFFD1 /* Utils.m in Sources */,
 				162AC9801BAB18ED00B13D72 /* aHttpURLConnection.m in Sources */,
+				162DCAEF1C7529A400437700 /* Patient.m in Sources */,
 				162AC9861BAB18ED00B13D72 /* HttpHeaders.m in Sources */,
 				16F7C77E1C17B653007D715B /* Order.m in Sources */,
 				16F7C77A1C17B653007D715B /* Alerts.m in Sources */,
 				16BC9C361A49F84100EAFFD1 /* Labs.m in Sources */,
+				162DCAEC1C7529A400437700 /* Labs.m in Sources */,
+				162DCAE21C7529A400437700 /* Account.m in Sources */,
+				162DCAB21C75296500437700 /* SmartDateContext.m in Sources */,
 				164BFB4B1A50C82100DB8546 /* ClinicalValue.m in Sources */,
 				16FD5D0A191EBA4B00CE456D /* main.m in Sources */,
 				16F7C7801C17B653007D715B /* OrderFields.m in Sources */,
+				162DCAEA1C7529A400437700 /* FHIRUtils.m in Sources */,
 				16AF71D61B2653FF00BA569D /* CardStackCollectionActionListener.m in Sources */,
 				163A81CE1A74276F002C5FB4 /* Document.m in Sources */,
 				161906651A84434D000C604E /* PickList.m in Sources */,
 				162AC9841BAB18ED00B13D72 /* FileBackedBufferedOutputStream.m in Sources */,
 				164BFB5B1A50D27000DB8546 /* TrendPanel.m in Sources */,
+				162DCAE81C7529A400437700 /* FHIRJSONWatcher.m in Sources */,
 				16BC9C371A49F84100EAFFD1 /* MainEventHandler.m in Sources */,
 				1619065B1A84434D000C604E /* CareTeam.m in Sources */,
+				162DCAE41C7529A400437700 /* Composition.m in Sources */,
 				161705E51AC100CE001CE3D8 /* RemoteMonitorEventHandler.m in Sources */,
 				162AC9821BAB18ED00B13D72 /* ConnectionHandler.m in Sources */,
 				1619065D1A84434D000C604E /* DefaultImageViewer.m in Sources */,
 				162AC9881BAB18ED00B13D72 /* StreamHandlerFactory.m in Sources */,
 				161705E01AC100CE001CE3D8 /* aBeaconLocatorSupport.m in Sources */,
 				161705E41AC100CE001CE3D8 /* DemoPatientLocator.m in Sources */,
+				162DCAF01C7529A400437700 /* Procedures.m in Sources */,
 				162AC9691BAB18BF00B13D72 /* aProtocolHandler.m in Sources */,
 				16F7C7831C17B653007D715B /* TextFieldBorder.m in Sources */,
 				162AC9811BAB18ED00B13D72 /* aRemoteService.m in Sources */,
 				1619065A1A84434D000C604E /* Actions.m in Sources */,
 				16BC9C381A49F84100EAFFD1 /* OrderManager.m in Sources */,
 				16BC9C351A49F84100EAFFD1 /* iValueChecker.m in Sources */,
+				162DCAF11C7529A400437700 /* Lists.m in Sources */,
 				16F7C77B1C17B653007D715B /* Cart.m in Sources */,
+				162DCAB01C75296500437700 /* iDataPagingSupport.m in Sources */,
 				16AF71D71B2653FF00BA569D /* CardStackUtils.m in Sources */,
 				162AC9831BAB18ED00B13D72 /* ContentWriter.m in Sources */,
+				162DCAE51C7529A400437700 /* DiagnosticReport.m in Sources */,
 				16F7C7811C17B653007D715B /* Ordering.m in Sources */,
 				161906611A84434D000C604E /* aBarcodeReader.m in Sources */,
 				161705D11AC100B2001CE3D8 /* BVBeaconMonitor.m in Sources */,
 				161906621A84434D000C604E /* aCommunicationHandler.m in Sources */,
+				162DCAB81C75299200437700 /* ActionLinkEx.m in Sources */,
 				163A81D21A74276F002C5FB4 /* Orders.m in Sources */,
 				163A81CD1A74276F002C5FB4 /* aResultsManager.m in Sources */,
 				16F7C77C1C17B653007D715B /* FieldValue.m in Sources */,
 				161906601A84434D000C604E /* aAttachmentHandler.m in Sources */,
 				16F7C77D1C17B653007D715B /* FormsManager.m in Sources */,
 				168BE2C41A7B086700D26F12 /* ActionPath.m in Sources */,
+				162DCAB51C75298400437700 /* NonFatalServiceException.m in Sources */,
+				162DCAE31C7529A400437700 /* aFHIRemoteService.m in Sources */,
 				16AF71D51B2653FF00BA569D /* CardStack.m in Sources */,
 				16FD5D08191EBA4B00CE456D /* AppDelegate.m in Sources */,
 				161906641A84434D000C604E /* aRemoteMonitor.m in Sources */,
+				162DCAE71C7529A400437700 /* FHIRHttpURLConnection.m in Sources */,
 				163A81D31A74276F002C5FB4 /* Vitals.m in Sources */,
+				162DCAE91C7529A400437700 /* FHIRServer.m in Sources */,
+				162DCAED1C7529A400437700 /* LinkWaiter.m in Sources */,
 				162AC9851BAB18ED00B13D72 /* FileBackedBufferedWriter.m in Sources */,
 				16AF71D81B2653FF00BA569D /* Summary.m in Sources */,
+				162DCAF21C7529A400437700 /* Patients.m in Sources */,
 				16F7C77F1C17B653007D715B /* OrderEntry.m in Sources */,
 				16BC9C341A49F84100EAFFD1 /* aEventHandler.m in Sources */,
 				161705E31AC100CE001CE3D8 /* DemoBarcodeReader.m in Sources */,
 				161705DF1AC100CE001CE3D8 /* aBeaconLocator.m in Sources */,
+				162DCAF31C7529A400437700 /* Users.m in Sources */,
 				164BFB4A1A50C82100DB8546 /* aChartHandler.m in Sources */,
+				162DCAF41C7529A400437700 /* Vitals.m in Sources */,
 				166E288A1A97F59300F5FDB9 /* Settings.m in Sources */,
 				163A81D11A74276F002C5FB4 /* Notes.m in Sources */,
 				162AC97F1BAB18ED00B13D72 /* ListPager.m in Sources */,
@@ -638,6 +799,7 @@
 				16DF0F291A59CB400035647B /* ApplicationListener.m in Sources */,
 				16BC9C391A49F84100EAFFD1 /* PatientSelect.m in Sources */,
 				161705E11AC100CE001CE3D8 /* BluetoothBeaconLocator.m in Sources */,
+				162DCAEE1C7529A400437700 /* Orders.m in Sources */,
 				161705E21AC100CE001CE3D8 /* BluetoothBeaconLocatorSupport.m in Sources */,
 				168BE2BF1A79639000D26F12 /* ResultsView.m in Sources */,
 			);

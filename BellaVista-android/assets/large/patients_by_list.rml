@@ -70,6 +70,7 @@ GroupBox {
         selectionMode: single
         itemDescription {
           icon: "resource:bv.icon.list"
+          wordWrap: true
         }
         visibleRowCount: 3
         autoSizeRowsToFit: true

@@ -22,7 +22,7 @@ Form {
         showDividerLine: true
         singleClickActionEnabled: true
         rowHeight: "2ln"
-      } [ onContextMenu="onAction", onAction="class:oe.Cart#onCartAction" ]
+      } [ onContextMenu="onAction", onAction="class:.oe.Cart#onCartAction" ]
     }
     {
       GroupBox {
@@ -50,7 +50,7 @@ Form {
               }
               templateName: "bv.button"
               value: "{resource:bv.action.order_sign}"
-            } [ onAction="class:oe.Cart#onSubmit" ]
+            } [ onAction="class:.oe.Cart#onSubmit" ]
           }
           {
             PushButton {
@@ -63,7 +63,7 @@ Form {
               }
               templateName: "bv.button"
               value: "{resource:bv.oe.text.empty_cart}"
-            } [ onAction="class:oe.Cart#onEmptyCart" ]
+            } [ onAction="class:.oe.Cart#onEmptyCart" ]
           }
           {
             PushButton {
@@ -75,7 +75,7 @@ Form {
               }
               templateName: "bv.button"
               value: "{resource:Rare.text.close}"
-            } [ onAction="class:oe.Cart#onClose" ]
+            } [ onAction="class:.oe.Cart#onClose" ]
           }
         }
       }
@@ -111,7 +111,7 @@ Form {
               enabled: false
               templateName: "bv.button"
               value: "{resource:bv.action.order_sign}"
-            } [ onAction="class:oe.Cart#onSubmitOrder" ]
+            } [ onAction="class:.oe.Cart#onSubmitOrder" ]
           }
           {
             PushButton {
@@ -124,10 +124,10 @@ Form {
               }
               templateName: "bv.button"
               value: "{resource:bv.action.delete}"
-            } [ onAction="class:oe.Cart#onDeleteOrder" ]
+            } [ onAction="class:.oe.Cart#onDeleteOrder" ]
           }
         }
       }
     }
   }
-} [ onConfigure="class:oe.Cart#onConfigure" onDispose="class:oe.Cart#onDispose" ]
+} [ onConfigure="class:.oe.Cart#onConfigure" onDispose="class:.oe.Cart#onDispose" ]

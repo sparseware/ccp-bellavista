@@ -16,25 +16,13 @@
 
 package com.sparseware.bellavista;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.List;
-
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.aWorkerTask;
+import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.iDataCollection;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.iPlatformAppContext;
 import com.appnativa.rare.iWorkerTask;
-import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.net.ActionLink.RequestMethod;
 import com.appnativa.rare.scripting.Functions;
@@ -52,14 +40,14 @@ import com.appnativa.rare.ui.UIScreen;
 import com.appnativa.rare.ui.UISoundHelper;
 import com.appnativa.rare.ui.UISpriteIcon;
 import com.appnativa.rare.ui.aPlatformIcon;
-import com.appnativa.rare.ui.iEventHandler;
-import com.appnativa.rare.ui.iPlatformGraphics;
-import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.ui.border.UILineBorder;
 import com.appnativa.rare.ui.event.ActionEvent;
 import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.iActionListener;
 import com.appnativa.rare.ui.event.iChangeListener;
+import com.appnativa.rare.ui.iEventHandler;
+import com.appnativa.rare.ui.iPlatformGraphics;
+import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.viewer.ImagePaneViewer;
 import com.appnativa.rare.viewer.StackPaneViewer;
 import com.appnativa.rare.viewer.TableViewer;
@@ -86,6 +74,18 @@ import com.sparseware.bellavista.external.aPatientLocator;
 import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeEvent;
 import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeType;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * This class handles the selection of a patient. If provides support for
  * integrating barcode scanning for patient identification as well as an
@@ -94,44 +94,26 @@ import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeType;
  * @author Don DeCoteau
  */
 public class PatientSelect implements iEventHandler, iChangeListener {
-  public static final int            ADMIT_DATE             = 6;
-  public static final int            ADMIT_DX               = 7;
-  public static final int            DOB                    = 2;
-  public static final int            DOCTOR                 = 5;
-  public static final int            GENDER                 = 3;
-  public static final int            ID                     = 0;
-  public static final int            LOCATION               = 8;
-  public static final int            MRN                    = 4;
-  public static final int            NAME                   = 1;
-  public static final int            PHOTO                  = 10;
-  public static final int            SIGNAL                 = 11;
-  public static final int            RM_BED                 = 9;
+  public static final int            ADMIT_DATE = 6;
+  public static final int            ADMIT_DX   = 7;
+  public static final int            DOB        = 2;
+  public static final int            DOCTOR     = 5;
+  public static final int            GENDER     = 3;
+  public static final int            ID         = 0;
+  public static final int            LOCATION   = 8;
+  public static final int            MRN        = 4;
+  public static final int            NAME       = 1;
+  public static final int            PHOTO      = 10;
+  public static final int            SIGNAL     = 11;
+  public static final int            RM_BED     = 9;
   static String                      lastPatientID;
   static String                      lastTabName;
-  TableViewer                        patientsTable;
-  iWidget                            locatorWidget;
-  aPatientLocator                    patientLocator;
-  aBarcodeReader                     barcodeReader;
   static iPlatformIcon               signalIcons[];
   public static UILineBorder         photoBorder;
   public static PatientIcon          noPhotoIcon;
-  Class                              barcodeReaderClass;
-  Class                              patientLocatorClass;
-  RenderableDataItem                 patientListLoaded;
-  RenderableDataItem                 noPatientsFound;
-  RenderableDataItem                 noPatientListLoaded;
-  RenderableDataItem                 searchingForPatients;
-  boolean                            autoShowDefaultList;
-  ListPager                          pager                  = new ListPager();
-  int                                searchPageSize;
-  CardPatientSelectionActionListener psActionListener;
-  private UIPopupMenu                selectionMenu;
-  private boolean                    alwaysShowSearchFirst;
-  private boolean                    genderSearchSupported;
   static final String                PATIENT_SELECTION_TYPE = "pt_selection_type";
   static final String                PATIENT_SELECT_PAGE    = "pt_select_paage";
   static final String                PATIENT_SELECT         = "pt_select_patient";
-
   static {
     signalIcons = new iPlatformIcon[5];
 
@@ -140,15 +122,34 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     signalIcons[4] = Platform.getResourceAsIcon("bv.icon.signal");
-    photoBorder = new UILineBorder(ColorUtils.getColor("darkBorder"), UIScreen.platformPixelsf(1.25f), UIScreen.PLATFORM_PIXELS_6);
+    photoBorder    = new UILineBorder(ColorUtils.getColor("darkBorder"), UIScreen.platformPixelsf(1.25f),
+                                      UIScreen.PLATFORM_PIXELS_6);
     noPhotoIcon = new PatientIcon(Platform.getResourceAsIcon("bv.icon.no_photo"));
   }
+  TableViewer                        patientsTable;
+  iWidget                            locatorWidget;
+  aPatientLocator                    patientLocator;
+  aBarcodeReader                     barcodeReader;
+  Class                              barcodeReaderClass;
+  Class                              patientLocatorClass;
+  RenderableDataItem                 patientListLoaded;
+  RenderableDataItem                 noPatientsFound;
+  RenderableDataItem                 noPatientListLoaded;
+  RenderableDataItem                 searchingForPatients;
+  boolean                            autoShowDefaultList;
+  ListPager                          pager = new ListPager();
+  int                                searchPageSize;
+  CardPatientSelectionActionListener psActionListener;
+  private UIPopupMenu                selectionMenu;
+  private boolean                    alwaysShowSearchFirst;
+
+  private boolean                    genderSearchSupported;
 
   public PatientSelect() {
     JSONObject info = (JSONObject) Platform.getAppContext().getData("patientSelectInfo");
 
     autoShowDefaultList = info.optBoolean("autoShowDefaultList", true);
-    searchPageSize = info.optInt("searchPageSize", 0);
+    searchPageSize      = info.optInt("searchPageSize", 0);
 
     String cls = info.optString("patientLocatorClass");
 
@@ -157,7 +158,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
       try {
         patientLocatorClass = Platform.loadClass(cls);
-      } catch (ClassNotFoundException e) {
+      } catch(ClassNotFoundException e) {
         Platform.debugLog("Patient locator class not found:" + cls);
       }
     }
@@ -166,9 +167,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     if ((cls != null) && (cls.length() > 0)) {
       try {
-        cls = Utils.resolveClassName(cls, "external");
+        cls                = Utils.resolveClassName(cls, "external");
         barcodeReaderClass = Platform.loadClass(cls);
-      } catch (ClassNotFoundException e) {
+      } catch(ClassNotFoundException e) {
         Platform.debugLog("Barcode reader class not found:" + cls);
       }
     }
@@ -177,10 +178,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       if (patientLocatorClass == null) {
         patientLocatorClass = DemoPatientLocator.class;
       }
-
     }
 
-    alwaysShowSearchFirst = info.optBoolean("alwaysShowSearchFirst", false);
+    alwaysShowSearchFirst = info.optBoolean("alwaysShowSearchFirst", true);
     genderSearchSupported = info.optBoolean("genderSearchSupported", true);
 
     String s = Platform.getResourceAsString("bv.text.patient_list_loaded");
@@ -197,8 +197,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   public void onBarcodeButtonAction(String eventName, final iWidget widget, EventObject event) {
     if (barcodeReader != null) {
-      final WindowViewer w = Platform.getWindowViewer();
-      iFunctionCallback cb = new iFunctionCallback() {
+      final WindowViewer w  = Platform.getWindowViewer();
+      iFunctionCallback  cb = new iFunctionCallback() {
         @Override
         public void finished(boolean canceled, Object returnValue) {
           Utils.setIgnorePausing(false);
@@ -221,7 +221,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
             try {
               processPatientsList(patientsTable, (List<RenderableDataItem>) returnValue, false);
-            } catch (Exception e) {
+            } catch(Exception e) {
               Utils.handleError(e);
             }
           }
@@ -240,10 +240,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void onBookmarkButtonAction(String eventName, iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
 
-    WindowViewer w = widget.getAppContext().getWindowViewer();
-    iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
-
-    clearPreview(fv);
+    clearPreview();
 
     if (!UIScreen.isLargeScreen()) {
       StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
@@ -261,7 +258,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     if (patientLocatorClass != null) {
       try {
         patientLocator = (aPatientLocator) patientLocatorClass.newInstance();
-      } catch (Exception e) {
+      } catch(Exception e) {
         Platform.ignoreException("faled to instantiate patient locator", e);
       }
     }
@@ -269,7 +266,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     if (barcodeReaderClass != null) {
       try {
         barcodeReader = (aBarcodeReader) barcodeReaderClass.newInstance();
-      } catch (Exception e) {
+      } catch(Exception e) {
         Platform.ignoreException("faled to instantiate barcode reader", e);
       }
     }
@@ -279,15 +276,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
       selectionMenu = new UIPopupMenu(Platform.getWindowViewer(), cfg.getPopupMenu());
       cfg.setPopupMenu(null);
-    }
-  }
-
-  /**
-   * Called when the patient selection from is loadex
-   */
-  public void onLoad(String eventName, iWidget widget, EventObject event) {
-    if (Utils.isCardStack()) {
-      Platform.getWindowViewer().getActionBar().setVisible(false);
     }
   }
 
@@ -311,15 +299,14 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       barcodeReader.dispose();
     }
 
-    barcodeReader = null;
-    patientLocator = null;
-    locatorWidget = null;
+    barcodeReader    = null;
+    patientLocator   = null;
+    locatorWidget    = null;
     psActionListener = null;
   }
 
   @Override
-  public void onEvent(String eventName, iWidget widget, EventObject event) {
-  }
+  public void onEvent(String eventName, iWidget widget, EventObject event) {}
 
   /**
    * Called when the patient identifier field is shown. On android we will give
@@ -344,8 +331,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       TableViewer table = patientsTable;
 
       if (pl.isContainsPatients()) {
-        WindowViewer w = widget.getAppContext().getWindowViewer();
-        iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
+        WindowViewer     w  = widget.getAppContext().getWindowViewer();
+        iContainer       fv = (iContainer) w.getViewer("patientSelectionForm");
         aGroupableButton pb = (aGroupableButton) fv.getWidget("bookmarkButton");
 
         if (pb != null) {
@@ -366,10 +353,20 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     aListViewer lb = (aListViewer) widget;
 
     if (lb.isEmpty()) {
-      WindowViewer w = Platform.getWindowViewer();
-      PatientList pl=(PatientList) lb.getLinkedData();
-      noPatientListLoaded.setValue(w.getString("bv.format.no_lists",pl.title));
+      WindowViewer w  = Platform.getWindowViewer();
+      PatientList  pl = (PatientList) lb.getLinkedData();
+
+      noPatientListLoaded.setValue(w.getString("bv.format.no_lists", pl.title));
       lb.setAll(Arrays.asList(noPatientListLoaded));
+    }
+  }
+
+  /**
+   * Called when the patient selection from is loadex
+   */
+  public void onLoad(String eventName, iWidget widget, EventObject event) {
+    if (Utils.isCardStack()) {
+      Platform.getWindowViewer().getActionBar().setVisible(false);
     }
   }
 
@@ -377,20 +374,21 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * Called when the most recent action is invoked
    */
   public void onMostRecentAction(String eventName, iWidget widget, EventObject event) {
-    loadPatientList(patientsTable, Utils.createLink(patientsTable, "/hub/main/util/patients/most_recent", true), null, null);
+    loadPatientList(patientsTable, Utils.createLink(patientsTable, "/hub/main/util/patients/most_recent", true), null,
+                    null);
   }
 
   /**
    * Called when the nearby patients button is pressed.
    */
   public void onNearbyPatientsAction(String eventName, final iWidget widget, EventObject event) {
-    iContainer fv = (iContainer) Platform.getWindowViewer().getViewer("patientSelectionForm");
+    iContainer       fv = (iContainer) Platform.getWindowViewer().getViewer("patientSelectionForm");
     aGroupableButton pb = (aGroupableButton) fv.getWidget("signalButton");
 
-    if ((pb != null) && !pb.isVisible()) {
+    if ((pb != null) &&!pb.isVisible()) {
       if (pb.getIcon() == null) {
-        UIImage sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
-        UISpriteIcon icon = new UISpriteIcon(sprite);
+        UIImage      sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
+        UISpriteIcon icon   = new UISpriteIcon(sprite);
 
         pb.setIcon(icon);
       }
@@ -412,7 +410,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * Called when the next or previous page button is pressed
    */
   public void onNextOrPreviousPage(String eventName, iWidget widget, EventObject event) {
-    boolean next = widget.getName().equals("nextPage");
+    boolean    next = widget.getName().equals("nextPage");
     ActionLink link = null;
 
     if (next) {
@@ -421,7 +419,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       link = pager.previous();
     }
 
-    if (link == null) { //should not happen
+    if (link == null) {    //should not happen
       widget.setEnabled(false);
       UISoundHelper.beep();
     } else {
@@ -433,11 +431,11 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * Called when a specific patient list is selected from the list widget
    */
   public void onPatientListSelected(String eventName, iWidget widget, EventObject event) {
-    WindowViewer w = widget.getAppContext().getWindowViewer();
-    iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
-    String list = widget.getSelectionDataAsString();
+    WindowViewer w    = widget.getAppContext().getWindowViewer();
+    iContainer   fv   = (iContainer) w.getViewer("patientSelectionForm");
+    String       list = widget.getSelectionDataAsString();
 
-    clearPreview(fv);
+    clearPreview();
 
     aGroupableButton pb = (aGroupableButton) fv.getWidget("bookmarkButton");
 
@@ -458,10 +456,11 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void onPatientSearch(String eventName, iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
 
-    WindowViewer w = Platform.getWindowViewer();
-    iFormViewer form = widget.getFormViewer();
-    TableViewer table = patientsTable;
-
+    WindowViewer w     = Platform.getWindowViewer();
+    iContainer  form  = widget.getFormViewer();
+    TableViewer  table = patientsTable;
+    table.clear();
+    clearPreview();
     pager.clear();
 
     String id = form.getWidget("identifier").getValueAsString();
@@ -472,8 +471,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       return;
     }
 
-    String gender = ((aGroupableButton) form.getWidget("M")).getSelectedButtonName();
-    StringBuilder sb = new StringBuilder();
+    String        gender = ((aGroupableButton) form.getWidget("M")).getSelectedButtonName();
+    StringBuilder sb     = new StringBuilder();
 
     sb.append("/hub/main/util/patients/");
 
@@ -495,12 +494,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         attributes.put("max", Integer.toString(searchPageSize));
       }
 
-      id = null;
+      id   = null;
       link = Utils.createLink(table, sb.toString(), true);
       link.setAttributes(attributes);
       link.setRequestMethod(RequestMethod.POST);
     } else {
-      sb.append("nearby"); //for the demo we filter the nearby list
+      sb.append("nearby");    //for the demo we filter the nearby list
       link = Utils.createLink(table, sb.toString(), true);
     }
 
@@ -519,8 +518,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   public void onPatientsTableCreated(String eventName, final iWidget widget, EventObject event) {
     Table table = (Table) ((DataEvent) event).getData();
-    float px = UIScreen.toPlatformPixelHeight("2ln", null, 0, false);
-    float px54 = UIScreen.platformPixelsf(54);
+    float px    = UIScreen.toPlatformPixelHeight("2ln", null, 0, false);
+    float px54  = UIScreen.platformPixelsf(54);
 
     if (px < px54) {
       table.rowHeight.setValue("54");
@@ -530,7 +529,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       Platform.invokeLater(new Runnable() {
         @Override
         public void run() {
-          loadPatientList((TableViewer) widget, Utils.createLink(patientsTable, "/hub/main/util/patients/list", true), null, null);
+          loadPatientList((TableViewer) widget, Utils.createLink(patientsTable, "/hub/main/util/patients/list", true),
+                          null, null);
         }
       });
     }
@@ -540,7 +540,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * Called to configure the search form form
    */
   public void onSearchFormConfigure(String eventName, iWidget widget, EventObject event) {
-    iFormViewer fv = widget.getFormViewer();
+    iFormViewer      fv = widget.getFormViewer();
     aGroupableButton pb = (aGroupableButton) fv.getWidget("bv.action.scan_barcode");
 
     if (pb != null) {
@@ -600,17 +600,17 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * Called after the selection form has been configured
    */
   public void onSelectionFormConfigure(String eventName, final iWidget widget, EventObject event) {
-    boolean cardStack = Utils.isCardStack();
-    WindowViewer w = Platform.getWindowViewer();
-    iFormViewer fv = widget.getFormViewer();
+    boolean      cardStack = Utils.isCardStack();
+    WindowViewer w         = Platform.getWindowViewer();
+    iFormViewer  fv        = widget.getFormViewer();
 
     patientsTable = (TableViewer) fv.getWidget("patientsTable");
 
     if (cardStack) {
-      if (patientsTable == null) { //to keep things simple we will create a hidden table so that code that relys on the table can be used
+      if (patientsTable == null) {    //to keep things simple we will create a hidden table so that code that relys on the table can be used
         Table cfg = (Table) w.createConfigurationObject("Table", "bv.table.patients");
 
-        cfg.spot_clearAttributes(); //remove event handlers so that they are not called
+        cfg.spot_clearAttributes();    //remove event handlers so that they are not called
         patientsTable = (TableViewer) w.createWidget(cfg);
       }
 
@@ -619,20 +619,20 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       CardStackUtils.createListItemsViewer(sp, null, null, selectionMenu, null, true, false);
 
       StackPane cfg = (StackPane) ((DataEvent) event).getData();
-      final int n = cfg.selectedIndex.intValue();
+      final int n   = cfg.selectedIndex.intValue();
 
       sp.switchTo(n);
     } else {
-      final aGroupableButton pb = (aGroupableButton) fv.getWidget("patient");
-      UIPopupMenu pm = pb.getPopupMenu();
-      String format = w.getString("bv.format.goto");
-      int len = pm.size();
-      iActionListener al = new MenuActionListener();
+      final aGroupableButton pb     = (aGroupableButton) fv.getWidget("patient");
+      UIPopupMenu            pm     = pb.getPopupMenu();
+      String                 format = w.getString("bv.format.goto");
+      int                    len    = pm.size();
+      iActionListener        al     = new MenuActionListener();
 
       for (int i = 0; i < len; i++) {
-        UIMenuItem mi = pm.getMenuItem(i);
-        String name = mi.getName();
-        String s = w.getString("bv.text." + name);
+        UIMenuItem mi   = pm.getMenuItem(i);
+        String     name = mi.getName();
+        String     s    = w.getString("bv.text." + name);
 
         mi.setText(Functions.format(format, s));
         mi.setActionListener(al);
@@ -664,8 +664,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         pb2 = (aGroupableButton) fv.getWidget("signalButton");
 
         if (pb2 != null) {
-          UIImage sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
-          UISpriteIcon icon = new UISpriteIcon(sprite);
+          UIImage      sprite = Platform.getAppContext().getResourceAsImage("bv.icon.beacon.sprite");
+          UISpriteIcon icon   = new UISpriteIcon(sprite);
 
           icon.setFrozen(UIScreen.isMediumScreen());
           pb2.setIcon(icon);
@@ -684,12 +684,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       showPreview(patientsTable);
     }
 
-    final WindowViewer w = Platform.getWindowViewer();
-    iWidget patient = widget.getFormViewer().getWidget("patient");
-    RenderableDataItem row = (RenderableDataItem) patient.getLinkedData();
-    String id = (String) row.get(0).getValue();
-    final iPlatformIcon icon = row.get(0).getIcon();
-    iFunctionCallback cb = new iFunctionCallback() {
+    final WindowViewer  w       = Platform.getWindowViewer();
+    iWidget             patient = widget.getFormViewer().getWidget("patient");
+    RenderableDataItem  row     = (RenderableDataItem) patient.getLinkedData();
+    String              id      = (String) row.get(0).getValue();
+    final iPlatformIcon icon    = row.get(0).getIcon();
+    iFunctionCallback   cb      = new iFunctionCallback() {
       @Override
       public void finished(boolean canceled, Object returnValue) {
         if (returnValue instanceof Throwable) {
@@ -711,8 +711,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void onSignalButtonAction(String eventName, iWidget widget, EventObject event) {
     patientLocator.stopListeningForNearbyPatients();
 
-    aGroupableButton pb = (aGroupableButton) widget;
-    UISpriteIcon icon = (UISpriteIcon) pb.getIcon();
+    aGroupableButton pb   = (aGroupableButton) widget;
+    UISpriteIcon     icon = (UISpriteIcon) pb.getIcon();
 
     if (UIScreen.isLargeScreen()) {
       stopListeningForNearbyPatients();
@@ -736,8 +736,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   public void onSortByRoomNumber(String eventName, iWidget widget, EventObject event) {
-    TableViewer table = (TableViewer) widget;
-    Comparator<RenderableDataItem> c = new Comparator<RenderableDataItem>() {
+    TableViewer                    table = (TableViewer) widget;
+    Comparator<RenderableDataItem> c     = new Comparator<RenderableDataItem>() {
       @Override
       public int compare(RenderableDataItem o1, RenderableDataItem o2) {
         RenderableDataItem rb1 = o1.getItemEx(RM_BED);
@@ -745,7 +745,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
         if ((rb1 == null) || (rb2 == null)) {
           if (rb1 == null) {
-            return (rb2 == null) ? 0 : 1;
+            return (rb2 == null)
+                   ? 0
+                   : 1;
           }
 
           return -1;
@@ -772,8 +774,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   /**
    * Called when the nearby patients button is pressed.
    */
-  public void onVoiceSearchAction(String eventName, final iWidget widget, EventObject event) {
-  }
+  public void onVoiceSearchAction(String eventName, final iWidget widget, EventObject event) {}
 
   /**
    * Call by a toolbar button to show the stack pane form with the same name as
@@ -782,21 +783,24 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   public void showFormForButton(String eventName, iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
 
-    WindowViewer w = widget.getAppContext().getWindowViewer();
-    iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
+    clearPreview();
 
-    clearPreview(fv);
-
-    String name = widget.getName();
-    StackPaneViewer sp = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
+    String          name = widget.getName();
+    StackPaneViewer sp   = (StackPaneViewer) widget.getFormViewer().getWidget("selectionStack");
 
     if (name.equals("listsButton") && sp.isViewerLoaded(name)) {
-      iContainer c = (iContainer) sp.getViewer(name);
+      iContainer     c  = (iContainer) sp.getViewer(name);
       ComboBoxWidget cb = (ComboBoxWidget) c.getWidget("listCategories");
-      PatientList pl = (PatientList) cb.getSelectionData();
+      PatientList    pl = (PatientList) cb.getSelectionData();
 
       if ((pl != null) && pl.isContainsPatients()) {
         cb.clearSelection();
+
+        aListViewer lb = (aListViewer) c.getWidget("listsBox");
+
+        if (lb != null) {
+          lb.clear();
+        }
       }
     }
 
@@ -820,26 +824,32 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     iFunctionCallback cb = new iFunctionCallback() {
       @Override
       public void finished(boolean canceled, Object returnValue) {
-        if ((locatorWidget != null) && !locatorWidget.isDisposed() && locatorWidget.isShowing() && (patientLocator != null)) {
+        if ((locatorWidget != null) &&!locatorWidget.isDisposed() && locatorWidget.isShowing()
+            && (patientLocator != null)) {
           if (returnValue instanceof Throwable) {
             Utils.handleError((Throwable) returnValue);
           } else {
             try {
-              TableViewer table = patientsTable;
-              List<RenderableDataItem> list = (List<RenderableDataItem>) returnValue;
+              TableViewer              table = patientsTable;
+              List<RenderableDataItem> list  = (List<RenderableDataItem>) returnValue;
 
               if (areSamePatientsInSameOrder(list, table)) {
                 int len = list.size();
 
                 for (int i = 0; i < len; i++) {
-                  if (!list.get(i).get(SIGNAL).valueEquals(table.get(i).get(SIGNAL))) {
+                  RenderableDataItem row=table.get(i);
+                  RenderableDataItem os=list.get(i).get(SIGNAL);
+                  RenderableDataItem s=row.get(SIGNAL);
+                  if (!os.valueEquals(s)) {
+                    row.set(SIGNAL, s);
+                    updateSignalIcon(row);
                     table.rowChanged(i);
                   }
                 }
               } else {
                 patientsTable.setAll(processPatientsList(patientsTable, (List<RenderableDataItem>) returnValue, true));
               }
-            } catch (Exception e) {
+            } catch(Exception e) {
               Utils.handleError(e);
             }
           }
@@ -856,8 +866,11 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    * @param fv
    *          the form viewer containing the preview fields
    */
-  protected void clearPreview(iContainer fv) {
-    fv.getWidget("patient").setValue(fv.getAppContext().getWindowViewer().getString("bv.text.no_patient"));
+  protected void clearPreview() {
+    WindowViewer w = Platform.getWindowViewer();
+    iContainer fv=(iContainer) w.getViewer("patientSelectionForm");
+    if(fv!=null) {
+    fv.getWidget("patient").setValue(w.getString("bv.text.no_patient"));
 
     if (fv.getWidget("mrn") != null) {
       fv.getWidget("mrn").setValue("");
@@ -877,29 +890,44 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     fv.getWidget("patient").setEnabled(false);
+    }
   }
 
-  protected void loadPatientList(final TableViewer table, final ActionLink link, final String filter, final String gender) {
-    final WindowViewer w = Platform.getWindowViewer();
-    aWorkerTask task = new aWorkerTask() {
+  protected void loadPatientList(final TableViewer table, final ActionLink link, final String filter,
+                                 final String gender) {
+    final WindowViewer w    = Platform.getWindowViewer();
+    aWorkerTask        task = new aWorkerTask() {
+      @Override
+      public void cancel(boolean canInterrupt) {
+        super.cancel(canInterrupt);
+
+        if (!isDone()) {
+          link.cancel(true);
+        }
+      }
       @Override
       public Object compute() {
+        if (canceled) {
+          return null;
+        }
+
         try {
           List<RenderableDataItem> rows = loadPatientListEx(table, link, filter, gender, false);
 
           rows = processPatientsList(table, rows, false);
 
           return rows;
-        } catch (Exception e) {
-          return e;
+        } catch(Exception e) {
+          return canceled
+                 ? null
+                 : e;
         }
       }
-
       @Override
       public void finish(Object result) {
         w.hideWaitCursor();
 
-        if (!table.isDisposed()) {
+        if ((result != null) &&!table.isDisposed()) {
           if (result instanceof Exception) {
             Utils.handleError((Exception) result);
           } else {
@@ -917,7 +945,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
               List<RenderableDataItem> rows = (List<RenderableDataItem>) result;
 
               table.resetData(rows);
-              patientsTableUpdated(table, link, empty);
+              empty = (rows.size() == 1) && (rows.get(0) == noPatientsFound);
+              patientsTableUpdated(table, link);
 
               if (!Utils.isCardStack()) {
                 StackPaneViewer sp = (StackPaneViewer) w.getWidget("selectionStack");
@@ -926,6 +955,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                   if (sp != null) {
                     if (sp.getActiveViewerIndex() != 0) {
                       Utils.alert(w.getString("bv.text.no_patients_found"));
+                    } else if ((filter == null) && (gender == null)) {
+                      ((aGroupableButton) sp.getFormViewer().getWidget("searchButton")).click();
                     }
                   }
                 } else {
@@ -937,7 +968,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                   showPreview(table);
                 }
               }
-            } catch (Exception e) {
+            } catch(Exception e) {
               Utils.handleError(e);
             }
           }
@@ -946,18 +977,19 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     };
 
     w.spawn(task);
-    w.showWaitCursor();
+    w.showWaitCursor(task);
   }
 
-  protected List<RenderableDataItem> loadPatientListEx(final TableViewer widget, ActionLink link, String filter, String gender,
-      boolean sort) throws Exception {
+  protected List<RenderableDataItem> loadPatientListEx(final TableViewer widget, ActionLink link, String filter,
+          String gender, boolean sort)
+          throws Exception {
     widget.setLinkedData(link);
 
     final List<RenderableDataItem> rows = widget.parseDataLink(link, true);
 
-    if (filter != null) { // demo search
+    if (filter != null) {    // demo search
       boolean mrn = false;
-      int len = filter.length();
+      int     len = filter.length();
 
       for (int i = 0; i < len; i++) {
         if (Character.isDigit(filter.charAt(i))) {
@@ -973,9 +1005,11 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         iFilter f = createPatientNameFilter(filter);
 
         for (int i = len - 1; i >= 0; i--) {
-          RenderableDataItem row = rows.get(i);
-          RenderableDataItem item = row.get(mrn ? MRN : NAME);
-          String s = (String) item.getValue();
+          RenderableDataItem row  = rows.get(i);
+          RenderableDataItem item = row.get(mrn
+                                            ? MRN
+                                            : NAME);
+          String             s    = (String) item.getValue();
 
           if (!f.passes(s, null)) {
             rows.remove(i);
@@ -985,7 +1019,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
           if (gender != null) {
             item = row.get(GENDER);
-            s = (String) item.getValue();
+            s    = (String) item.getValue();
 
             if (!s.startsWith(gender)) {
               rows.remove(i);
@@ -1013,18 +1047,17 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   /**
    * Populates a patient preview form
    *
-   * @param fv
-   *          the container for the preview form
    * @param row
    *          the row for the preview
    *
    * @throws Exception
    */
-  protected void populatePreview(iContainer fv, RenderableDataItem row) {
-    WindowViewer w = Platform.getWindowViewer();
+  protected void populatePreview(RenderableDataItem row) {
+    WindowViewer       w    = Platform.getWindowViewer();
+    iContainer fv=(iContainer) w.getViewer("patientSelectionForm");
     RenderableDataItem item = row.get(NAME);
-    String mrn = (String) row.get(MRN).getValue();
-    String s = (String) item.getLinkedData();
+    String             mrn  = (String) row.get(MRN).getValue();
+    String             s    = (String) item.getLinkedData();
 
     fv.getWidget("patient").setValue(s);
 
@@ -1043,8 +1076,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     item.setType(RenderableDataItem.TYPE_DATETIME);
     s = item.toString();
     fv.getWidget("admit_date").setValue(s);
-    item = row.get(ADMIT_DX);
-    s = (String) item.getValue();
+    item  = row.get(ADMIT_DX);
+    s     = (String) item.getValue();
     field = fv.getWidget("admit_dx");
 
     if (field != null) {
@@ -1066,7 +1099,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     item = row.get(RM_BED);
-    s = item.toString();
+    s    = item.toString();
 
     if ((s == null) || (s == "")) {
       s = "";
@@ -1094,7 +1127,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     if (ip != null) {
       PatientIcon icon = (PatientIcon) row.get(0).getIcon();
-      UIImage img = (icon == null) ? null : icon.getImage();
+      UIImage     img  = (icon == null)
+                         ? null
+                         : icon.getImage();
 
       ip.setImage(img);
     }
@@ -1102,29 +1137,32 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
   @SuppressWarnings("resource")
   protected List<RenderableDataItem> processPatientsList(final TableViewer widget, final List<RenderableDataItem> rows,
-      boolean checkForSignal) throws IOException {
+          boolean checkForSignal)
+          throws IOException {
     RenderableDataItem row, item, nameItem;
-    final WindowViewer w = widget.getAppContext().getWindowViewer();
-    SNumber num = new SNumber();
+    final WindowViewer w   = widget.getAppContext().getWindowViewer();
+    SNumber            num = new SNumber();
 
     widget.clear();
 
-    int len = (rows == null) ? 0 : rows.size();
+    int len = (rows == null)
+              ? 0
+              : rows.size();
 
     if (len == 0) {
       return Arrays.asList(noPatientsFound);
     }
 
-    String s;
-    Date date;
-    CharArray ca = new CharArray();
-    boolean small = !UIScreen.isLargeScreen();
-    CharArray sb = new CharArray(64);
+    String    s;
+    Date      date;
+    CharArray ca    = new CharArray();
+    boolean   small = !UIScreen.isLargeScreen();
+    CharArray sb    = new CharArray(64);
 
     for (int i = len - 1; i >= 0; i--) {
       row = rows.get(i);
       //we will be changing the name value so copy it first as patietn locators may be caching the value
-      item = row.get(NAME).copy();
+      item     = row.get(NAME).copy();
       nameItem = item;
       row.set(NAME, item);
       s = (String) item.getValue();
@@ -1156,7 +1194,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       }
 
       sb.append("/").append(sex);
-      item.setLinkedData(sb.substring(asstart)); // set age/sex on dob field
+      item.setLinkedData(sb.substring(asstart));    // set age/sex on dob field
       sb.append("<br/>");
       s = row.get(LOCATION).toString();
 
@@ -1176,20 +1214,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       }
 
       if (checkForSignal) {
-        item = row.getItemEx(SIGNAL);
-
-        if (item != null) {
-          int signal = item.intValue();
-
-          if (signal > 0) {
-            if (signal > 5) {
-              signal = 5;
-            }
-
-            item = row.get(2);
-            item.setIcon(signalIcons[signal - 1]);
-          }
-        }
+        updateSignalIcon(row);
       }
 
       sb.append("</b></html>");
@@ -1204,7 +1229,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     return rows;
   }
-
   /**
    * Called to show the nearby patients button is pressed.
    *
@@ -1219,11 +1243,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     if (searchingForPatients == null) {
       searchingForPatients = Utils.createDisabledTableRow("bv.text.search_dots", 1);
     }
+    clearPreview();
 
     patientsTable.clear();
     patientsTable.add(searchingForPatients);
   }
-
+  
   /**
    * Shows the preview for the selected patient
    *
@@ -1234,15 +1259,14 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   protected void showPreview(TableViewer widget) {
     RenderableDataItem row = widget.getSelectedItem();
-    iContainer fv = widget.getFormViewer();
 
-    if ((row == null) || !row.isSelectable()) {
-      clearPreview(fv);
+    if ((row == null) ||!row.isSelectable()) {
+      clearPreview();
 
       return;
     }
 
-    iWidget patient = fv.getWidget("patient");
+    iWidget patient = widget.getFormViewer().getWidget("patient");
 
     if (patient.getLinkedData() == row) {
       return;
@@ -1250,23 +1274,23 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     patient.setEnabled(true);
     patient.setLinkedData(row);
-    populatePreview(fv, row);
+    populatePreview(row);
   }
 
   private iFilter createPatientNameFilter(String filter) {
     iFilter f = null;
-    int i = filter.indexOf(',');
+    int     i = filter.indexOf(',');
 
     if (i != -1) {
       filter = filter.substring(0, i) + ".*,\\s*" + filter.substring(i + 1) + ".*";
-      f = Functions.createRegExFilter(filter, false);
+      f      = Functions.createRegExFilter(filter, false);
     }
 
     i = filter.indexOf(' ');
 
     if (i != -1) {
       filter = filter.substring(i + 1) + ".*,\\s*" + filter.substring(0, i) + ".*";
-      f = Functions.createRegExFilter(filter, false);
+      f      = Functions.createRegExFilter(filter, false);
     }
 
     if (f == null) {
@@ -1274,6 +1298,24 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     return f;
+  }
+
+  private void updateSignalIcon(RenderableDataItem row) {
+    RenderableDataItem item = row.getItemEx(SIGNAL);
+
+    if (item != null) {
+      int signal = item.intValue();
+
+      if (signal > 0) {
+        if (signal > 5) {
+          signal = 5;
+        }
+
+        item = row.get(2);
+        item.setIcon(signalIcons[signal - 1]);
+      }
+    }
+    
   }
 
   boolean areSamePatientsInSameOrder(List<RenderableDataItem> list, TableViewer table) {
@@ -1292,7 +1334,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     return true;
   }
 
-  void patientsTableUpdated(TableViewer table, ActionLink link, boolean empty) {
+  void patientsTableUpdated(TableViewer table, ActionLink link) {
     WindowViewer w = Platform.getWindowViewer();
 
     if (Utils.isCardStack()) {
@@ -1302,19 +1344,19 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         al = psActionListener = new CardPatientSelectionActionListener();
       }
 
-      int len = table.size();
+      int                           len  = table.size();
       ArrayList<RenderableDataItem> list = new ArrayList<RenderableDataItem>(len);
 
       for (int i = 0; i < len; i++) {
-        RenderableDataItem row = table.get(i);
-        iPlatformIcon icon = row.get(0).getIcon();
+        RenderableDataItem row  = table.get(i);
+        iPlatformIcon      icon = row.get(0).getIcon();
 
-        if (icon == null) { //row does not contain a patient
+        if (icon == null) {    //row does not contain a patient
           continue;
         }
 
-        RenderableDataItem item = row.get(NAME).copy();
-        iPlatformIcon signal = row.get(2).getIcon();
+        RenderableDataItem item   = row.get(NAME).copy();
+        iPlatformIcon      signal = row.get(2).getIcon();
 
         if (signal != null) {
           UICompoundIcon ci = new UICompoundIcon(signal, icon);
@@ -1331,25 +1373,14 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
       Utils.pushWorkspaceViewer(CardStackUtils.createListItemsOrPageViewer(null, w, list, 3, -1, null, true, false));
     } else {
-      String pn = null;
+      String      pn = null;
       iFormViewer fv = table.getFormViewer();
 
-      if (link.getAttributes() != null) { //we searched/or set a max number
-        pn = link.getLinkInfo();
+      pager.add(link);
+      pn = link.getPagingNext();
 
-        if (pn != null) {
-          pager.add(ListPager.createPagingLink(link, pn));
-        } else {
-          pager.add(link);
-        }
-
-        pn = link.getPagingNext();
-
-        if (pn != null) {
-          pager.setNext(ListPager.createPagingLink(link, pn));
-        }
-      } else {
-        pager.clear();
+      if (pn != null) {
+        pager.setNext(ListPager.createPagingLink(link, pn));
       }
 
       aGroupableButton pb = (aGroupableButton) fv.getWidget("nextPage");
@@ -1370,8 +1401,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     if (patientLocator != null) {
       patientLocator.stopListeningForNearbyPatients();
 
-      WindowViewer w = Platform.getWindowViewer();
-      iContainer fv = (iContainer) w.getViewer("patientSelectionForm");
+      WindowViewer     w  = Platform.getWindowViewer();
+      iContainer       fv = (iContainer) w.getViewer("patientSelectionForm");
       aGroupableButton pb = (aGroupableButton) fv.getWidget("signalButton");
 
       if (pb != null) {
@@ -1417,7 +1448,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
     app.closePopupWindows(true);
 
-    String id = (path == null) ? null : path.shift();
+    String id = (path == null)
+                ? null
+                : path.shift();
 
     Utils.toggleActions(false);
 
@@ -1428,11 +1461,10 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       return;
     }
 
-    final WindowViewer w = Platform.getWindowViewer();
-    iFunctionCallback cb = new iFunctionCallback() {
+    final WindowViewer w  = Platform.getWindowViewer();
+    iFunctionCallback  cb = new iFunctionCallback() {
       @Override
       public void finished(boolean canceled, Object returnValue) {
-
         if (canceled) {
           if (returnValue instanceof Throwable) {
             Platform.ignoreException("failed to load patient from path", (Throwable) returnValue);
@@ -1465,8 +1497,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
   public static void showPatientSelectView(iWidget widget) {
-    final WindowViewer w = Platform.getWindowViewer();
-    iFunctionCallback cb = new iFunctionCallback() {
+    final WindowViewer w  = Platform.getWindowViewer();
+    iFunctionCallback  cb = new iFunctionCallback() {
       @Override
       public void finished(boolean canceled, Object returnValue) {
         w.hideWaitCursor();
@@ -1491,7 +1523,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     try {
       w.createViewer("patient_select.rml", cb);
       w.showWaitCursor();
-    } catch (Exception e) {
+    } catch(Exception e) {
       Utils.handleError(e);
     }
   }
@@ -1509,20 +1541,20 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    *          the callback
    */
   protected static void establishRelationship(final iWidget context, final String patientID, final String relationship,
-      final iFunctionCallback cb) {
+          final iFunctionCallback cb) {
     if (Utils.isDemo()) {
       cb.finished(false, relationship);
 
       return;
     }
 
-    final WindowViewer w = Platform.getWindowViewer();
-    iWorkerTask task = new aWorkerTask() {
+    final WindowViewer w    = Platform.getWindowViewer();
+    iWorkerTask        task = new aWorkerTask() {
       @Override
       public Object compute() {
         try {
           final ActionLink l = w.createActionLink("/hub/main/util/patients/establish_relationship/" + patientID + "/"
-              + relationship);
+                                 + relationship);
           String s = l.getContentAsString();
 
           if ((s == null) || (s.length() == 0)) {
@@ -1530,11 +1562,10 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           } else {
             return false;
           }
-        } catch (Throwable e) {
+        } catch(Throwable e) {
           return e;
         }
       }
-
       @Override
       public void finish(Object result) {
         w.hideProgressPopup();
@@ -1553,6 +1584,16 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     w.showProgressPopup(w.getString("bv.text.establish_relationship"));
   }
 
+  protected static Object getLinkedValue(String name, JSONObject o) {
+    Object obj = o.opt(name);
+
+    if (obj instanceof JSONObject) {
+      obj = ((JSONObject) obj).opt("value");
+    }
+
+    return obj;
+  }
+
   protected static iPlatformIcon getThimbnail(WindowViewer w, String s) {
     ActionLink link = null;
 
@@ -1566,66 +1607,17 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       try {
         icon = w.getIcon(link.getURL(w), s, 1);
 
-        if (icon != null) {
+        if (icon instanceof UIImageIcon && ((UIImageIcon)icon).getImage()!=UIImageIcon.getBrokenImage()) {
           icon = new PatientIcon(icon);
+          return icon;
         }
 
-        return icon;
-      } catch (MalformedURLException e) {
+      } catch(MalformedURLException e) {
         Platform.ignoreException(null, e);
       }
     }
 
     return noPhotoIcon;
-  }
-
-  static class PatientIcon extends aPlatformIcon {
-    final iPlatformIcon icon;
-    final boolean       imageIcon;
-    static final int    iconSize = UIScreen.platformPixels(48);
-
-    @Override
-    public int getIconHeight() {
-      return iconSize;
-    }
-
-    public UIImage getImage() {
-      return imageIcon ? ((UIImageIcon) icon).getImage() : null;
-    }
-
-    public PatientIcon(iPlatformIcon icon) {
-      super();
-      this.icon = icon;
-      this.imageIcon = icon instanceof UIImageIcon;
-    }
-
-    @Override
-    public int getIconWidth() {
-      return iconSize;
-    }
-
-    @Override
-    public iPlatformIcon getDisabledVersion() {
-      return this;
-    }
-
-    @Override
-    public void paint(iPlatformGraphics g, float x, float y, float width, float height) {
-      int d1 = UIScreen.PLATFORM_PIXELS_1;
-      int d2 = UIScreen.PLATFORM_PIXELS_2;
-      float isize = iconSize;
-      y += (height - isize) / 2;
-      g.saveState();
-      photoBorder.clip(g, x, y, isize, isize);
-      if (imageIcon) {
-        UIImage img = ((UIImageIcon) icon).getImage();
-        g.drawImage(img, x+d1, y+d1, isize-d2, isize-d2);
-      } else {
-        icon.paint(g,  x+d1, y+d1, isize-d2, isize-d2);
-      }
-      g.restoreState();
-      photoBorder.paint(g, x, y, isize, isize, photoBorder.isPaintLast());
-    }
   }
 
   /**
@@ -1646,17 +1638,20 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    *          the callback
    */
   protected static void loadPatientEx(final iWidget widget, final String id, final iFunctionCallback cb) {
-    final WindowViewer w = widget.getAppContext().getWindowViewer();
-    aWorkerTask task = new aWorkerTask() {
+    final WindowViewer w    = widget.getAppContext().getWindowViewer();
+    aWorkerTask        task = new aWorkerTask() {
       @Override
       public Object compute() {
+        ActionLink l = null;
+
         try {
-          ActionLink l = w.createActionLink("/hub/main/util/patients/select/" + id + ".json");
+          l = w.createActionLink("/hub/main/util/patients/select/" + id + ".json");
+
           String s = l.getContentAsString();
 
           if ((s != null) && (s.length() > 0)) {
             JSONObject patient = new JSONObject(s);
-            JSONArray rows = patient.getJSONArray("_rows");
+            JSONArray  rows    = patient.getJSONArray("_rows");
 
             if (rows != null) {
               patient = rows.getJSONObject(0);
@@ -1669,8 +1664,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
               cm.clear();
 
-              JSONObject json = patient.optJSONObject("allergies");
-              iDataCollection dc = cm.getCollection("allergies");
+              JSONObject      json = patient.optJSONObject("allergies");
+              iDataCollection dc   = cm.getCollection("allergies");
 
               try {
                 if (json == null) {
@@ -1680,12 +1675,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
                   dc.setCollectionData(list);
                 }
-              } catch (IOException e) {
+              } catch(IOException e) {
                 Platform.ignoreException("couldn't parse allergies", e);
               }
 
               json = patient.optJSONObject("alerts");
-              dc = cm.getCollection("alerts");
+              dc   = cm.getCollection("alerts");
 
               if (dc != null) {
                 try {
@@ -1696,13 +1691,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                   } else {
                     dc.refresh(w);
                   }
-                } catch (IOException e) {
+                } catch(IOException e) {
                   Platform.ignoreException("couldn't parse alerts", e);
                 }
               }
 
               json = patient.optJSONObject("flags");
-              dc = cm.getCollection("flags");
+              dc   = cm.getCollection("flags");
 
               if (dc != null) {
                 try {
@@ -1713,7 +1708,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                   } else {
                     dc.refresh(w);
                   }
-                } catch (IOException e) {
+                } catch(IOException e) {
                   Platform.ignoreException("couldn't parse flags", e);
                 }
               }
@@ -1731,14 +1726,18 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           }
 
           return null;
-        } catch (Exception e) {
+        } catch(Exception e) {
+          if (l != null) {
+            l.close();
+          }
+
           return e;
         }
       }
-
       @Override
       public void finish(Object result) {
         w.hideWaitCursor();
+
         if ((result instanceof Throwable) || (result == null)) {
           cb.finished(true, result);
 
@@ -1746,8 +1745,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         }
 
         final JSONObject patient = (JSONObject) result;
-        Object o = patient.get("relationship");
-        String s = null;
+        Object           o       = patient.get("relationship");
+        String           s       = null;
 
         if (o instanceof JSONObject) {
           s = ((JSONObject) o).optString("linkedData");
@@ -1756,7 +1755,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         }
 
         try {
-          if ((s == null) || (s.length() == 0) || (SNumber.intValue(s) < 1)) {
+          if ((s == null) || (s.length() == 0)) {
             String name = patient.getString("name");
 
             showRelationshipPopup(w, id, name, new iFunctionCallback() {
@@ -1778,7 +1777,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           patient.put("relationship", s);
           processPatientData(patient);
           cb.finished(false, patient);
-        } catch (Exception e) {
+        } catch(Exception e) {
           cb.finished(true, e);
         }
       }
@@ -1788,16 +1787,18 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     w.showWaitCursor();
   }
 
+
   @SuppressWarnings("resource")
   protected static void processPatientData(JSONObject patient) {
-    WindowViewer w = Platform.getWindowViewer();
+    WindowViewer        w   = Platform.getWindowViewer();
     iPlatformAppContext app = Platform.getAppContext();
 
     app.clearData("pt_");
     app.putData("patient", patient);
 
-    String name;
-    String mrn;
+    String    name;
+    String    mrn;
+    String    s;
     CharArray ca = new CharArray();
 
     name = patient.getString("name");
@@ -1812,20 +1813,18 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     app.putData("pt_room_bed", patient.optString("rm_bed"));
-    String s=(String) patient.opt("location","value");
-    app.putData("pt_location", s==null ? w.getString("bv.text.unknownLocation"): s);
 
     String sex = patient.optString("gender");
 
     app.putData("pt_gender", sex);
 
-    Object obj = patient.opt("dob");
-    Date date = null;
+    Object obj  = patient.opt("dob");
+    Date   date = null;
 
     if (obj instanceof String) {
       try {
         date = Functions.parseDateString(w, (String) obj);
-      } catch (ParseException e) {
+      } catch(ParseException e) {
         Platform.ignoreException("couldn't parse dob value:" + obj, e);
       }
 
@@ -1847,13 +1846,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     app.putData("pt_name_age_sex", w.getString("bv.format.name_age_gender", name, app.getData("pt_age_sex")));
-    obj = patient.opt("encounter_date");
+    obj  = patient.opt("encounter_date");
     date = null;
 
     if (obj instanceof String) {
       try {
         date = Functions.parseDateString(w, (String) obj);
-      } catch (ParseException e) {
+      } catch(ParseException e) {
         Platform.ignoreException("couldn't parse encounter date value:" + obj, e);
       }
 
@@ -1867,28 +1866,31 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     s = "";
 
     if (date != null) {
-      s = Functions.convertDate(w, date);
+      s = Functions.convertDate(date);
     }
 
     app.putData("pt_admit_date", s);
     s = patient.optString("encounter_reason");
-    app.putData("pt_admit_dx", (s == null) ? "" : Functions.titleCase(s));
+    app.putData("pt_admit_dx", (s == null)
+                               ? ""
+                               : Functions.titleCase(s));
 
-    String provider = (String)patient.opt("provider","value");
+    String provider = (String) getLinkedValue("provider", patient);
 
-    s = (String)patient.opt("attending","value");
+    s = (String) getLinkedValue("attending", patient);
 
     if ((provider == null) || (provider.length() == 0)) {
       provider = s;
     }
 
     app.putData("pt_provider", ca.set(provider).toTitleCase().toString());
-    obj = patient.opt("location","value");
+    obj = getLinkedValue("location", patient);
 
     if (obj == null) {
       obj = w.getString("bv.text.unknown_location");
     }
 
+    app.putData("pt_location", (String) obj);
     s = patient.optString("rm_bed");
 
     if (s != null) {
@@ -1908,7 +1910,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     updateWeightHeightBMI(app, patient);
 
     JSONObject li = (JSONObject) app.getData("labsInfo");
-    String id = li.optString("bun_id");
+    String     id = li.optString("bun_id");
 
     if (id != null) {
       ClinicalValue bun = new ClinicalValue(id, "BUN");
@@ -1925,11 +1927,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       bun.setAttributName("pt_creatinine");
       patient.put("cv_creatinine", bun);
     }
+
     OrderManager.patientChanged();
   }
 
   protected static void showRelationshipPopup(final WindowViewer w, final String patientID, String patientName,
-      final iFunctionCallback cb) {
+          final iFunctionCallback cb) {
     iFunctionCallback rcb = new iFunctionCallback() {
       @Override
       public void finished(boolean canceled, Object returnValue) {
@@ -1940,7 +1943,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         }
       }
     };
-    String title = w.expandString("<html>{resource:bv.text.relationship_prompt}<br/><b>" + patientName + "</b></html>");
+    String     title = w.expandString("<html>{resource:bv.text.relationship_prompt}<br/><b>" + patientName
+                                      + "</b></html>");
     ActionLink link;
 
     if (Utils.isDemo()) {
@@ -1948,21 +1952,23 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     } else {
       link = Utils.createLink(w, "/hub/main/util/lists/relationships/" + patientID, true);
     }
-    PickList pl=new PickList(title, link);
+
+    PickList pl = new PickList(title, link);
+
     pl.setSupportListDblClick(false);
     pl.show(rcb);
   }
 
   protected static void updateWeightHeightBMI(iPlatformAppContext app, JSONObject patient) {
-    float wt = 0;
-    float ht = 0;
-    StringBuilder sb = new StringBuilder();
-    AppPreferences prefs = Utils.getPreferences();
-    boolean metric_weight = prefs.getBoolean("metric_weight", false);
-    boolean metric_height = prefs.getBoolean("metric_height", false);
-    SNumber num = new SNumber();
-    String s = null;
-    Object obj = patient.opt("wt");
+    float          wt            = 0;
+    float          ht            = 0;
+    StringBuilder  sb            = new StringBuilder();
+    AppPreferences prefs         = Utils.getPreferences();
+    boolean        metric_weight = prefs.getBoolean("metric_weight", false);
+    boolean        metric_height = prefs.getBoolean("metric_height", false);
+    SNumber        num           = new SNumber();
+    String         s             = null;
+    Object         obj           = patient.opt("wt");
 
     if (obj instanceof String) {
       s = (String) obj;
@@ -2050,12 +2056,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   class CardPatientSelectionActionListener implements iActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-      final WindowViewer w = Platform.getWindowViewer();
-      RenderableDataItem item = (RenderableDataItem) e.getSource();
-      RenderableDataItem row = patientsTable.get((Integer) item.getLinkedData());
-      String id = (String) row.get(0).getValue();
+      final WindowViewer  w    = Platform.getWindowViewer();
+      RenderableDataItem  item = (RenderableDataItem) e.getSource();
+      RenderableDataItem  row  = patientsTable.get((Integer) item.getLinkedData());
+      String              id   = (String) row.get(0).getValue();
       final iPlatformIcon icon = (iPlatformIcon) row.get(0).getIcon();
-      iFunctionCallback cb = new iFunctionCallback() {
+      iFunctionCallback   cb   = new iFunctionCallback() {
         @Override
         public void finished(boolean canceled, Object returnValue) {
           if (returnValue instanceof Throwable) {
@@ -2074,14 +2080,70 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   static class MenuActionListener implements iActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-      UIMenuItem mi = (UIMenuItem) e.getSource();
-      String name = mi.getName();
+      UIMenuItem mi   = (UIMenuItem) e.getSource();
+      String     name = mi.getName();
 
       Utils.setFirstSelectedTab(name);
 
       aGroupableButton pb = (aGroupableButton) mi.getContextWidget();
 
       pb.click();
+    }
+  }
+
+
+  static class PatientIcon extends aPlatformIcon {
+    static final int    iconSize = UIScreen.platformPixels(48);
+    final iPlatformIcon icon;
+    final boolean       imageIcon;
+
+    public PatientIcon(iPlatformIcon icon) {
+      super();
+      this.icon      = icon;
+      this.imageIcon = icon instanceof UIImageIcon;
+    }
+
+    @Override
+    public iPlatformIcon getDisabledVersion() {
+      return this;
+    }
+
+    @Override
+    public int getIconHeight() {
+      return iconSize;
+    }
+
+    @Override
+    public int getIconWidth() {
+      return iconSize;
+    }
+
+    public UIImage getImage() {
+      return imageIcon
+             ? ((UIImageIcon) icon).getImage()
+             : null;
+    }
+
+    @Override
+    public void paint(iPlatformGraphics g, float x, float y, float width, float height) {
+      int   d1    = UIScreen.PLATFORM_PIXELS_1;
+      int   d2    = UIScreen.PLATFORM_PIXELS_2;
+      float isize = iconSize;
+
+      y += (height - isize) / 2;
+      g.saveState();
+      photoBorder.clip(g, x, y, isize, isize);
+
+      if (imageIcon) {
+        UIImage img = ((UIImageIcon) icon).getImage();
+
+        g.drawImage(img, x + d1, y + d1, isize - d2, isize - d2);
+      } else {
+        icon.paint(g, x + d1, y + d1, isize - d2, isize - d2);
+      }
+
+      g.restoreState();
+      photoBorder.paint(g, x, y, isize, isize, photoBorder.isPaintLast());
     }
   }
 }

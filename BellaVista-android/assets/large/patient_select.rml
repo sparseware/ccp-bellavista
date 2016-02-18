@@ -7,58 +7,49 @@ SplitPane {
         shadow
       }
       viewer {
-        Form {
-          layout: forms
-          rows: "d:g"
-          columns: "d:g"
-          widgets {
-            {
-              TabPane {
-                verticalAlign: full
-                horizontalAlign: full
-                bgColor: "white"
-                bounds {
-                  x: "0"
-                  y: "0"
-                }
-                contentPadding {
-                  left: "0"
-                }
-                tabStyle: stacked
-                tabPainter {
-                  bgColor: "defaultBackground"
-                }
-                tabAreaPainter {
-                  borders {
-                    matte [ insets="0,0,6,0", color="themeBlue," ]
-                  }
-                }
-                selectedTabPainter {
-                  bgColor: "defaultBackground-20"
-                  borders {
-                    empty [ insets="2,2,2,2" ]
-                    bevel_lowered
-                  }
-                }
-                selectedIndex: 0
-                tabs {
-                  {
-                    dataURL: "patients_by_list.rml"
-                    title: "{resource:bv.text.lists}"
-                    icon: "resource:bv_icon_list"
-                    reloadOnActivation: true
-                  }
-                  {
-                    dataURL: "patient_search.rml"
-                    title: "{resource:bv.text.search}"
-                    icon: "resource:bv.icon.find_patient"
-                    reloadOnActivation: true
-                  }
-                }
-              } [ onCreated="class:PatientSelect#onTabPaneCreated" ]
+        TabPane {
+          verticalAlign: full
+          horizontalAlign: full
+          bgColor: "white"
+          bounds {
+            x: "0"
+            y: "0"
+          }
+          contentPadding {
+            left: "0"
+          }
+          tabStyle: stacked
+          tabPainter {
+            bgColor: "defaultBackground"
+          }
+          tabAreaPainter {
+            borders {
+              matte [ insets="0,0,6,0", color="themeBlue," ]
             }
           }
-        }
+          selectedTabPainter {
+            bgColor: "defaultBackground-20"
+            borders {
+              empty [ insets="2,2,2,2" ]
+              bevel_lowered
+            }
+          }
+          selectedIndex: 0
+          tabs {
+            {
+              dataURL: "patients_by_list.rml"
+              title: "{resource:bv.text.lists}"
+              icon: "resource:bv_icon_list"
+              reloadOnActivation: true
+            }
+            {
+              dataURL: "patient_search.rml"
+              title: "{resource:bv.text.search}"
+              icon: "resource:bv.icon.find_patient"
+              reloadOnActivation: true
+            }
+          }
+        } [ onCreated="class:PatientSelect#onTabPaneCreated" ]
       }
     }
     {
@@ -243,7 +234,7 @@ SplitPane {
                     }
                   }
                 }
-              } 
+              }
             }
             {
               Table {
@@ -256,19 +247,20 @@ SplitPane {
                 templateName: "bv.table.patients"
                 local: false
                 visibleRowCount: 4
-              }
+              } [ onCreated="class:PatientSelect#onPatientsTableCreated", onAction="class:PatientSelect#onSelectPatient",
+                  onChange="class:PatientSelect#onPatientsTableChange" ]
             }
             {
               GroupBox {
                 name: "buttonPanel"
-                horizontalAlign: center
+                horizontalAlign: full
                 bounds {
                   x: "0"
                   y: "4"
                 }
                 layout: forms
                 rows: "d,2dlu"
-                columns: "d,d,d,d,d"
+                columns: "d:g,4dluX,d:g,d"
                 widgets {
                   {
                     PushButton {

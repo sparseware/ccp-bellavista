@@ -51,7 +51,7 @@ Form {
           x: "1"
           y: "4"
         }
-      } [ onAction="class:oe.Ordering#onFilterTypeAction" ]
+      } [ onAction="class:.oe.Ordering#onFilterTypeAction" ]
     }
     {
       CheckBox {

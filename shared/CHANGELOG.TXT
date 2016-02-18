@@ -1,0 +1,3 @@
+Added support for icons to denote flagged and unsigned orders
+Added color support for flagged and unsigned orders
+Added support for dynamically generated forms for oerder entry

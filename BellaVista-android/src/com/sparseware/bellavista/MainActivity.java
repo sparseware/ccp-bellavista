@@ -72,7 +72,7 @@ public class MainActivity extends com.appnativa.rare.platform.android.MainActivi
      */
     if (isRunningOnEmulator() || isUsingDebuggingBridge()) {
 
-      System.setProperty("Rare.applicationURL", "http://192.168.1.50/apps/BellaVista/BellaVista-android/assets/application.rml");
+      System.setProperty("Rare.applicationURL", "http://192.168.1.51/apps/BellaVista/BellaVista-android/assets/application.rml");
     }
   }
   @Override

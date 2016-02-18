@@ -16,11 +16,27 @@
 
 package com.sparseware.bellavista.service;
 
+import com.appnativa.rare.ErrorInformation;
+import com.appnativa.rare.Platform;
+import com.appnativa.rare.exception.ApplicationException;
+import com.appnativa.rare.iWeakReference;
+import com.appnativa.rare.net.HTTPException;
+import com.appnativa.rare.net.JavaURLConnection;
+import com.appnativa.util.CharArray;
+import com.appnativa.util.HTTPDateUtils;
+import com.appnativa.util.SNumber;
+import com.appnativa.util.URLEncoder;
+import com.appnativa.util.io.BufferedReaderEx;
+import com.google.j2objc.annotations.Weak;
+import com.sparseware.bellavista.ActionPath;
+import com.sparseware.bellavista.MessageException;
+
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,17 +45,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.appnativa.rare.Platform;
-import com.appnativa.rare.iWeakReference;
-import com.appnativa.rare.exception.ApplicationException;
-import com.appnativa.rare.net.HTTPException;
-import com.appnativa.util.CharArray;
-import com.appnativa.util.HTTPDateUtils;
-import com.appnativa.util.URLEncoder;
-import com.google.j2objc.annotations.Weak;
-import com.sparseware.bellavista.ActionPath;
-import com.sparseware.bellavista.MessageException;
 
 /**
  * This is the base class for services available via a standard HTTP Connection.
@@ -50,28 +55,33 @@ import com.sparseware.bellavista.MessageException;
  *
  */
 public abstract class aHttpURLConnection extends HttpURLConnection implements iHttpConnection {
-  protected FileBackedBufferedOutputStream         outStream;
-  protected InputStream                            inStream;
-  protected HttpHeaders                            headers        = new HttpHeaders();
   static ConcurrentHashMap<String, iWeakReference> handlerMap     = new ConcurrentHashMap<String, iWeakReference>();
+  static ConcurrentHashMap<String, String>         badPathMap     = new ConcurrentHashMap<String, String>();
   static Class                                     methodParams[] = new Class[] { iHttpConnection.class,
           ActionPath.class, InputStream.class, HttpHeaders.class };
-  protected String             clsPackage;
-  protected Method             serviceMethod;
-  protected Object             serviceObject;
-  protected String             HUB_SUBSTRING = "/hub/main/";
-  protected ActionPath         servicePath;
-  protected ContentWriter      contentWriter;
-  protected InputStream        errStream;
   protected static InputStream nullStream = new InputStream() {
     @Override
     public int read() throws IOException {
       return -1;
     }
+    @Override
     public long skip(long n) throws IOException {
       return 0;
     }
   };
+  protected FileBackedBufferedOutputStream outStream;
+  protected InputStream                    inStream;
+  protected HttpHeaders                    headers = new HttpHeaders();
+  protected String                         clsPackage;
+  protected Method                         serviceMethod;
+  protected Object                         serviceObject;
+  protected String                         HUB_SUBSTRING = "/hub/main/";
+  protected ActionPath                     servicePath;
+  protected ContentWriter                  contentWriter;
+  protected InputStream                    errStream;
+  protected HttpURLConnection              connectionPipe;
+
+  protected String        defaultCharset    = "ISO-8859-1";
 
   /**
    * Creates a new connection
@@ -96,6 +106,46 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
 
     connected = serviceMethod != null;
   }
+  @Override
+  public void disconnect() {
+    closeStream(inStream);
+    closeStream(outStream);
+    closeStream(errStream);
+    inStream  = null;
+    outStream = null;
+    headers.clear();
+    connected = false;
+    if(connectionPipe!=null) {
+      try {
+        connectionPipe.disconnect();
+      }catch(Exception ignore){}
+    }
+  }
+  /**
+   * Gets the content reader for the content of the request from the client
+   * @return the reader
+   *
+   * @throws IOException
+   */
+  public Reader getContentReader() throws IOException {
+    if(connectionPipe!=null) {
+
+      final int n = getContentLength();
+
+      if ((n > 0) && (n < 8192)) {
+        return new BufferedReaderEx(new InputStreamReader(connectionPipe.getInputStream(), getCharset()), n);
+      }
+
+      return new BufferedReaderEx(new InputStreamReader(connectionPipe.getInputStream(), getCharset()), (n > 0)
+              ? 8192
+              : 4096);
+    }
+    if (contentWriter != null) {
+      return contentWriter.getReader();
+    }
+
+    return new StringReader("");
+  }
 
   @Override
   public ContentWriter getContentWriter() {
@@ -107,14 +157,8 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
   }
 
   @Override
-  public void disconnect() {
-    closeStream(inStream);
-    closeStream(outStream);
-    closeStream(errStream);
-    inStream  = null;
-    outStream = null;
-    headers.clear();
-    connected = false;
+  public InputStream getErrorStream() {
+    return connectionPipe!=null ? connectionPipe.getErrorStream() : errStream;
   }
 
   @Override
@@ -123,7 +167,7 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
       getInputStream();
     } catch(IOException ignore) {}
 
-    return headers.getHeader(n);
+    return connectionPipe!=null ? connectionPipe.getHeaderField(n) : headers.getHeader(n);
   }
 
   @Override
@@ -132,7 +176,7 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
       getInputStream();
     } catch(IOException ignore) {}
 
-    return headers.getHeader(name);
+    return connectionPipe!=null ? connectionPipe.getHeaderField(name) : headers.getHeader(name);
   }
 
   @Override
@@ -140,13 +184,8 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
     try {
       getInputStream();
     } catch(IOException ignore) {}
-
-    return headers.getKey(n);
-  }
-
-  @Override
-  public InputStream getErrorStream() {
-    return errStream;
+    
+    return connectionPipe!=null ? connectionPipe.getHeaderFieldKey(n) : headers.getKey(n);
   }
 
   @Override
@@ -164,8 +203,13 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
         serviceMethod.invoke(serviceObject, new Object[] { this, servicePath, (outStream == null)
                 ? null
                 : outStream.getInputStream(), headers });
-        headers.setContentLength(contentWriter.getContentLength());
-        inStream = new ContentReaderInputStream(contentWriter);
+        if(connectionPipe!=null) {
+          inStream=connectionPipe.getInputStream();
+        }
+        else {
+          headers.setContentLength(contentWriter.getContentLength());
+          inStream = new ContentReaderInputStream(contentWriter);
+        }
       } catch(Exception e) {
         inStream = getExceptionInputStream(headers, e);
       }
@@ -188,13 +232,47 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
   }
 
   @Override
+  public int getResponseCode() throws IOException {
+    if (responseCode == -1) {
+      parseStatus();
+    }
+
+    return responseCode;
+  }
+
+  @Override
+  public String getResponseMessage() throws IOException {
+    if (responseCode == -1) {
+      parseStatus();
+    }
+
+    return responseMessage;
+  }
+
+  @Override
   public String getResquestHeader(String name) {
     return getRequestProperty(name);
+  }
+
+  public void setConnectionPipe(HttpURLConnection connectionPipe) {
+    this.connectionPipe = connectionPipe;
   }
 
   @Override
   public boolean usingProxy() {
     return false;
+  }
+
+  /**
+   * Silently closes a stream
+   * @param stream the stream to close
+   */
+  protected void closeStream(Closeable stream) {
+    try {
+      if (stream != null) {
+        stream.close();
+      }
+    } catch(Exception ignore) {}
   }
 
   /**
@@ -248,16 +326,19 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
           : r.get();
 
       if (o == null) {
-        try {
-          Class clz = Platform.loadClass(cls);
+        if (!badPathMap.containsKey(cls)) {
+          try {
+            Class clz = Platform.loadClass(cls);
 
-          o = clz.newInstance();
-          handlerMap.put(cls, Platform.createWeakReference(o));
+            o = clz.newInstance();
+            handlerMap.put(cls, Platform.createWeakReference(o));
 
-          break;
-        } catch(Exception ignore) {
-          ca.A[pos] = Character.toLowerCase(ca.A[pos]);
+            break;
+          } catch(Exception ignore) {
+            badPathMap.put(cls, cls);
+          }
         }
+        ca.A[pos] = Character.toLowerCase(ca.A[pos]);
       }
     }
 
@@ -267,21 +348,16 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
       throw new FileNotFoundException(s);
     }
 
+    n = method.indexOf('.');
+
+    if (n != -1) {
+      p.unshift(method.substring(n));
+      method = method.substring(0, n);
+    }
+
     serviceMethod = o.getClass().getMethod(method, methodParams);
     servicePath   = p;
     serviceObject = o;
-  }
-
-  /**
-   * Silently closes a stream
-   * @param stream the stream to close
-   */
-  protected void closeStream(Closeable stream) {
-    try {
-      if (stream != null) {
-        stream.close();
-      }
-    } catch(Exception ignore) {}
   }
 
   /**
@@ -321,11 +397,15 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
           Platform.ignoreException(null, e1);
         }
       }
-    } else if (e instanceof MessageException) {
-      status = "HTTP/1.1 303 See Other";
+    } else if (e instanceof NonFatalServiceException) {
+      status = "HTTP/1.1 420 Debug Mode Error";
       msg    = ((MessageException) e).getMessage();
+    } else if (e instanceof MessageException && !((MessageException)e).isFatal()) {
+      status = "HTTP/1.1 303 See Other";
+      msg    = e.getMessage();
     } else {
-      Platform.ignoreException(null, e);
+      ErrorInformation ei=new ErrorInformation(e);
+      msg = ei.toAlertPanelString();
     }
 
     if (status == null) {
@@ -362,18 +442,39 @@ public abstract class aHttpURLConnection extends HttpURLConnection implements iH
     return nullStream;
   }
 
-  /**
-   * Gets the content reader for the content of the request from the client
-   * @return the reader
-   *
-   * @throws IOException
-   */
-  public Reader getContentReader() throws IOException {
-    if (contentWriter != null) {
-      return contentWriter.getReader();
-    }
+  private  String getCharset() throws IOException {
+    return JavaURLConnection.getCharset(getContentType(), defaultCharset);
+  }
 
-    return new StringReader("");
+  private void parseStatus() throws IOException {
+    getInputStream();
+    if(connectionPipe!=null) {
+      responseCode=connectionPipe.getResponseCode();
+      responseMessage=connectionPipe.getResponseMessage();
+    }
+    else {
+      String status = headers.getHeader(0);
+  
+      if (status == null) {
+        status = "HTTP/1.1 0 Protocol Failure";
+      }
+  
+      int n = status.indexOf(' ');
+  
+      if (n == -1) {
+        responseCode    = 0;
+        responseMessage = "Protocol Failure";
+      } else {
+        responseCode = SNumber.intValue(status.substring(n + 1));
+        n            = status.indexOf(' ', n + 1);
+  
+        if (n != -1) {
+          responseMessage = status.substring(n + 1);
+        } else {
+          responseMessage = "Protocol Failure";
+        }
+      }
+    }
   }
 
   /**

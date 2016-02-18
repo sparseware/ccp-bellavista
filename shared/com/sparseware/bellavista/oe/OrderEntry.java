@@ -129,9 +129,9 @@ public class OrderEntry implements iEventHandler {
     fv.value = date;
 
     if (OrderFields.getFieldType(fv.field) == FieldType.DATE) {
-      fv.displayValue = Functions.convertDate(widget, date);
+      fv.displayValue = Functions.convertDate(date);
     } else {
-      fv.displayValue = Functions.convertDateTime(widget, date);
+      fv.displayValue = Functions.convertDateTime(date);
     }
 
     if (valueField != null) {

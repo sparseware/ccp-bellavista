@@ -53,7 +53,7 @@ TabPane {
                 gridLineColor: "white"
                 alternatingHighlightType: none
                 parentItemsSelectable: false
-              } [ onCreated="class:oe.Ordering#onTableCreated", onAction="class:oe.Ordering#onTableAction" ]
+              } [ onCreated="class:.oe.Ordering#onTableCreated", onAction="class:.oe.Ordering#onTableAction" ]
             }
             {
               ToolBar {
@@ -115,4 +115,4 @@ TabPane {
       dataURL: "/oe/new_order.rml"
     }
   }
-} [ onConfigure="class:oe.Ordering#onConfigure", onDispose="class:oe.Ordering#onDispose" ]
+} [ onConfigure="class:.oe.Ordering#onConfigure", onDispose="class:.oe.Ordering#onDispose" ]

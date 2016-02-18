@@ -29,6 +29,7 @@ GridPane {
           }
           tabs {
             {
+              name: "physicians"
               viewer {
                 ListBox {
 				  bgColor: "white"
@@ -47,6 +48,7 @@ GridPane {
               title: "Physicians"
             }
             {
+             name: "others"
               viewer {
                 ListBox {
                   name: "others"

@@ -72,4 +72,4 @@ MainWindow {
       }
     } [ onConfigure="class:Settings#onEvent", onKeyUp="class:MainEventHandler#onCardStackLogin", onClick="class:MainEventHandler#onCardStackLogin" ]
   }
-}
+} [ onError="class:MainEventHandler#onError"]
