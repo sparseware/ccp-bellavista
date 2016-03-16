@@ -16,6 +16,17 @@
 
 package com.sparseware.bellavista.external.fhir;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.scripting.Functions;
@@ -24,24 +35,11 @@ import com.appnativa.util.SNumber;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 import com.appnativa.util.json.JSONWriter;
-
 import com.sparseware.bellavista.ActionPath;
 import com.sparseware.bellavista.external.fhir.FHIRServer.FHIRResource;
 import com.sparseware.bellavista.external.fhir.FHIRUtils.MedicalCode;
 import com.sparseware.bellavista.service.HttpHeaders;
 import com.sparseware.bellavista.service.iHttpConnection;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Writer;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 
 public class Vitals extends aFHIRemoteService {
   protected static boolean                 searchByDateSupported;
@@ -94,7 +92,7 @@ public class Vitals extends aFHIRemoteService {
   }
 
   private static String searchParamsEx;
-
+  private HashSet<String> uniqueDates=new HashSet<String>();
   public Vitals() {
     super("Observation");
 
@@ -135,7 +133,7 @@ public class Vitals extends aFHIRemoteService {
 
       return;
     }
-
+    uniqueDates.clear();
     String from = null;
     String to   = null;
 
@@ -262,7 +260,7 @@ public class Vitals extends aFHIRemoteService {
 
   protected void parsingComplete(JSONWriter jw, Writer w, CharArray ca, Object... params) throws IOException {
     Map<String, JSONObject> bpcomponents = (HashMap<String, JSONObject>) params[1];
-
+    uniqueDates.clear();
     if (!bpcomponents.isEmpty()) {
       for (JSONObject o : bpcomponents.values()) {
         processEntryEx(o, jw, w, ca, null, null);
@@ -429,7 +427,6 @@ public class Vitals extends aFHIRemoteService {
 
       date  = getDateTime(entry);
       vital = o.optString("text", null);
-
       if (vital == null) {
         vital = mc.getBestText();
       }
@@ -528,6 +525,9 @@ public class Vitals extends aFHIRemoteService {
         }
 
         result = ca.toString();
+      }
+      if(server.debug && vitalld!="" && vital!=null && !uniqueDates.add(date+"-"+vitalld)) {
+        vital="{fgColor:badData}DUPLICATE: "+vital;
       }
 
       if (jw != null) {

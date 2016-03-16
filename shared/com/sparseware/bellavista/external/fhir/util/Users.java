@@ -112,9 +112,9 @@ public class Users extends aFHIRemoteService {
     }
   }
 
-  public static JSONObject populateUser(String id, JSONObject practioner) {
+  public static JSONObject populateUser(String id, JSONObject fhirPerson) {
     JSONObject o    = new JSONObject();
-    JSONObject name = practioner.getJSONObject("name");
+    JSONObject name = fhirPerson.getJSONObject("name");
     String     s    = name.optString("text", null);
 
     if (s == null) {
@@ -151,26 +151,26 @@ public class Users extends aFHIRemoteService {
 
       s = sb.toString();
     }
-
+    
     o.put("name", s);
-    s = practioner.optString("sub");
+    s = fhirPerson.optString("sub");
 
     if (s != null) {
       o.put("username", s);
     }
 
-    o.put("gender", practioner.optString("gender"));
-    o.put("dob", practioner.optString("birthDate"));
+    o.put("gender", fhirPerson.optString("gender"));
+    o.put("dob", fhirPerson.optString("birthDate"));
     o.put("id", id);
-    FHIRUtils.populateTelcom(practioner.optJSONArray("telecom"), o);
+    FHIRUtils.populateTelcom(fhirPerson.optJSONArray("telecom"), o);
 
-    JSONArray a = practioner.optJSONArray("address");
+    JSONArray a = fhirPerson.optJSONArray("address");
 
     if (a != null) {
       FHIRUtils.populateAddress(a.findJSONObject("use", "work"), o);
     }
 
-    a = practioner.optJSONArray("practitionerRole");
+    a = fhirPerson.optJSONArray("practitionerRole");
 
     int len = (a == null)
               ? 0

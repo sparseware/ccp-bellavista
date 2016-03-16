@@ -25,7 +25,6 @@ import com.appnativa.util.Streams;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
 import com.appnativa.util.json.JSONWriter;
-
 import com.sparseware.bellavista.ActionPath;
 import com.sparseware.bellavista.external.fhir.FHIRServer.FHIRResource;
 import com.sparseware.bellavista.external.fhir.FHIRUtils.MedicalCode;
@@ -35,7 +34,6 @@ import com.sparseware.bellavista.service.iHttpConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +55,7 @@ public class Labs extends aFHIRemoteService {
   protected static String[]                COLUMN_NAMES;
   protected String                         labValueFormat =
     "<tr><td class=\"lab_name\">%s</td><td class=\"lab_value\">%s</td></tr>";
+  private HashSet<String> uniqueDates=new HashSet<String>();
 
   static {
     bunCodes.add("75367002");
@@ -228,7 +227,7 @@ public class Labs extends aFHIRemoteService {
     }
     
 //    l=server.createLink(resourceName+"?_count=100");
-
+    uniqueDates.clear();
     try {
       Object w = FHIRUtils.createWriter(path, conn.getContentWriter(), headers, true);
 
@@ -947,6 +946,9 @@ public class Labs extends aFHIRemoteService {
 
       if (((result == null) || (result.length() == 0)) && is_document.equals("true")) {
         result = server.getResourceAsString("bv.text.see_report");
+      }
+      if(server.debug && labld!=null && lab!=null && !uniqueDates.add(date+"-"+labld)) {
+        lab="{fgColor:badData}DUPLICATE: "+lab;
       }
 
       if (jw != null) {

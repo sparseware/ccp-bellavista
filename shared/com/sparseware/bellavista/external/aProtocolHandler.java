@@ -53,7 +53,7 @@ public abstract class aProtocolHandler {
    * Convenience method for creating a link
    * @param context the context
    * @param url the url
-   * @param the mime type for the returned data
+   * @param type the mime type for the returned data
    * @return the new link
    */
   public ActionLinkEx createLink(iWidget context, URL url, String type) {

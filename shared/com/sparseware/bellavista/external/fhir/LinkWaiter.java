@@ -1,18 +1,16 @@
 package com.sparseware.bellavista.external.fhir;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import com.appnativa.rare.Platform;
-import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.iCancelableFuture;
+import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.util.IdentityArrayList;
 import com.appnativa.util.json.JSONObject;
 import com.appnativa.util.json.JSONTokener;
-
-import com.google.j2objc.annotations.WeakOuter;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * This class initiates the background loading of an link
@@ -190,7 +188,6 @@ public class LinkWaiter {
    */
   public void dispose() {
     links.clear();
-    links = null;
     results.clear();    //don't set to null as it is possible a background thread may need it to synchronize on because if was not able to be canceled
   }
 
@@ -222,7 +219,6 @@ public class LinkWaiter {
     this.cancelOnException = cancelOnException;
   }
 
-  @WeakOuter
   protected class DataRetriever implements Runnable {
     ActionLink link;
     int        index;

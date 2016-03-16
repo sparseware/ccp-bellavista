@@ -109,7 +109,7 @@ public abstract class aPatientLocator {
    * @author Don DeCoteau
    *
    */
-  public enum LocatorChangeType { PATIENTS, LOCATIONS, ACCESS_DENIED }
+  public enum LocatorChangeType { PATIENTS, LOCATIONS, ACCESS_DENIED}
 
   /**
    * Called to notify the locator that we are ignoring the event. Calling this

@@ -16,6 +16,9 @@ Currently the client is runs natively on iOS, Android, and on any desktop enviro
 The client has a demo mode which allows you to tests out its UI and functionality without having to talk to any back end systems.
 
 ##Latest News
+###16 Mar 2016
+Latest repo update requires v1.7 of the [appNativa SDK](http://www.appnativa.com/downloads)
+
 ###17 Feb 2016
 * Support for direct access to FHIR servers added, see the FHIR section in the [Working with the Client](https://github.com/sparseware/ccp-bellavista/wiki/Configuring) page
 * Documented how to test the Bluetooth Beacon support, see the Bluetooth Beacons section in the [Working with the Client](https://github.com/sparseware/ccp-bellavista/wiki/Configuring) page

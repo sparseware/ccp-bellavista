@@ -22,7 +22,6 @@ import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.iConstants;
 import com.appnativa.rare.iFunctionCallback;
 import com.appnativa.rare.net.ActionLink;
-import com.appnativa.rare.net.HTTPException;
 import com.appnativa.rare.scripting.Functions;
 import com.appnativa.rare.spot.Browser;
 import com.appnativa.rare.spot.Viewer;
@@ -43,6 +42,7 @@ import com.appnativa.util.SimpleDateFormatEx;
 import com.appnativa.util.Streams;
 import com.appnativa.util.iURLResolver;
 import com.appnativa.util.json.JSONArray;
+import com.appnativa.util.json.JSONException;
 import com.appnativa.util.json.JSONObject;
 import com.appnativa.util.json.JSONTokener;
 import com.appnativa.util.json.JSONWriter;
@@ -79,8 +79,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The protocol handler for connecting to FHIR servers via the 'fhir'
- * URL scheme
+ * The protocol handler for connecting to FHIR servers via the 'fhir' URL scheme
  *
  * @author Don DeCoteau
  */
@@ -423,8 +422,10 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Get the id of the currently selected patient
+   *
    * @return the id of the currently selected patient
-   * @throws IOException if not patient has been selected
+   * @throws IOException
+   *           if not patient has been selected
    */
   public String getPatientID() throws IOException {
     if (patientID == null) {
@@ -435,8 +436,8 @@ public class FHIRServer extends aProtocolHandler {
   }
 
   /**
-   * Get the id of the currently selected patient without
-   * throwing an exception if the id is null
+   * Get the id of the currently selected patient without throwing an exception
+   * if the id is null
    *
    * @return the id of the currently selected patient
    */
@@ -464,6 +465,7 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Gets the configuration object for the FHIR server
+   *
    * @return the configuration object for the FHIR server
    */
   public Server getServerConfig() {
@@ -508,6 +510,10 @@ public class FHIRServer extends aProtocolHandler {
 
     if (fhir != null) {
       debug = fhir.optBoolean("debug");
+
+      boolean log = fhir.optBoolean("logg_connections");
+
+      if (log) {}
     }
 
     String serverURL = server.getURL();
@@ -626,6 +632,7 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Gets the currently logged in user
+   *
    * @return the currently logged in user
    */
   public JSONObject getUser() {
@@ -863,6 +870,8 @@ public class FHIRServer extends aProtocolHandler {
             authHandler.authorizeUri = o.optString("valueUri", null);
           } else if (s.equals("token")) {
             authHandler.tokenUri = o.optString("valueUri", null);
+          } else if (s.equals("userinfo")) {
+            authHandler.userinfoUri = o.optString("valueUri", null);
           }
         }
 
@@ -953,10 +962,11 @@ public class FHIRServer extends aProtocolHandler {
   }
 
   /**
-   * Decorates a link with the additional request headers
-   * needed to access the server
+   * Decorates a link with the additional request headers needed to access the
+   * server
    *
-   * @param link the link
+   * @param link
+   *          the link
    */
   protected void decorateLink(ActionLink link) {
     if ((authHandler != null) && (authHandler.authHeader != null)) {
@@ -967,7 +977,8 @@ public class FHIRServer extends aProtocolHandler {
   /**
    * Converts a date to its display format
    *
-   * @param date the date
+   * @param date
+   *          the date
    * @return the date for display
    */
   public static String convertDate(Date date) {
@@ -977,7 +988,8 @@ public class FHIRServer extends aProtocolHandler {
   /**
    * Converts a date to its display format
    *
-   * @param date the date
+   * @param date
+   *          the date
    * @return the date for display
    */
   public static String convertDate(String date) {
@@ -995,7 +1007,8 @@ public class FHIRServer extends aProtocolHandler {
   /**
    * Converts a date and time to its display format
    *
-   * @param date the date
+   * @param date
+   *          the date
    * @return the date and time for display
    */
   public static String convertDateTime(Date date) {
@@ -1005,7 +1018,8 @@ public class FHIRServer extends aProtocolHandler {
   /**
    * Converts a date and time to its display format
    *
-   * @param date the date
+   * @param date
+   *          the date
    * @return the date and time for display
    */
   public static String convertDateTime(String date) {
@@ -1026,7 +1040,9 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Converts a date string to a date object
-   * @param date the date string
+   *
+   * @param date
+   *          the date string
    * @return the date object or null if the date was not able to be converted
    */
   public static Date toDate(String date) {
@@ -1040,8 +1056,10 @@ public class FHIRServer extends aProtocolHandler {
   /**
    * Converts a date and time to the FHIR server format
    *
-   * @param cal the date
-   * @param time true to include the time; false otherwise
+   * @param cal
+   *          the date
+   * @param time
+   *          true to include the time; false otherwise
    * @return the date and time in the FHIR server format
    */
   public static String convertToServerDate(Calendar cal, boolean time) {
@@ -1050,6 +1068,7 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Gets the singleton instance of the server
+   *
    * @param return the singleton instance of the server
    */
   public static FHIRServer getInstance() {
@@ -1058,6 +1077,7 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Gets the style sheet to use when generating HTML
+   *
    * @return the style sheet to use when generating HTML
    */
   public static String getStyleSheet() {
@@ -1081,6 +1101,7 @@ public class FHIRServer extends aProtocolHandler {
 
   /**
    * Gets the version of the FHIR server as a float
+   *
    * @return the version of the FHIR server as a float
    */
   public static float getVersion() {
@@ -1106,11 +1127,11 @@ public class FHIRServer extends aProtocolHandler {
   }
 
   private static void createForCommandLineTesting() throws Exception {
-//    FHIRServer server = new FHIRServer("https://fhir-open-api.smartplatforms.org/");
-//    FHIRServer server = new FHIRServer("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/");
-//    FHIRServer server = new FHIRServer("http://fhirtest.uhn.ca/baseDstu2/");
-    FHIRServer server =
-      new FHIRServer("https://fhir-open.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/");
+    FHIRServer server = new FHIRServer("https://fhir-open-api.smartplatforms.org/");
+    //    FHIRServer server = new FHIRServer("https://open-ic.epic.com/FHIR/api/FHIR/DSTU2/");
+    //    FHIRServer server = new FHIRServer("http://fhirtest.uhn.ca/baseDstu2/");
+    //    FHIRServer server =
+    //      new FHIRServer("https://fhir-open.sandboxcernerpowerchart.com/dstu2/d075cf8b-3261-481d-97e5-ba6c48d3b41f/");
 
     server.commandLine  = true;
     server.serverConfig = new Server("Demo", "local", false);
@@ -1240,6 +1261,7 @@ public class FHIRServer extends aProtocolHandler {
 
 
   static class AuthHandler implements iEventHandler {
+    protected String  userinfoUri;
     JSONObject        loggedInUser;
     iFunctionCallback callback;
     Server            server;
@@ -1271,10 +1293,13 @@ public class FHIRServer extends aProtocolHandler {
     }
 
     /**
-     * Called from {@link Account#login} to authenticate a user using
-     * basic authentication
-     * @param username the username
-     * @param password the password
+     * Called from {@link Account#login} to authenticate a user using basic
+     * authentication
+     *
+     * @param username
+     *          the username
+     * @param password
+     *          the password
      *
      * @return the authenticated user
      */
@@ -1292,11 +1317,12 @@ public class FHIRServer extends aProtocolHandler {
 
       JSONObject o = new JSONObject(l.getContentAsString());
 
-      authHeader = basicAuth;
+      if (o.optString("username", null) == null) {
+        o.put("username", username);
+      }
 
-      JSONObject user = getUserInfo(o);
-
-      loggedInUser = Users.populateUser(user.getString("id"), user);
+      authHeader   = basicAuth;
+      loggedInUser = resolveUserInfo(o);
 
       return loggedInUser;
     }
@@ -1315,11 +1341,10 @@ public class FHIRServer extends aProtocolHandler {
       }
 
       /**
-       * String s1 = Long.toHexString(l1);
-       * String s2 = Long.toHexString(l2);
+       * String s1 = Long.toHexString(l1); String s2 = Long.toHexString(l2);
        *
-       * state = Functions.sha1(s1 + s2);
-       * Using hex string as scope because some servers
+       * state = Functions.sha1(s1 + s2); Using hex string as scope because some
+       * servers
        */
       l1    ^= l2;
       state = Long.toHexString(l1);
@@ -1328,7 +1353,7 @@ public class FHIRServer extends aProtocolHandler {
       data.put("redirect_uri", fhir.getString("oauth_redirect_uri"));
       data.put("scope", fhir.getString("oauth_scope"));
       data.put("state", state);
-      data.put("aud", fhir.getString("aud"));
+      data.put("aud", fhir.optString("oauth_aud", fhir.optString("aud")));
 
       ActionLink link = new ActionLink(authorizeUri);
 
@@ -1419,15 +1444,18 @@ public class FHIRServer extends aProtocolHandler {
       ((WebBrowser) widget).setAutoDispose(false);
       Utils.clearViewerStack();
 
-      final WindowViewer w    = Platform.getWindowViewer();
+      final WindowViewer w = Platform.getWindowViewer();
+
       w.hideWaitCursor(true);
       w.showProgressPopup(w.getString("bv.text.authenticating"));
-      final String       code = map.get("code");
-      aWorkerTask        task = new aWorkerTask() {
+
+      final String code = map.get("code");
+      aWorkerTask  task = new aWorkerTask() {
         @Override
         public Object compute() {
           try {
             HashMap<String, String> data = new HashMap<String, String>();
+
             data.put("grant_type", "authorization_code");
             data.put("code", code);
             data.put("redirect_uri", fhir.getString("oauth_redirect_uri"));
@@ -1441,8 +1469,9 @@ public class FHIRServer extends aProtocolHandler {
             tokenTimeout = o.getInt("expires_in") * 1000 + System.currentTimeMillis();
             refreshToken = o.optString("refresh_token", null);
 
-            String     id = o.optString("id_token", null);
-            JSONObject user;
+            String     id      = o.optString("id_token", null);
+            String     profile = null;
+            JSONObject user    = null;
             String     patient = o.optString("patient", null);
 
             if (patient != null) {
@@ -1453,56 +1482,37 @@ public class FHIRServer extends aProtocolHandler {
               }
             }
 
-            if (id == null) {
-              user = new JSONObject();
-              user.put("sub", "unknown");
-              user.put("profile", "Practitioner/1234");
-            } else {
+            if (id != null) {
               int n = id.indexOf('.');
               int p = id.indexOf('.', n + 1);
 
-              id   = id.substring(n + 1, p);
-              id   = Base64.decodeUTF8(id + "=");
-              user = new JSONObject(id);
-            }
+              id = id.substring(n + 1, p);
+              id = Base64.decodeUTF8(id + "=");
 
-            try {
-              link = FHIRServer.getInstance().createResourceLink(user.getString("profile"));
+              JSONObject oo = new JSONObject(id);
 
-              JSONObject profile = new JSONObject(link.getContentAsString());
-
-              profile.put("sub", user.opt("sub"));
-              user = profile;
-            } catch(Exception e) {
-              if (e instanceof HTTPException) {
-                return e;
-              }
-
-              Platform.ignoreException(e);
-
-              JSONObject name = new JSONObject();
-
-              name.put("text", "unknown");
-              user.put("name", name);
-            }
-
-            id = user.optString("id", null);
-
-            if (id == null) {
-              id = user.optString("profile", null);
-
-              if (id == null) {
-                id = "unknown";
-              } else {
-                int n = id.indexOf('/');
-
-                if (n != -1) {
-                  id = id.substring(n + 1);
+              profile = oo.optString("profile",null);
+              id=fhir.optString("oauth_id_token_user_info_key",null);
+              if(id!=null) {
+                user=oo.optJSONObject(id);
+                if(user!=null) {
+                  resolveUserInfo(user);
                 }
               }
             }
 
-            user = Users.populateUser(id, user);
+            if (user == null) {
+              if (profile == null) {
+                user = resolveUserInfo(null);
+              } else {
+                link = FHIRServer.getInstance().createResourceLink(profile);
+
+                JSONObject oo = new JSONObject(link.getContentAsString());
+
+                user = Users.populateUser(FHIRServer.getInstance().getID(profile, false), oo);
+              }
+            }
+
             user.put("patient", patient);
 
             return user;
@@ -1521,11 +1531,13 @@ public class FHIRServer extends aProtocolHandler {
           }
         }
       };
+
       w.spawn(task);
     }
 
     /**
      * Called to renew a bearer token
+     *
      * @return
      */
     public boolean renewToken() {
@@ -1563,72 +1575,70 @@ public class FHIRServer extends aProtocolHandler {
     }
 
     /**
-     * Gets the user information from a the data returned in an
-     * authorization request
+     * Gets the user information from a the data returned in an authorization
+     * request
+     *
      * @param o
      * @return
+     * @throws IOException
+     * @throws JSONException
      */
-    protected JSONObject getUserInfo(JSONObject o) {
-      String     type = o.optString("resourceType");
-      JSONObject user = null;
-      String     id   = null;
+    protected JSONObject resolveUserInfo(JSONObject o) throws JSONException, IOException {
+      if (o == null) {
+        if (userinfoUri == null) {
+          String s = tokenUri;
+          int    n = s.lastIndexOf('/');
 
-      if (type.equals("Person") || type.equals("Practitioner")) {
-        user = o;
-      } else {
-        id = o.optString("id_token", null);
-
-        if (id != null) {
-          int n = id.indexOf('.');
-          int p = id.indexOf('.', n + 1);
-
-          id   = id.substring(n + 1, p);
-          id   = Base64.decodeUTF8(id + "=");
-          user = new JSONObject(id);
+          s           = s.substring(0, n + 1) + "userinfo";
+          userinfoUri = s;
         }
 
-        try {
-          String s = user.optString("profile", null);
+        ActionLink l = FHIRServer.getInstance().createLink(userinfoUri);
 
+        o = new JSONObject(l.getContentAsString());
+      }
+
+      if (o.optString("username", null) == null) {
+        o.put("username", o.optString("sub"));
+      }
+
+      String s = o.optString("name", null);
+
+      if (s == null) {
+        StringBuilder sb = new StringBuilder();
+
+        s = o.optString("family_name", null);
+
+        if (s != null) {
+          sb.append(s).append(", ");
+        }
+
+        s = o.optString("given_name", null);
+
+        if (s != null) {
           if (s != null) {
-            ActionLinkEx l       = FHIRServer.getInstance().createResourceLink(s);
-            JSONObject   profile = new JSONObject(l.getContentAsString());
-
-            profile.put("sub", user.opt("sub"));
-            user = profile;
-          }
-        } catch(Exception e) {
-          Platform.ignoreException(e);
-        }
-      }
-
-      if (user == null) {
-        user = new JSONObject();
-
-        JSONObject name = new JSONObject();
-
-        name.put("text", "Unknown User");
-        user.put("name", name);
-        user.put("id", "unknown");
-      }
-
-      id = user.optString("id", null);
-
-      if (id == null) {
-        id = user.optString("profile", null);
-
-        if (id == null) {
-          id = "unknown";
-        } else {
-          int n = id.indexOf('/');
-
-          if (n != -1) {
-            id = id.substring(n + 1);
+            sb.append(s);
           }
         }
+
+        String m = o.optString("middle_name", null);
+
+        if (m != null) {
+          if (s != null) {
+            sb.append(" ").append(m);
+          } else {
+            sb.append(m);
+          }
+        }
+
+        if (sb.length() == 0) {
+          sb.append("Anonymous User");
+        }
+
+        o.put("name", sb.toString());
       }
 
-      return user;
+      return o;
     }
 
     void error(final String msg, final Throwable e) {

@@ -54,6 +54,7 @@ MainWindow {
                 }
                 value: "{resource:bv.text.username}:"
                 textHAlignment: right
+                enabled: false
               }
             }
             {
@@ -66,6 +67,7 @@ MainWindow {
                 visibleCharacters: 12
                 allowDefaultSuggestions: false
                 keyboardType: default_type [ autoCapatilize="none", autoCorrect="false", spellCheck="false" ]
+                enabled: false
               } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
             }
             {
@@ -77,6 +79,7 @@ MainWindow {
                 }
                 value: "{resource:bv.text.password}:"
                 textHAlignment: right
+                enabled: false
               }
             }
             {
@@ -86,6 +89,7 @@ MainWindow {
                   x: "3"
                   y: "7"
                 }
+                enabled: false
               } [ onAction="class:MainEventHandler#onLoginFormEnter" ]
             }
             {

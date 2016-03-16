@@ -83,7 +83,12 @@
         "0E7D80F7-592A-4EE1-A528-F7F178188371",
         "B4D90800-9CA3-499A-BA46-474B8D47EDA5"
       ],
-      "locationsSignalColumn": 1
+      "locationsSignalColumn": 1,
+      "gimbalInfo": {
+        "apiKey": "a3b8ee1e-1e40-4057-8f84-ca9c65f73331",
+        "patientPrefix": "BV",
+        "locationPrefix": ""
+      }
     },
     "barcodeReaderClass": "",
     "listCategories": [

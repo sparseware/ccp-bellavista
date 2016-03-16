@@ -219,7 +219,7 @@ public class Patients extends aFHIRemoteService {
         s = getExtension(path);
 
         if (s == null) {
-          s = id.substring(1) + ".json";
+          s = id.substring(1);
         } else {
           s = id.substring(1) + "." + s;
         }

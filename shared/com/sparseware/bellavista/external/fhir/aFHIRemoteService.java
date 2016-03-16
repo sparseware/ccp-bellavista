@@ -234,14 +234,17 @@ public abstract class aFHIRemoteService extends aRemoteService {
       i++;
     }
 
-    if (searchParams != null) {
+    if (searchParams != null && searchParams.length()>0) {
       if (i > 0) {
         sb.append('&');
       }
 
       sb.append(searchParams);
     }
-
+    i=sb.length();
+    if(sb.charAt(i-1)=='&') {
+      sb.setLength(i-1);
+    }
     ActionLinkEx l = server.createLink(sb.toString());
 
     lastLink = l;

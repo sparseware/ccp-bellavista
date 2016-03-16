@@ -1057,10 +1057,8 @@ public class Orders extends aResultsManager implements iActionListener {
         if (pos == -1) {
           categories.add(0, category = new RenderableDataItem(medicationsTitle, medsCategoryID, icon));
           category.setActionListener(this);
-        } else {
-          category = categories.get(pos);
+          allOrders.addAll(createNotDataForCategory(table, category));
         }
-        allOrders.addAll(createNotDataForCategory(table, category));
       }
 
       final int selectedIndex;

@@ -75,7 +75,9 @@ GroupBox {
           }
           {
             PushButton {
+              name:"deleteButton"
               icon: "resource:bv.icon.minus"
+              enabled: false
             } [ onAction="class:Settings#onServersDeleteAction" ]
           }
           {
@@ -87,12 +89,14 @@ GroupBox {
             PushButton {
               name: "upButton"
               icon: "resource:bv.icon.up"
+              enabled: false
             } [ onAction="class:MainEventHandler#moveListItemUp?servers" ]
           }
           {
             PushButton {
               name: "downButton"
               icon: "resource:bv.icon.down"
+              enabled: false
             } [ onAction="class:MainEventHandler#moveListItemDown?servers" ]
           }
         }

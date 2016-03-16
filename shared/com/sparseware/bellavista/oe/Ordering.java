@@ -195,7 +195,9 @@ public class Ordering extends Orders {
           String                        route = demo
                   ? OrderManager.getOrdersFilter().optString("route")
                   : null;
-
+          if(demo && route.equals("all")) {
+            route="";
+          }
           for (int i = 0; i < len; i++) {
             RenderableDataItem row  = list.get(i);
             RenderableDataItem item = row.get(0);

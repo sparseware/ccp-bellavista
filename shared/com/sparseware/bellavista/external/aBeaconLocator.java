@@ -188,7 +188,7 @@ public abstract class aBeaconLocator extends aPatientLocator implements iChangeL
       Platform.invokeLater(new Runnable() {
         @Override
         public void run() {
-          fireStactChanged(new LocatorChangeEvent(this, LocatorChangeType.ACCESS_DENIED));
+          fireStateChanged(new LocatorChangeEvent(this, LocatorChangeType.ACCESS_DENIED));
         }
       });
     } else {
@@ -224,7 +224,7 @@ public abstract class aBeaconLocator extends aPatientLocator implements iChangeL
         return;
 
       default :
-        fireStactChanged(ce);
+        fireStateChanged(ce);
 
         break;
     }
@@ -249,7 +249,7 @@ public abstract class aBeaconLocator extends aPatientLocator implements iChangeL
               ? LocatorChangeType.PATIENTS
               : LocatorChangeType.LOCATIONS, map);
 
-      fireStactChanged(lce);
+      fireStateChanged(lce);
     }
   }
 
@@ -283,7 +283,7 @@ public abstract class aBeaconLocator extends aPatientLocator implements iChangeL
     return nlist;
   }
 
-  protected void fireStactChanged(final LocatorChangeEvent ce) {
+  protected void fireStateChanged(final LocatorChangeEvent ce) {
     if (Platform.isUIThread()) {
       if (changeListener != null) {
         changeListener.stateChanged(ce);
@@ -303,8 +303,7 @@ public abstract class aBeaconLocator extends aPatientLocator implements iChangeL
   /**
    * Gets an array of uuid's from a configuration string
    *
-   * @param value
-   *          a configuration string
+   * @param array containing beacon strings
    * @return an array of uuid's or null
    */
   protected List<Beacon> getBeacons(JSONArray array) {

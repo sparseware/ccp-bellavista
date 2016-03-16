@@ -46,6 +46,8 @@ import com.appnativa.rare.ui.event.DataEvent;
 import com.appnativa.rare.ui.event.iActionListener;
 import com.appnativa.rare.ui.event.iChangeListener;
 import com.appnativa.rare.ui.iEventHandler;
+import com.appnativa.rare.ui.iImageObserver;
+import com.appnativa.rare.ui.iObservableImage;
 import com.appnativa.rare.ui.iPlatformGraphics;
 import com.appnativa.rare.ui.iPlatformIcon;
 import com.appnativa.rare.viewer.ImagePaneViewer;
@@ -59,6 +61,7 @@ import com.appnativa.rare.viewer.iTarget;
 import com.appnativa.rare.viewer.iViewer;
 import com.appnativa.rare.widget.ComboBoxWidget;
 import com.appnativa.rare.widget.aGroupableButton;
+import com.appnativa.rare.widget.aWidget;
 import com.appnativa.rare.widget.iWidget;
 import com.appnativa.util.CharArray;
 import com.appnativa.util.SNumber;
@@ -66,6 +69,7 @@ import com.appnativa.util.StringCache;
 import com.appnativa.util.iFilter;
 import com.appnativa.util.json.JSONArray;
 import com.appnativa.util.json.JSONObject;
+
 import com.sparseware.bellavista.CollectionManager.PatientList;
 import com.sparseware.bellavista.Settings.AppPreferences;
 import com.sparseware.bellavista.external.DemoPatientLocator;
@@ -75,8 +79,11 @@ import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeEvent;
 import com.sparseware.bellavista.external.aPatientLocator.LocatorChangeType;
 
 import java.io.IOException;
+
 import java.net.MalformedURLException;
+
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,26 +101,27 @@ import java.util.List;
  * @author Don DeCoteau
  */
 public class PatientSelect implements iEventHandler, iChangeListener {
-  public static final int            ADMIT_DATE = 6;
-  public static final int            ADMIT_DX   = 7;
-  public static final int            DOB        = 2;
-  public static final int            DOCTOR     = 5;
-  public static final int            GENDER     = 3;
-  public static final int            ID         = 0;
-  public static final int            LOCATION   = 8;
-  public static final int            MRN        = 4;
-  public static final int            NAME       = 1;
-  public static final int            PHOTO      = 10;
-  public static final int            SIGNAL     = 11;
-  public static final int            RM_BED     = 9;
-  static String                      lastPatientID;
-  static String                      lastTabName;
-  static iPlatformIcon               signalIcons[];
-  public static UILineBorder         photoBorder;
-  public static PatientIcon          noPhotoIcon;
-  static final String                PATIENT_SELECTION_TYPE = "pt_selection_type";
-  static final String                PATIENT_SELECT_PAGE    = "pt_select_paage";
-  static final String                PATIENT_SELECT         = "pt_select_patient";
+  public static final int    ADMIT_DATE = 6;
+  public static final int    ADMIT_DX   = 7;
+  public static final int    DOB        = 2;
+  public static final int    DOCTOR     = 5;
+  public static final int    GENDER     = 3;
+  public static final int    ID         = 0;
+  public static final int    LOCATION   = 8;
+  public static final int    MRN        = 4;
+  public static final int    NAME       = 1;
+  public static final int    PHOTO      = 10;
+  public static final int    SIGNAL     = 11;
+  public static final int    RM_BED     = 9;
+  static String              lastPatientID;
+  static String              lastTabName;
+  static iPlatformIcon       signalIcons[];
+  public static UILineBorder photoBorder;
+  public static PatientIcon  noPhotoIcon;
+  static final String        PATIENT_SELECTION_TYPE = "pt_selection_type";
+  static final String        PATIENT_SELECT_PAGE    = "pt_select_paage";
+  static final String        PATIENT_SELECT         = "pt_select_patient";
+
   static {
     signalIcons = new iPlatformIcon[5];
 
@@ -126,6 +134,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                                       UIScreen.PLATFORM_PIXELS_6);
     noPhotoIcon = new PatientIcon(Platform.getResourceAsIcon("bv.icon.no_photo"));
   }
+
   TableViewer                        patientsTable;
   iWidget                            locatorWidget;
   aPatientLocator                    patientLocator;
@@ -142,7 +151,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   CardPatientSelectionActionListener psActionListener;
   private UIPopupMenu                selectionMenu;
   private boolean                    alwaysShowSearchFirst;
-
   private boolean                    genderSearchSupported;
 
   public PatientSelect() {
@@ -239,7 +247,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   public void onBookmarkButtonAction(String eventName, iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
-
     clearPreview();
 
     if (!UIScreen.isLargeScreen()) {
@@ -457,8 +464,9 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     stopListeningForNearbyPatients();
 
     WindowViewer w     = Platform.getWindowViewer();
-    iContainer  form  = widget.getFormViewer();
+    iContainer   form  = widget.getFormViewer();
     TableViewer  table = patientsTable;
+
     table.clear();
     clearPreview();
     pager.clear();
@@ -782,7 +790,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   public void showFormForButton(String eventName, iWidget widget, EventObject event) {
     stopListeningForNearbyPatients();
-
     clearPreview();
 
     String          name = widget.getName();
@@ -837,9 +844,10 @@ public class PatientSelect implements iEventHandler, iChangeListener {
                 int len = list.size();
 
                 for (int i = 0; i < len; i++) {
-                  RenderableDataItem row=table.get(i);
-                  RenderableDataItem os=list.get(i).get(SIGNAL);
-                  RenderableDataItem s=row.get(SIGNAL);
+                  RenderableDataItem row = table.get(i);
+                  RenderableDataItem os  = list.get(i).get(SIGNAL);
+                  RenderableDataItem s   = row.get(SIGNAL);
+
                   if (!os.valueEquals(s)) {
                     row.set(SIGNAL, s);
                     updateSignalIcon(row);
@@ -863,33 +871,32 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   /**
    * Clears the current patient preview
    *
-   * @param fv
-   *          the form viewer containing the preview fields
    */
   protected void clearPreview() {
-    WindowViewer w = Platform.getWindowViewer();
-    iContainer fv=(iContainer) w.getViewer("patientSelectionForm");
-    if(fv!=null) {
-    fv.getWidget("patient").setValue(w.getString("bv.text.no_patient"));
+    WindowViewer w  = Platform.getWindowViewer();
+    iContainer   fv = (iContainer) w.getViewer("patientSelectionForm");
 
-    if (fv.getWidget("mrn") != null) {
-      fv.getWidget("mrn").setValue("");
-    }
+    if (fv != null) {
+      fv.getWidget("patient").setValue(w.getString("bv.text.no_patient"));
 
-    fv.getWidget("age_sex").setValue("");
-    fv.getWidget("admit_date").setValue("");
+      if (fv.getWidget("mrn") != null) {
+        fv.getWidget("mrn").setValue("");
+      }
 
-    if (fv.getWidget("admit_dx") != null) {
-      fv.getWidget("admit_dx").setValue("");
-    }
+      fv.getWidget("age_sex").setValue("");
+      fv.getWidget("admit_date").setValue("");
 
-    ImagePaneViewer ip = ((ImagePaneViewer) fv.getWidget("photo"));
+      if (fv.getWidget("admit_dx") != null) {
+        fv.getWidget("admit_dx").setValue("");
+      }
 
-    if (ip != null) {
-      ip.setImage(fv.getAppContext().getResourceAsImage("bv.icon.no_photo"));
-    }
+      ImagePaneViewer ip = ((ImagePaneViewer) fv.getWidget("photo"));
 
-    fv.getWidget("patient").setEnabled(false);
+      if (ip != null) {
+        ip.setImage(fv.getAppContext().getResourceAsImage("bv.icon.no_photo"));
+      }
+
+      fv.getWidget("patient").setEnabled(false);
     }
   }
 
@@ -1054,7 +1061,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    */
   protected void populatePreview(RenderableDataItem row) {
     WindowViewer       w    = Platform.getWindowViewer();
-    iContainer fv=(iContainer) w.getViewer("patientSelectionForm");
+    iContainer         fv   = (iContainer) w.getViewer("patientSelectionForm");
     RenderableDataItem item = row.get(NAME);
     String             mrn  = (String) row.get(MRN).getValue();
     String             s    = (String) item.getLinkedData();
@@ -1140,7 +1147,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
           boolean checkForSignal)
           throws IOException {
     RenderableDataItem row, item, nameItem;
-    final WindowViewer w   = widget.getAppContext().getWindowViewer();
     SNumber            num = new SNumber();
 
     widget.clear();
@@ -1223,12 +1229,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       row.setValue(s);
 
       if (row.isEnabled()) {
-        row.get(0).setIcon(getThimbnail(w, (String) row.get(PHOTO).getValue()));
+        row.get(0).setIcon(getThimbnail(widget, (String) row.get(PHOTO).getValue()));
       }
     }
 
     return rows;
   }
+
   /**
    * Called to show the nearby patients button is pressed.
    *
@@ -1243,12 +1250,12 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     if (searchingForPatients == null) {
       searchingForPatients = Utils.createDisabledTableRow("bv.text.search_dots", 1);
     }
-    clearPreview();
 
+    clearPreview();
     patientsTable.clear();
     patientsTable.add(searchingForPatients);
   }
-  
+
   /**
    * Shows the preview for the selected patient
    *
@@ -1267,9 +1274,10 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
 
     iWidget patient = widget.getFormViewer().getWidget("patient");
-
-    if (patient.getLinkedData() == row) {
-      return;
+    if(patient!=null) {
+      if (patient.getLinkedData() == row) {
+        return;
+      }
     }
 
     patient.setEnabled(true);
@@ -1315,7 +1323,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
         item.setIcon(signalIcons[signal - 1]);
       }
     }
-    
   }
 
   boolean areSamePatientsInSameOrder(List<RenderableDataItem> list, TableViewer table) {
@@ -1436,8 +1443,8 @@ public class PatientSelect implements iEventHandler, iChangeListener {
    *
    * @param context
    *          the context
-   * @param patientSearch
-   *          string to populate the search field with
+   * @param path
+   *          path optional to containing patient and application location to go to
    */
   public static void changePatient(final iWidget context, final ActionPath path) {
     if (!OrderManager.canChangePatientOrExit(false, path)) {
@@ -1594,7 +1601,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     return obj;
   }
 
-  protected static iPlatformIcon getThimbnail(WindowViewer w, String s) {
+  protected static iPlatformIcon getThimbnail(aWidget context, String s) {
     ActionLink link = null;
 
     if ((s != null) && (s.length() > 0)) {
@@ -1605,13 +1612,13 @@ public class PatientSelect implements iEventHandler, iChangeListener {
       iPlatformIcon icon;
 
       try {
-        icon = w.getIcon(link.getURL(w), s, 1);
+        icon = context.getIcon(link.getURL(context), s, 1);
 
-        if (icon instanceof UIImageIcon && ((UIImageIcon)icon).getImage()!=UIImageIcon.getBrokenImage()) {
+        if ((icon instanceof UIImageIcon) && ((UIImageIcon) icon).getImage() != UIImageIcon.getBrokenImage()) {
           icon = new PatientIcon(icon);
+
           return icon;
         }
-
       } catch(MalformedURLException e) {
         Platform.ignoreException(null, e);
       }
@@ -1786,7 +1793,6 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     w.spawn(task);
     w.showWaitCursor();
   }
-
 
   @SuppressWarnings("resource")
   protected static void processPatientData(JSONObject patient) {
@@ -2077,6 +2083,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
     }
   }
 
+
   static class MenuActionListener implements iActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -2092,7 +2099,7 @@ public class PatientSelect implements iEventHandler, iChangeListener {
   }
 
 
-  static class PatientIcon extends aPlatformIcon {
+  static class PatientIcon extends aPlatformIcon implements iObservableImage {
     static final int    iconSize = UIScreen.platformPixels(48);
     final iPlatformIcon icon;
     final boolean       imageIcon;
@@ -2144,6 +2151,15 @@ public class PatientSelect implements iEventHandler, iChangeListener {
 
       g.restoreState();
       photoBorder.paint(g, x, y, isize, isize, photoBorder.isPaintLast());
+    }
+
+    @Override
+    public boolean isImageLoaded(iImageObserver imageObserver) {
+      if (imageIcon) {
+        return ((UIImageIcon) icon).isImageLoaded(imageObserver);
+      }
+
+      return true;
     }
   }
 }

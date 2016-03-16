@@ -16,21 +16,19 @@
 
 package com.sparseware.bellavista.external.fhir;
 
+import java.io.InputStream;
+import java.net.URL;
+
 import com.appnativa.rare.ErrorInformation;
 import com.appnativa.rare.exception.ApplicationException;
 import com.appnativa.rare.net.ActionLink;
 import com.appnativa.rare.net.HTTPException;
 import com.appnativa.util.json.JSONObject;
-
 import com.sparseware.bellavista.MessageException;
 import com.sparseware.bellavista.service.HttpHeaders;
 import com.sparseware.bellavista.service.NonFatalServiceException;
 import com.sparseware.bellavista.service.aHttpURLConnection;
 import com.sparseware.bellavista.service.aRemoteService;
-
-import java.io.InputStream;
-
-import java.net.URL;
 
 public class FHIRHttpURLConnection extends aHttpURLConnection {
   public static long lastConnectTime;
@@ -54,16 +52,17 @@ public class FHIRHttpURLConnection extends aHttpURLConnection {
         HTTPException he = (HTTPException) e;
 
         msg = ((HTTPException) e).getMessageBody();
-
+        boolean json=false;
         if (msg.startsWith("{")) {
           try {
             JSONObject o = new JSONObject(msg);
 
             msg = o.toString(1);
+            json=true;
           } catch(Exception ignore) {}
         }
 
-        if (msg.indexOf("</html>") != -1) {
+        if (!json && msg.indexOf("</html>") != -1) {
           msg = msg.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
         }
 

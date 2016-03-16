@@ -70,7 +70,13 @@ public class Orders extends aFHIRemoteService {
   }
 
   public void list(iHttpConnection conn, ActionPath path, InputStream data, HttpHeaders headers) throws IOException {
-    ActionLink l = createSearchLink("patient", server.getPatientID(), "status", "active");
+    ActionLink l;
+    if(searchParams!=null) {
+      l= createSearchLink("patient", server.getPatientID());
+    }
+    else {
+      l= createSearchLink("patient", server.getPatientID(), "status", "active");
+    }
 
     try {
       Object w = FHIRUtils.createWriter(path, conn.getContentWriter(), headers, true);
@@ -83,7 +89,13 @@ public class Orders extends aFHIRemoteService {
 
   public void medications(iHttpConnection conn, ActionPath path, InputStream data, HttpHeaders headers)
           throws IOException {
-    ActionLink l       = createSearchLink("patient", server.getPatientID(), "status", "active");
+    ActionLink l;
+    if(searchParams!=null) {
+      l= createSearchLink("patient", server.getPatientID());
+    }
+    else {
+      l= createSearchLink("patient", server.getPatientID(), "status", "active");
+    }
     Boolean    summary = path.shift() != null;
 
     try {

@@ -39,28 +39,6 @@ public class aBeaconLocatorSupport {
   }
 
   /**
-   * Gets the nearby locations of patients
-   *
-   * @param event
-   *          the change event that this call is a response to
-   */
-  public List<Beacon> getNearbyLocations(LocatorChangeEvent event) {
-    return null;
-  }
-
-  /**
-   * Gets the updated list nearby list of patients.
-   *
-   * @param event
-   *          the change event that this call is a response to
-   *
-   * @return the list of nearby patients
-   */
-  public List<Beacon> getNearbyPatients(LocatorChangeEvent event) {
-    return null;
-  }
-
-  /**
    * The event was ignored release any resources associated with it
    *
    * @param event

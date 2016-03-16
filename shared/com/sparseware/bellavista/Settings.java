@@ -251,23 +251,31 @@ public class Settings implements iEventHandler {
           if (returnValue instanceof Throwable) {
             Utils.handleError((Throwable) returnValue);
           } else {
+            HashSet<String> set = getServersSet();
+
             try {
               ObjectHolder oh = (ObjectHolder) returnValue;
               JSONObject   o  = (JSONObject) oh.value;
               JSONArray    a  = o.getJSONArray("servers");
 
               lv.clear();
-
+              int count=0;
               for (Object s : a) {
                 Server             server = new Server((JSONObject) s);
-                RenderableDataItem item   = new RenderableDataItem(server.getName(), server, null);
-
-                lv.addEx(item);
+                if(!set.contains(server.toHashKey())) {
+                  RenderableDataItem item   = new RenderableDataItem(server.getName(), server, null);
+                  count++;
+                  lv.addEx(item);
+                }
               }
-
-              lv.refreshItems();
+              if(count==0) {
+                w.alert(w.getString("bv.text.settings.no_new_servers"));
+              }
+              else {
+                lv.refreshItems();
+              }
             } catch(Exception e) {
-              w.alert(w.getString("bv.text.invalid_network_servers_data"));
+              w.alert(w.getString("bv.text.settings.invalid_network_servers_data"));
               Platform.ignoreException(null, e);
             }
           }
@@ -323,7 +331,7 @@ public class Settings implements iEventHandler {
     TextFieldWidget name    = (TextFieldWidget) fv.getWidget("name");
     TextFieldWidget url     = (TextFieldWidget) fv.getWidget("url");
     iWidget         context = fv.getWidget("context");
-
+    int n=lv.getSelectedIndex();
     name.setValue((s == null)
                   ? ""
                   : s.getName());
@@ -339,6 +347,9 @@ public class Settings implements iEventHandler {
     name.setEnabled((s != null) &&!s.isFrozen());
     url.setEnabled((s != null) &&!s.isFrozen());
     context.setEnabled((s != null) &&!s.isFrozen());
+    fv.getWidget("deleteButton").setEnabled(n!=-1);
+    fv.getWidget("upButton").setEnabled(n>-1 && n>0);
+    fv.getWidget("downButton").setEnabled(n>-1 && n<lv.size()-1);
   }
 
   public void onServersDeleteAction(String eventName, iWidget widget, EventObject event) {
@@ -428,7 +439,13 @@ public class Settings implements iEventHandler {
   public void onShownLoginForm(String eventName, iWidget widget, EventObject event) {
     updateLoginFormForSelectedServer((aListWidget) widget.getFormViewer().getWidget("server"));
   }
-
+  /**
+   * Called when the settings popup main form unloads
+   */
+  public void onSettingsUnload(String eventName, iWidget widget, EventObject event) {
+    
+    preferences.update();
+  }
   /**
    * Called to submit a pin for a wearable device
    */
@@ -579,6 +596,7 @@ public class Settings implements iEventHandler {
   }
 
   protected void populateServers(aListViewer lv) {
+    lv.clear();
     for (Server s : servers) {
       lv.addEx(new RenderableDataItem(s.getName(), s, null));
     }
@@ -739,7 +757,7 @@ public class Settings implements iEventHandler {
         try {
           iPreferences p   = globalPrefs.getNode("servers");
           int          len = p.getInt("length", 0);
-
+          HashSet<String> set=new HashSet<String>(len>1? len : 1);
           for (int i = 0; i < len; i++) {
             String s = p.get("s_" + i, null);
 
@@ -749,7 +767,7 @@ public class Settings implements iEventHandler {
 
                 Server server = new Server(new JSONObject(s));
 
-                if (server.isValid()) {
+                if (server.isValid() && set.add(server.toHashKey())) {
                   list.add(server);
                 }
               } catch(Exception e) {

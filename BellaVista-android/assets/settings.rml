@@ -54,4 +54,4 @@ Form {
       }
     }
   }
-}
+} [ onUnload="class:Settings#onSettingsUnload" ]

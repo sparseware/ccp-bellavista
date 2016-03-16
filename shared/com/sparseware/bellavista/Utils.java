@@ -940,7 +940,7 @@ public class Utils {
         nitem.setType(RenderableDataItem.TYPE_STRING);
         nitem.setValue(s);
       }
-
+      nitem.setForeground(item.getForeground());
       nitem.setFont(font);
       nitem.setColumnSpan(-1);
       row.add(nitem);
@@ -3107,7 +3107,7 @@ public class Utils {
 
       app.putData("user", user);
 
-      if (username == null) {
+      if (username == null || username.length()==0) {
         username = user.optString("username", "unknown");
       }
 

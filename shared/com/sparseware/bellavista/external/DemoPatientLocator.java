@@ -98,6 +98,5 @@ public class DemoPatientLocator extends aPatientLocator {
 
   @Override
   public void ignoreEvent(EventObject e) {
-    // TODO Auto-generated method stub
   }
 }

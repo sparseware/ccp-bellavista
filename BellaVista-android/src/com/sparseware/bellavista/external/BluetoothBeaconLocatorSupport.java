@@ -15,9 +15,102 @@
  */
 package com.sparseware.bellavista.external;
 
-public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
+import com.appnativa.rare.Platform;
+import com.appnativa.rare.ui.event.iChangeListener;
 
+import java.util.List;
+
+public class BluetoothBeaconLocatorSupport extends aBeaconLocatorSupport {
+  aBeaconLocatorSupport support;
   public BluetoothBeaconLocatorSupport() {
+    try {
+      Class cls=Class.forName("com.sparseware.bellavista.external.GimbalBeaconLocatorSupport");
+      if(cls!=null) {
+        support= (aBeaconLocatorSupport) cls.newInstance();
+      }
+    }
+    catch(Exception e) {
+      Platform.ignoreException(e);
+    }
+  }
+  @Override
+  public void dispose() {
+    if(support!=null) {
+      support.dispose();
+    }
+    super.dispose();
+  }
+
+  @Override
+  public void ignoreEvent(aPatientLocator.LocatorChangeEvent event) {
+    if(support!=null) {
+      support.ignoreEvent(event);
+    }
+  }
+
+  @Override
+  public boolean isAvailable() {
+    if(support!=null) {
+      return support.isAvailable();
+    }
+    return false;
+  }
+
+  @Override
+  public boolean wasAccessDenied() {
+    if(support!=null) {
+      return support.wasAccessDenied();
+    }
+    return super.wasAccessDenied();
+  }
+
+  @Override
+  public void setChangeListener(iChangeListener changeListener) {
+    if(support!=null) {
+      support.setChangeListener(changeListener);
+    }
+  }
+
+  @Override
+  public void setLocationBeacons(List<aBeaconLocator.Beacon> beacons) {
+    if(support!=null) {
+      support.setLocationBeacons(beacons);
+    }
+  }
+
+  @Override
+  public void setPatientBeacons(List<aBeaconLocator.Beacon> beacons) {
+    if(support!=null) {
+      support.setPatientBeacons(beacons);
+    }
+  }
+
+  @Override
+  public void startListeningForLocations() {
+    if(support!=null) {
+      support.startListeningForLocations();
+    }
+  }
+
+  @Override
+  public void startListeningForPatients() {
+    if(support!=null) {
+      support.startListeningForPatients();
+    }
+  }
+
+  @Override
+  public void stopListeningForLocations() {
+    if(support!=null) {
+      support.stopListeningForLocations();
+    }
+  }
+
+  @Override
+  public void stopListeningForPatients() {
+    if(support!=null) {
+      support.stopListeningForPatients();
+    }
   }
 
 }

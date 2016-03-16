@@ -1,3 +1,7 @@
-Added support for icons to denote flagged and unsigned orders
-Added color support for flagged and unsigned orders
-Added support for dynamically generated forms for oerder entry
+Fix error panel not displaying complete error text (see issue#1)
+Remove trailing ampersand for some URLS's sent to FHIR servers (see issue#2)
+Fix duplicate entries in server's list when downloading servers with the same name but different URLs (see issue#3)
+Allow 'search_params' defined in a server's configuration file to override the default search parameters for MedicationOrder
+Fix cookie issue in desktop version (see issue#6)
+Add support retrieving logged in user info form an open id server instead of a FHIR server
+Fix selecting "All Medications" during order entry in the demo version does not show any results 

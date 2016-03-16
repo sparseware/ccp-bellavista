@@ -247,7 +247,7 @@ public class MainEventHandler implements iEventHandler {
     int         n    = lb.getSelectedIndex();
     int         len  = lb.size();
 
-    if ((n > -1) && (n < len - 2)) {
+    if ((n > -1) && (n < len - 1)) {
       lb.clearSelection();
       lb.swap(n, n + 1);
       lb.setSelectedIndex(n + 1);

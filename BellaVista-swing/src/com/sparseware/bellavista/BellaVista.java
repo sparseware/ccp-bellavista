@@ -21,12 +21,12 @@ import org.jdesktop.swinghelper.debug.CheckThreadViolationRepaintManager;
 import com.appnativa.rare.Platform;
 import com.appnativa.rare.platform.swing.Main;
 
-public class MainSwing extends Main {
-  public MainSwing() {
+public class BellaVista extends Main {
+  public BellaVista() {
     super();
   }
 
-  public MainSwing(String[] args) {
+  public BellaVista(String[] args) {
     super(args);
   }
 
@@ -37,11 +37,11 @@ public class MainSwing extends Main {
   
   public static void main(String[] args) {
     String resourcePath = null;
-
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Hello World!");
     //check if running from file system and if so
     //use the live assets and resources
     try {
-      URL u = MainSwing.class.getResource("MainSwing.class");
+      URL u = BellaVista.class.getResource("BellaVista.class");
 
       if (u != null && u.getProtocol().equals("file")) {
         String s = u.getPath();
@@ -75,7 +75,7 @@ public class MainSwing extends Main {
     }
 
     try {
-      MainSwing m = new MainSwing(args);
+      BellaVista m = new BellaVista(args);
 
       if (resourcePath != null) {
         Platform.getUIDefaults().put("Rare.Resources.path", resourcePath);
